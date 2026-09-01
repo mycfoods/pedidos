@@ -850,11 +850,17 @@
                         <span>Total:</span>
                         <span id="cart-total">$0</span>
                     </div>
-                    
-                    <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
-                        <button class="btn-clear-cart" onclick="vaciarCarrito()">Vaciar Carrito</button>
-                        <button class="btn-send-whatsapp" onclick="enviarWhatsApp()" style="flex: 1;">
-                            <i class="fa-brands fa-whatsapp"></i> Enviar Pedido por WhatsApp
+     
+<div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
+    <button class="btn-clear-cart" onclick="vaciarCarrito()">Vaciar Carrito</button>
+
+    <button class="btn-send-whatsapp" onclick="imprimirComanda()" style="flex: 1;">
+        <i class="fa-solid fa-print"></i> Imprimir Comanda
+    </button>
+</div>
+```
+
+
                         </button>
                     </div>
                 </div>
@@ -954,64 +960,187 @@
             totalEl.innerText = `$${total.toLocaleString()}`;
         }
 
-        function enviarWhatsApp() {
-            if (carrito.length === 0) {
-                alert('El carrito está vacío. Agregá productos antes de pedir.');
-                return;
+ ```javascript
+function imprimirComanda() {
+    if (carrito.length === 0) {
+        alert('El carrito está vacío.');
+        return;
+    }
+
+    const nombre = document.getElementById('cliente-nombre').value.trim();
+    const tipoEntrega = document.getElementById('cliente-entrega').value;
+    const direccion = document.getElementById('cliente-direccion').value.trim();
+    const horario = document.getElementById('cliente-horario').value.trim();
+    const pago = document.getElementById('cliente-pago').value;
+    const notas = document.getElementById('cliente-notas').value.trim();
+
+    if (!nombre) {
+        alert('Ingresá el nombre del cliente.');
+        document.getElementById('cliente-nombre').focus();
+        return;
+    }
+
+    if (tipoEntrega === 'Delivery' && !direccion) {
+        alert('Ingresá la dirección.');
+        document.getElementById('cliente-direccion').focus();
+        return;
+    }
+
+    if (!horario) {
+        alert('Indicá el horario.');
+        document.getElementById('cliente-horario').focus();
+        return;
+    }
+
+    let total = 0;
+    let productosHTML = '';
+
+    carrito.forEach(item => {
+        const subtotal = item.precio * item.cantidad;
+        total += subtotal;
+
+        productosHTML += `
+            <div class="producto">
+                <strong>${item.cantidad} x ${item.nombre}</strong>
+                <span>$${subtotal.toLocaleString('es-AR')}</span>
+            </div>
+        `;
+    });
+
+    const ventana = window.open('', '_blank');
+
+    ventana.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Comanda MYCFOODS</title>
+
+            <style>
+                @page {
+                    size: 80mm auto;
+                    margin: 0;
+                }
+
+                * {
+                    box-sizing: border-box;
+                }
+
+                body {
+                    width: 80mm;
+                    margin: 0;
+                    padding: 8px;
+                    font-family: Arial, sans-serif;
+                    font-size: 13px;
+                    color: #000;
+                }
+
+                .cabecera {
+                    text-align: center;
+                    font-weight: bold;
+                    font-size: 18px;
+                    margin-bottom: 8px;
+                }
+
+                .linea {
+                    border-top: 1px dashed #000;
+                    margin: 7px 0;
+                }
+
+                .dato {
+                    margin: 3px 0;
+                }
+
+                .producto {
+                    display: flex;
+                    justify-content: space-between;
+                    gap: 8px;
+                    margin: 5px 0;
+                }
+
+                .producto strong {
+                    max-width: 65%;
+                }
+
+                .total {
+                    display: flex;
+                    justify-content: space-between;
+                    font-size: 17px;
+                    font-weight: bold;
+                    margin-top: 8px;
+                }
+
+                .observaciones {
+                    margin-top: 8px;
+                    font-weight: bold;
+                }
+            </style>
+        </head>
+
+        <body>
+
+            <div class="cabecera">
+                MYCFOODS
+                <br>
+                COMANDA
+            </div>
+
+            <div class="linea"></div>
+
+            <div class="dato"><strong>CLIENTE:</strong> ${nombre}</div>
+            <div class="dato"><strong>ENTREGA:</strong> ${tipoEntrega}</div>
+
+            ${tipoEntrega === 'Delivery'
+                ? `<div class="dato"><strong>DIRECCIÓN:</strong> ${direccion}</div>`
+                : ''
             }
 
-            const nombre = document.getElementById('cliente-nombre').value.trim();
-            const tipoEntrega = document.getElementById('cliente-entrega').value;
-            const direccion = document.getElementById('cliente-direccion').value.trim();
-            const horario = document.getElementById('cliente-horario').value.trim();
-            const pago = document.getElementById('cliente-pago').value;
-            const notas = document.getElementById('cliente-notas').value.trim();
+            <div class="dato"><strong>HORARIO:</strong> ${horario}</div>
+            <div class="dato"><strong>PAGO:</strong> ${pago}</div>
 
-            if (!nombre) {
-                alert('Por favor, ingresá tu Nombre y Apellido para el pedido.');
-                document.getElementById('cliente-nombre').focus();
-                return;
+            <div class="linea"></div>
+
+            <strong>DETALLE DEL PEDIDO</strong>
+
+            <div class="linea"></div>
+
+            ${productosHTML}
+
+            <div class="linea"></div>
+
+            <div class="total">
+                <span>TOTAL</span>
+                <span>$${total.toLocaleString('es-AR')}</span>
+            </div>
+
+            ${notas
+                ? `<div class="linea"></div>
+                   <div class="observaciones">
+                       OBSERVACIONES:<br>
+                       ${notas}
+                   </div>`
+                : ''
             }
 
-            if (tipoEntrega === 'Delivery' && !direccion) {
-                alert('Por favor, ingresá tu dirección para la entrega.');
-                document.getElementById('cliente-direccion').focus();
-                return;
-            }
+            <div class="linea"></div>
 
-            if (!horario) {
-                alert('Por favor, indicá el horario deseado para la entrega o retiro.');
-                document.getElementById('cliente-horario').focus();
-                return;
-            }
+            <div style="text-align:center; margin-top:10px;">
+                MYCFOODS
+            </div>
 
-            let mensaje = `*NUEVO PEDIDO - MYCFOODS*\n\n`;
-            mensaje += `👤 *Cliente:* ${nombre}\n`;
-            mensaje += `🛵 *Entrega:* ${tipoEntrega}\n`;
-            if (tipoEntrega === 'Delivery') {
-                mensaje += `📍 *Dirección:* ${direccion}\n`;
-            }
-            mensaje += `⏰ *Horario deseado:* ${horario}\n`;
-            mensaje += `💳 *Pago:* ${pago}\n`;
-            if (notas) {
-                mensaje += `📝 *Notas:* ${notas}\n`;
-            }
-            
-            mensaje += `\n*DETALLE DEL PEDIDO:*\n`;
+        </body>
+        </html>
+    `);
 
-            let total = 0;
-            carrito.forEach(item => {
-                const subtotal = item.precio * item.cantidad;
-                total += subtotal;
-                mensaje += `• ${item.cantidad}x ${item.nombre} ($${subtotal.toLocaleString()})\n`;
-            });
+    ventana.document.close();
 
-            mensaje += `\n💰 *TOTAL: $${total.toLocaleString()}*`;
-            
-            const telefono = "541176006544"; 
-            const url = `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`;
-            window.open(url, '_blank');
-        }
+    ventana.onload = function() {
+        ventana.focus();
+        ventana.print();
+    };
+}
+```
+
     </script>
 
 <script>
