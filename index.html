@@ -1199,146 +1199,83 @@ async function cargarMenuDesdeGoogle() {
 }
 
 
-/* =========================================================
-   IMPRIMIR COMANDA
-========================================================= */
-
+```javascript
 function imprimirComanda() {
 
     if (carrito.length === 0) {
-
         alert("El carrito está vacío.");
-
         return;
     }
 
+    const nombreEl = document.getElementById("cliente-nombre");
+    const entregaEl = document.getElementById("cliente-entrega");
+    const direccionEl = document.getElementById("cliente-direccion");
+    const horarioEl = document.getElementById("cliente-horario");
+    const pagoEl = document.getElementById("cliente-pago");
+    const notasEl = document.getElementById("cliente-notas");
 
-    const nombreEl =
-        document.getElementById("cliente-nombre");
-
-    const entregaEl =
-        document.getElementById("cliente-entrega");
-
-    const direccionEl =
-        document.getElementById("cliente-direccion");
-
-    const horarioEl =
-        document.getElementById("cliente-horario");
-
-    const pagoEl =
-        document.getElementById("cliente-pago");
-
-    const notasEl =
-        document.getElementById("cliente-notas");
-
-
-    const nombre =
-        nombreEl ? nombreEl.value.trim() : "";
-
-    const tipoEntrega =
-        entregaEl ? entregaEl.value : "";
-
-    const direccion =
-        direccionEl ? direccionEl.value.trim() : "";
-
-    const horario =
-        horarioEl ? horarioEl.value.trim() : "";
-
-    const pago =
-        pagoEl ? pagoEl.value : "";
-
-    const notas =
-        notasEl ? notasEl.value.trim() : "";
-
-
-    /* Validaciones */
+    const nombre = nombreEl ? nombreEl.value.trim() : "";
+    const tipoEntrega = entregaEl ? entregaEl.value : "";
+    const direccion = direccionEl ? direccionEl.value.trim() : "";
+    const horario = horarioEl ? horarioEl.value.trim() : "";
+    const pago = pagoEl ? pagoEl.value : "";
+    const notas = notasEl ? notasEl.value.trim() : "";
 
     if (!nombre) {
-
         alert("Ingresá el nombre del cliente.");
-
-        if (nombreEl) {
-            nombreEl.focus();
-        }
-
+        if (nombreEl) nombreEl.focus();
         return;
     }
 
-
-    if (
-        tipoEntrega === "Delivery" &&
-        !direccion
-    ) {
-
+    if (tipoEntrega === "Delivery" && !direccion) {
         alert("Ingresá la dirección.");
-
-        if (direccionEl) {
-            direccionEl.focus();
-        }
-
+        if (direccionEl) direccionEl.focus();
         return;
     }
-
 
     if (!horario) {
-
         alert("Indicá el horario.");
-
-        if (horarioEl) {
-            horarioEl.focus();
-        }
-
+        if (horarioEl) horarioEl.focus();
         return;
     }
 
+    // HORA EXACTA EN QUE SE GENERA LA COMANDA
+    const ahora = new Date();
 
-    /* Productos */
+    const horaPedido = ahora.toLocaleTimeString("es-AR", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false
+    });
 
+    const fechaPedido = ahora.toLocaleDateString("es-AR");
+
+    // PRODUCTOS
     let total = 0;
-
     let productosHTML = "";
-
 
     carrito.forEach(function(item) {
 
-        const subtotal =
-            item.precio * item.cantidad;
-
+        const subtotal = item.precio * item.cantidad;
         total += subtotal;
-
 
         productosHTML += `
             <div class="producto">
-
-                <strong>
-                    ${item.cantidad} x ${item.nombre}
-                </strong>
-
-                <span>
-                    $${subtotal.toLocaleString("es-AR")}
-                </span>
-
+                <div class="cantidad">${item.cantidad} x</div>
+                <div class="nombre">${item.nombre}</div>
+                <div class="precio">$${subtotal.toLocaleString("es-AR")}</div>
             </div>
         `;
-
     });
 
-
-    /* Ventana de impresión */
-
-    const ventana =
-        window.open("", "_blank");
-
+    // VENTANA DE IMPRESIÓN
+    const ventana = window.open("", "_blank");
 
     if (!ventana) {
-
-        alert(
-            "El navegador bloqueó la ventana de impresión."
-        );
-
+        alert("El navegador bloqueó la ventana de impresión.");
         return;
     }
-
 
     ventana.document.write(`
 
@@ -1363,135 +1300,158 @@ function imprimirComanda() {
                     box-sizing: border-box;
                 }
 
-                body {
+                html, body {
                     width: 80mm;
                     margin: 0;
-                    padding: 8px;
-                    font-family: Arial, sans-serif;
-                    font-size: 13px;
+                    padding: 0;
+                }
+
+                body {
+                    padding: 5mm;
+                    font-family: "Courier New", monospace;
+                    font-size: 12px;
+                    line-height: 1.35;
                     color: #000;
+                    font-weight: normal;
                 }
 
                 .cabecera {
                     text-align: center;
                     font-weight: bold;
                     font-size: 18px;
+                    line-height: 1.3;
                     margin-bottom: 8px;
                 }
 
                 .linea {
                     border-top: 1px dashed #000;
                     margin: 7px 0;
+                    height: 1px;
                 }
 
                 .dato {
-                    margin: 3px 0;
+                    margin: 4px 0;
+                    line-height: 1.4;
+                    word-wrap: break-word;
                 }
 
-                .producto {
-                    display: flex;
-                    justify-content: space-between;
-                    gap: 8px;
+                .titulo {
+                    font-weight: bold;
                     margin: 5px 0;
                 }
 
-                .producto strong {
-                    max-width: 65%;
+                .producto {
+                    display: grid;
+                    grid-template-columns: 35px 1fr 70px;
+                    column-gap: 3px;
+                    align-items: start;
+                    margin: 6px 0;
+                    line-height: 1.4;
+                }
+
+                .cantidad {
+                    font-weight: bold;
+                    white-space: nowrap;
+                }
+
+                .nombre {
+                    font-weight: bold;
+                    word-break: normal;
+                    overflow-wrap: break-word;
+                }
+
+                .precio {
+                    text-align: right;
+                    white-space: nowrap;
                 }
 
                 .total {
                     display: flex;
                     justify-content: space-between;
-                    font-size: 17px;
+                    font-size: 16px;
                     font-weight: bold;
                     margin-top: 8px;
                 }
 
                 .observaciones {
-                    margin-top: 8px;
+                    margin-top: 7px;
+                    line-height: 1.4;
+                    word-wrap: break-word;
+                }
+
+                .pie {
+                    text-align: center;
                     font-weight: bold;
+                    margin-top: 10px;
                 }
 
             </style>
 
         </head>
 
-
         <body>
 
             <div class="cabecera">
-
                 MYCFOODS
                 <br>
                 COMANDA
-
             </div>
-
 
             <div class="linea"></div>
 
-
             <div class="dato">
-                <strong>CLIENTE:</strong>
-                ${nombre}
+                <strong>FECHA:</strong> ${fechaPedido}
             </div>
 
-
             <div class="dato">
-                <strong>ENTREGA:</strong>
-                ${tipoEntrega}
+                <strong>HORA PEDIDO:</strong> ${horaPedido}
             </div>
 
+            <div class="linea"></div>
+
+            <div class="dato">
+                <strong>CLIENTE:</strong> ${nombre}
+            </div>
+
+            <div class="dato">
+                <strong>ENTREGA:</strong> ${tipoEntrega}
+            </div>
 
             ${
                 tipoEntrega === "Delivery"
                     ? `
                         <div class="dato">
-                            <strong>DIRECCIÓN:</strong>
+                            <strong>DIRECCIÓN:</strong><br>
                             ${direccion}
                         </div>
-                      `
+                    `
                     : ""
             }
 
-
             <div class="dato">
-                <strong>HORARIO:</strong>
-                ${horario}
+                <strong>HORARIO:</strong> ${horario}
             </div>
 
-
             <div class="dato">
-                <strong>PAGO:</strong>
-                ${pago}
+                <strong>PAGO:</strong> ${pago}
             </div>
-
 
             <div class="linea"></div>
 
-
-            <strong>DETALLE DEL PEDIDO</strong>
-
+            <div class="titulo">
+                DETALLE DEL PEDIDO
+            </div>
 
             <div class="linea"></div>
-
 
             ${productosHTML}
 
-
             <div class="linea"></div>
 
-
             <div class="total">
-
                 <span>TOTAL</span>
-
-                <span>
-                    $${total.toLocaleString("es-AR")}
-                </span>
-
+                <span>$${total.toLocaleString("es-AR")}</span>
             </div>
-
 
             ${
                 notas
@@ -1499,24 +1459,18 @@ function imprimirComanda() {
                         <div class="linea"></div>
 
                         <div class="observaciones">
-
-                            OBSERVACIONES:
-                            <br>
+                            <strong>OBSERVACIONES:</strong><br>
                             ${notas}
-
                         </div>
-                      `
+                    `
                     : ""
             }
 
-
             <div class="linea"></div>
 
-
-            <div style="text-align:center; margin-top:10px;">
+            <div class="pie">
                 MYCFOODS
             </div>
-
 
         </body>
 
@@ -1524,19 +1478,14 @@ function imprimirComanda() {
 
     `);
 
-
     ventana.document.close();
 
-
     ventana.onload = function() {
-
         ventana.focus();
-
         ventana.print();
-
     };
-
 }
+```
 
 
 /* =========================================================
