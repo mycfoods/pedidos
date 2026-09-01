@@ -872,163 +872,28 @@
     <i class="fa-solid fa-cart-shopping"></i>
     <span id="floating-cart-count">0</span>
 </button>
-   <!-- LÓGICA JAVASCRIPT -->
+<!-- LÓGICA JAVASCRIPT -->
 <script>
 
 let carrito = [];
-// =========================================================
-// BOTÓN FLOTANTE DEL CARRITO
-// =========================================================
 
-let tiempoOcultarCarrito;
+/* =========================================================
+   CARRITO
+========================================================= */
 
-
-// Actualizar cantidad de productos del carrito
 function actualizarBotonCarrito() {
 
-    const contador =
-        document.getElementById("floating-cart-count");
+    const contador = document.getElementById("floating-cart-count");
 
     if (!contador) return;
 
-    // Cuenta productos distintos, NO unidades
     contador.innerText = carrito.length;
 }
 
 
-// Mostrar carrito mientras se desplaza la página
-function mostrarBotonCarrito() {
-
-    const boton =
-        document.getElementById("floating-cart-btn");
-
-    if (!boton) return;
-
-    boton.classList.add("visible");
-
-    clearTimeout(tiempoOcultarCarrito);
-
-    tiempoOcultarCarrito = setTimeout(() => {
-
-        boton.classList.remove("visible");
-
-    }, 2000);
-}
-
-
-// Detectar desplazamiento
-window.addEventListener("scroll", mostrarBotonCarrito);
-    // Ocultar el carrito flotante al cargar la página
-document.addEventListener("DOMContentLoaded", function() {
-
-    const boton =
-        document.getElementById("floating-cart-btn");
-
-    if (boton) {
-        boton.classList.remove("visible");
-    }
-
-});
-// =========================================================
-// CARGAR MENÚ DEL DÍA DESDE GOOGLE SHEETS
-// =========================================================
-
-const URL_MENU = "https://script.google.com/macros/s/AKfycby9nZR0UMXbHR71rsV4k6y5iZi_IuptX5CJHQqyQEvfs0D7_4__kD-tnKToRggo1B5W/exec";
-
-async function cargarMenuDesdeGoogle() {
-    const detalle = document.getElementById("texto-menu-actual");
-
-    try {
-        const respuesta = await fetch(URL_MENU);
-
-        if (!respuesta.ok) {
-            throw new Error("Error HTTP: " + respuesta.status);
-        }
-
-        const texto = await respuesta.text();
-
-        console.log("Respuesta Google:", texto);
-
-        const datos = JSON.parse(texto);
-
-        if (!datos.menu_dia) {
-            throw new Error("No existe menu_dia en la respuesta");
-        }
-
-        const menu = datos.menu_dia;
-
-        if (detalle && menu.detalle) {
-            detalle.innerText = menu.detalle;
-        }
-
-        const precio = document.querySelector(".cat-menu-dia .price");
-
-        if (precio && menu.precio) {
-            precio.innerText =
-                "$" + Number(menu.precio).toLocaleString("es-AR");
-        }
-
-        const botonAgregar =
-            document.querySelector(".cat-menu-dia .btn-add");
-
-        if (botonAgregar && menu.precio) {
-            botonAgregar.onclick = function() {
-                agregarDesdeMenu(
-                    this,
-                    "Menú del Día",
-                    Number(menu.precio)
-                );
-            };
-        }
-
-    } catch (error) {
-
-        console.error(
-            "Error cargando el menú desde Google:",
-            error
-        );
-
-        if (detalle) {
-            detalle.innerText = "No se pudo cargar el menú";
-        }
-    }
-}
-
-// =========================================================
-// DOM READY
-// =========================================================
-
-document.addEventListener("DOMContentLoaded", function() {
-
-    // Mostrar/ocultar dirección según tipo de entrega
-    toggleDireccion();
-
-    // Cargar menú desde Google
-    cargarMenuDesdeGoogle();
-
-});
-
-
-// =========================================================
-// ENTREGA
-// =========================================================
-
-function toggleDireccion() {
-
-    const tipo = document.getElementById("cliente-entrega").value;
-    const groupDireccion = document.getElementById("group-direccion");
-
-    if (tipo === "Take Away") {
-        groupDireccion.style.display = "none";
-    } else {
-        groupDireccion.style.display = "block";
-    }
-}
-
-
-// =========================================================
-// CANTIDAD EN LOS PRODUCTOS DEL MENÚ
-// =========================================================
+/* =========================================================
+   CANTIDAD DE PRODUCTOS
+========================================================= */
 
 function modificarCantidadMenu(btn, cambio) {
 
@@ -1040,21 +905,21 @@ function modificarCantidadMenu(btn, cambio) {
 
     if (!qtyVal) return;
 
-    let actual = parseInt(qtyVal.innerText) || 1;
+    let cantidad = parseInt(qtyVal.innerText) || 1;
 
-    actual += cambio;
+    cantidad += cambio;
 
-    if (actual < 1) {
-        actual = 1;
+    if (cantidad < 1) {
+        cantidad = 1;
     }
 
-    qtyVal.innerText = actual;
+    qtyVal.innerText = cantidad;
 }
 
 
-// =========================================================
-// AGREGAR PRODUCTO DESDE EL MENÚ
-// =========================================================
+/* =========================================================
+   AGREGAR PRODUCTO DESDE EL MENÚ
+========================================================= */
 
 function agregarDesdeMenu(btn, nombre, precio) {
 
@@ -1070,16 +935,15 @@ function agregarDesdeMenu(btn, nombre, precio) {
 
     agregarAlCarrito(nombre, precio, cantidad);
 
-    // Reiniciar cantidad del producto
     if (qtyVal) {
         qtyVal.innerText = "1";
     }
 }
 
 
-// =========================================================
-// AGREGAR AL CARRITO
-// =========================================================
+/* =========================================================
+   AGREGAR AL CARRITO
+========================================================= */
 
 function agregarAlCarrito(nombre, precio, cantidad = 1) {
 
@@ -1102,13 +966,13 @@ function agregarAlCarrito(nombre, precio, cantidad = 1) {
     }
 
     actualizarCarritoUI();
-actualizarBotonCarrito();
+    actualizarBotonCarrito();
 }
 
 
-// =========================================================
-// CAMBIAR CANTIDAD DESDE EL CARRITO
-// =========================================================
+/* =========================================================
+   CAMBIAR CANTIDAD DESDE EL CARRITO
+========================================================= */
 
 function cambiarCantidad(index, cambio) {
 
@@ -1121,12 +985,13 @@ function cambiarCantidad(index, cambio) {
     }
 
     actualizarCarritoUI();
+    actualizarBotonCarrito();
 }
 
 
-// =========================================================
-// VACIAR CARRITO
-// =========================================================
+/* =========================================================
+   VACIAR CARRITO
+========================================================= */
 
 function vaciarCarrito() {
 
@@ -1137,9 +1002,9 @@ function vaciarCarrito() {
 }
 
 
-// =========================================================
-// ACTUALIZAR CARRITO
-// =========================================================
+/* =========================================================
+   ACTUALIZAR CARRITO
+========================================================= */
 
 function actualizarCarritoUI() {
 
@@ -1151,7 +1016,7 @@ function actualizarCarritoUI() {
     if (carrito.length === 0) {
 
         container.innerHTML =
-            '<p class="empty-msg">Tu carrito está vacío. ¡Agregá tus platos preferidos!</p>';
+            '<p class="empty-msg">El carrito está vacío.</p>';
 
         totalEl.innerText = "$0";
 
@@ -1214,67 +1079,278 @@ function actualizarCarritoUI() {
 }
 
 
-// =========================================================
-// ENVIAR PEDIDO POR WHATSAPP
-// =========================================================
+/* =========================================================
+   ENTREGA
+========================================================= */
 
-```javascript
+function toggleDireccion() {
+
+    const tipoEl = document.getElementById("cliente-entrega");
+    const direccion = document.getElementById("group-direccion");
+
+    if (!tipoEl || !direccion) return;
+
+    direccion.style.display =
+        tipoEl.value === "Take Away"
+            ? "none"
+            : "block";
+}
+
+
+/* =========================================================
+   MENÚ DEL DÍA DESDE GOOGLE SHEETS
+========================================================= */
+
+const URL_MENU =
+"https://script.google.com/macros/s/AKfycby9nZR0UMXbHR71rsV4k6y5iZi_IuptX5CJHQqyQEvfs0D7_4__kD-tnKToRggo1B5W/exec";
+
+
+async function cargarMenuDesdeGoogle() {
+
+    const detalle =
+        document.getElementById("texto-menu-actual");
+
+    try {
+
+        const respuesta = await fetch(URL_MENU);
+
+        if (!respuesta.ok) {
+            throw new Error(
+                "Error HTTP: " + respuesta.status
+            );
+        }
+
+        const datos = await respuesta.json();
+
+        if (!datos.menu_dia) {
+            throw new Error(
+                "No existe menu_dia en la respuesta"
+            );
+        }
+
+        const menu = datos.menu_dia;
+
+
+        /* Descripción */
+
+        if (detalle && menu.detalle) {
+
+            detalle.innerText = menu.detalle;
+
+        }
+
+
+        /* Precio */
+
+        const precio =
+            document.querySelector(
+                ".cat-menu-dia .price"
+            );
+
+        if (precio && menu.precio) {
+
+            precio.innerText =
+                "$" +
+                Number(menu.precio)
+                    .toLocaleString("es-AR");
+
+        }
+
+
+        /* Botón agregar */
+
+        const botonAgregar =
+            document.querySelector(
+                ".cat-menu-dia .btn-add"
+            );
+
+        if (botonAgregar && menu.precio) {
+
+            botonAgregar.onclick = function() {
+
+                agregarDesdeMenu(
+                    this,
+                    "Menú del Día",
+                    Number(menu.precio)
+                );
+
+            };
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Error cargando menú:",
+            error
+        );
+
+        if (detalle) {
+
+            detalle.innerText =
+                "No se pudo cargar el menú";
+
+        }
+
+    }
+}
+
+
+/* =========================================================
+   IMPRIMIR COMANDA
+========================================================= */
+
 function imprimirComanda() {
+
     if (carrito.length === 0) {
-        alert('El carrito está vacío.');
+
+        alert("El carrito está vacío.");
+
         return;
     }
 
-    const nombre = document.getElementById('cliente-nombre').value.trim();
-    const tipoEntrega = document.getElementById('cliente-entrega').value;
-    const direccion = document.getElementById('cliente-direccion').value.trim();
-    const horario = document.getElementById('cliente-horario').value.trim();
-    const pago = document.getElementById('cliente-pago').value;
-    const notas = document.getElementById('cliente-notas').value.trim();
+
+    const nombreEl =
+        document.getElementById("cliente-nombre");
+
+    const entregaEl =
+        document.getElementById("cliente-entrega");
+
+    const direccionEl =
+        document.getElementById("cliente-direccion");
+
+    const horarioEl =
+        document.getElementById("cliente-horario");
+
+    const pagoEl =
+        document.getElementById("cliente-pago");
+
+    const notasEl =
+        document.getElementById("cliente-notas");
+
+
+    const nombre =
+        nombreEl ? nombreEl.value.trim() : "";
+
+    const tipoEntrega =
+        entregaEl ? entregaEl.value : "";
+
+    const direccion =
+        direccionEl ? direccionEl.value.trim() : "";
+
+    const horario =
+        horarioEl ? horarioEl.value.trim() : "";
+
+    const pago =
+        pagoEl ? pagoEl.value : "";
+
+    const notas =
+        notasEl ? notasEl.value.trim() : "";
+
+
+    /* Validaciones */
 
     if (!nombre) {
-        alert('Ingresá el nombre del cliente.');
-        document.getElementById('cliente-nombre').focus();
+
+        alert("Ingresá el nombre del cliente.");
+
+        if (nombreEl) {
+            nombreEl.focus();
+        }
+
         return;
     }
 
-    if (tipoEntrega === 'Delivery' && !direccion) {
-        alert('Ingresá la dirección.');
-        document.getElementById('cliente-direccion').focus();
+
+    if (
+        tipoEntrega === "Delivery" &&
+        !direccion
+    ) {
+
+        alert("Ingresá la dirección.");
+
+        if (direccionEl) {
+            direccionEl.focus();
+        }
+
         return;
     }
+
 
     if (!horario) {
-        alert('Indicá el horario.');
-        document.getElementById('cliente-horario').focus();
+
+        alert("Indicá el horario.");
+
+        if (horarioEl) {
+            horarioEl.focus();
+        }
+
         return;
     }
 
-    let total = 0;
-    let productosHTML = '';
 
-    carrito.forEach(item => {
-        const subtotal = item.precio * item.cantidad;
+    /* Productos */
+
+    let total = 0;
+
+    let productosHTML = "";
+
+
+    carrito.forEach(function(item) {
+
+        const subtotal =
+            item.precio * item.cantidad;
+
         total += subtotal;
+
 
         productosHTML += `
             <div class="producto">
-                <strong>${item.cantidad} x ${item.nombre}</strong>
-                <span>$${subtotal.toLocaleString('es-AR')}</span>
+
+                <strong>
+                    ${item.cantidad} x ${item.nombre}
+                </strong>
+
+                <span>
+                    $${subtotal.toLocaleString("es-AR")}
+                </span>
+
             </div>
         `;
+
     });
 
-    const ventana = window.open('', '_blank');
+
+    /* Ventana de impresión */
+
+    const ventana =
+        window.open("", "_blank");
+
+
+    if (!ventana) {
+
+        alert(
+            "El navegador bloqueó la ventana de impresión."
+        );
+
+        return;
+    }
+
 
     ventana.document.write(`
+
         <!DOCTYPE html>
+
         <html>
+
         <head>
+
             <meta charset="UTF-8">
+
             <title>Comanda MYCFOODS</title>
 
             <style>
+
                 @page {
                     size: 80mm auto;
                     margin: 0;
@@ -1332,703 +1408,151 @@ function imprimirComanda() {
                     margin-top: 8px;
                     font-weight: bold;
                 }
+
             </style>
+
         </head>
+
 
         <body>
 
             <div class="cabecera">
+
                 MYCFOODS
                 <br>
                 COMANDA
+
             </div>
 
+
             <div class="linea"></div>
 
-            <div class="dato"><strong>CLIENTE:</strong> ${nombre}</div>
-            <div class="dato"><strong>ENTREGA:</strong> ${tipoEntrega}</div>
 
-            ${tipoEntrega === 'Delivery'
-                ? `<div class="dato"><strong>DIRECCIÓN:</strong> ${direccion}</div>`
-                : ''
+            <div class="dato">
+                <strong>CLIENTE:</strong>
+                ${nombre}
+            </div>
+
+
+            <div class="dato">
+                <strong>ENTREGA:</strong>
+                ${tipoEntrega}
+            </div>
+
+
+            ${
+                tipoEntrega === "Delivery"
+                    ? `
+                        <div class="dato">
+                            <strong>DIRECCIÓN:</strong>
+                            ${direccion}
+                        </div>
+                      `
+                    : ""
             }
 
-            <div class="dato"><strong>HORARIO:</strong> ${horario}</div>
-            <div class="dato"><strong>PAGO:</strong> ${pago}</div>
+
+            <div class="dato">
+                <strong>HORARIO:</strong>
+                ${horario}
+            </div>
+
+
+            <div class="dato">
+                <strong>PAGO:</strong>
+                ${pago}
+            </div>
+
 
             <div class="linea"></div>
+
 
             <strong>DETALLE DEL PEDIDO</strong>
 
+
             <div class="linea"></div>
+
 
             ${productosHTML}
 
+
             <div class="linea"></div>
+
 
             <div class="total">
+
                 <span>TOTAL</span>
-                <span>$${total.toLocaleString('es-AR')}</span>
+
+                <span>
+                    $${total.toLocaleString("es-AR")}
+                </span>
+
             </div>
 
-            ${notas
-                ? `<div class="linea"></div>
-                   <div class="observaciones">
-                       OBSERVACIONES:<br>
-                       ${notas}
-                   </div>`
-                : ''
+
+            ${
+                notas
+                    ? `
+                        <div class="linea"></div>
+
+                        <div class="observaciones">
+
+                            OBSERVACIONES:
+                            <br>
+                            ${notas}
+
+                        </div>
+                      `
+                    : ""
             }
 
+
             <div class="linea"></div>
+
 
             <div style="text-align:center; margin-top:10px;">
                 MYCFOODS
             </div>
 
+
         </body>
+
         </html>
+
     `);
+
 
     ventana.document.close();
 
+
     ventana.onload = function() {
+
         ventana.focus();
+
         ventana.print();
-    };
-}
-```
-
-
-// =========================================================
-// PRECIOS DEL BOX
-// =========================================================
-// IMPORTANTE:
-// ACÁ PONÉS VOS EL PRECIO UNITARIO DE CADA PRODUCTO.
-//
-// Ejemplo:
-// carneCuchillo: 3500
-//
-// No hace falta modificar el HTML.
-// El precio que pongas acá se utiliza automáticamente
-// para calcular el total según la cantidad elegida.
-// =========================================================
-
-const PRECIOS_BOX = {
-
-    // -----------------------------------------------------
-    // PACKS ARMADOS
-    // -----------------------------------------------------
-
-    packs: {
-        dos: 54300,
-        cuatro: 110000
-    },
-
-
-    // -----------------------------------------------------
-    // EMPANADAS
-    // PRECIO UNITARIO
-    // -----------------------------------------------------
-
-    empanadas: {
-
-        carneCuchillo: 2300,           // <-- PONER PRECIO
-        jamonQueso: 2300,              // <-- PONER PRECIO
-        espinacaSalsaBlanca: 2300,    // <-- PONER PRECIO
-        pollo: 2300,                   // <-- PONER PRECIO
-        cebollaCaramelizada: 2300,     // <-- PONER PRECIO
-        cuatroQuesos: 2300,            // <-- PONER PRECIO
-        bondiolaBraseada: 2300,        // <-- PONER PRECIO
-        caprese: 2300                  // <-- PONER PRECIO
-
-    },
-
-
-    // -----------------------------------------------------
-    // SÁNDWICHES
-    // PRECIO UNITARIO
-    // -----------------------------------------------------
-
-    sandwiches: {
-
-        mayoJamonQueso: 3500,              // <-- PONER PRECIO
-        mayoPestoQuesoTomate: 3500,        // <-- PONER PRECIO
-        jamonCrudoQuesoRucula: 4000,       // <-- PONER PRECIO
-        bondiolaSandwich: 4000,             // <-- PONER PRECIO
-        carneDesmechada: 4000,              // <-- PONER PRECIO
-        salmonAhumado: 4000,                // <-- PONER PRECIO
-        miniCheeseBurger: 3500              // <-- PONER PRECIO
-
-    }
-
-};
-
-
-// =========================================================
-// FORMATEAR PRECIO
-// =========================================================
-
-function formatearPrecioBox(precio) {
-
-    return "$" + Number(precio).toLocaleString("es-AR");
-
-}
-
-
-// =========================================================
-// ACTUALIZAR PRECIOS MOSTRADOS EN LA SECCIÓN BOX
-// =========================================================
-
-function actualizarPreciosBox() {
-
-    const precios = {
-
-        carneCuchillo:
-            PRECIOS_BOX.empanadas.carneCuchillo,
-
-        jamonQueso:
-            PRECIOS_BOX.empanadas.jamonQueso,
-
-        espinacaSalsaBlanca:
-            PRECIOS_BOX.empanadas.espinacaSalsaBlanca,
-
-        pollo:
-            PRECIOS_BOX.empanadas.pollo,
-
-        cebollaCaramelizada:
-            PRECIOS_BOX.empanadas.cebollaCaramelizada,
-
-        cuatroQuesos:
-            PRECIOS_BOX.empanadas.cuatroQuesos,
-
-        bondiolaBraseada:
-            PRECIOS_BOX.empanadas.bondiolaBraseada,
-
-        caprese:
-            PRECIOS_BOX.empanadas.caprese,
-
-        mayoJamonQueso:
-            PRECIOS_BOX.sandwiches.mayoJamonQueso,
-
-        mayoPestoQuesoTomate:
-            PRECIOS_BOX.sandwiches.mayoPestoQuesoTomate,
-
-        jamonCrudoQuesoRucula:
-            PRECIOS_BOX.sandwiches.jamonCrudoQuesoRucula,
-
-        bondiolaSandwich:
-            PRECIOS_BOX.sandwiches.bondiolaSandwich,
-
-        carneDesmechada:
-            PRECIOS_BOX.sandwiches.carneDesmechada,
-
-        salmonAhumado:
-            PRECIOS_BOX.sandwiches.salmonAhumado,
-
-        miniCheeseBurger:
-            PRECIOS_BOX.sandwiches.miniCheeseBurger
 
     };
 
-
-    document.querySelectorAll("#box .box-unit-price").forEach(elemento => {
-
-        const clave = elemento.dataset.priceKey;
-        const precio = precios[clave];
-
-      if (precio && precio > 0) {
-
-    const precioMediaDocena = precio * 6;
-
-    elemento.innerText =
-        formatearPrecioBox(precioMediaDocena);
-
-} else {
-
-    elemento.innerText =
-        "Precio a definir";
-
-}
-
-    });
-
-}
-
-
-// =========================================================
-// MODIFICAR CANTIDAD
-//
-// PACKS:
-// +1 / -1
-//
-// PRODUCTOS INDIVIDUALES:
-// +6 / -6
-//
-// Ejemplos:
-// 0 → 6 → 12 → 18 → 24
-// =========================================================
-
-function modificarCantidadBox(btn, cambio) {
-
-    const selector = btn.closest(".qty-selector");
-
-    if (!selector) return;
-
-
-    const cantidadEl = selector.querySelector(".qty-val");
-
-    if (!cantidadEl) return;
-
-
-    const paso =
-        parseInt(cantidadEl.dataset.step) || 1;
-
-    const minimo =
-        parseInt(cantidadEl.dataset.min) || 0;
-
-
-    let cantidad =
-        parseInt(cantidadEl.innerText) || 0;
-
-
-    cantidad += cambio * paso;
-
-
-    if (cantidad < minimo) {
-        cantidad = minimo;
-    }
-
-
-    cantidadEl.innerText = cantidad;
-
-
-    // Destacar cuando todavía no hay cantidad seleccionada
-    if (cantidad === 0) {
-
-        cantidadEl.classList.add("box-qty-zero");
-
-    } else {
-
-        cantidadEl.classList.remove("box-qty-zero");
-
-    }
-
-}
-
-
-// =========================================================
-// AGREGAR PACK ARMADO AL CARRITO
-//
-// Los packs mantienen sus cantidades internas.
-// El selector solamente permite agregar 1, 2, 3...
-// packs del mismo tipo.
-// =========================================================
-
-function agregarPackBox(btn, nombre, precio) {
-
-    const controles =
-        btn.closest(".item-controls-inline");
-
-    if (!controles) return;
-
-
-    const cantidadEl =
-        controles.querySelector(".qty-val");
-
-    if (!cantidadEl) return;
-
-
-    const cantidad =
-        parseInt(cantidadEl.innerText) || 1;
-
-
-    agregarAlCarrito(
-        nombre,
-        precio,
-        cantidad
-    );
-
-
-    // Reiniciar a 1 pack
-    cantidadEl.innerText = "1";
-
-}
-
-
-// =========================================================
-// AGREGAR PRODUCTO INDIVIDUAL DEL BOX
-//
-// Cada producto es independiente.
-// La cantidad siempre llega en múltiplos de 6.
-// =========================================================
-
-function agregarItemBox(btn, nombre, precio) {
-
-    const controles =
-        btn.closest(".item-controls-inline");
-
-    if (!controles) return;
-
-
-    const cantidadEl =
-        controles.querySelector(".qty-val");
-
-    if (!cantidadEl) return;
-
-
-    const cantidad =
-        parseInt(cantidadEl.innerText) || 0;
-
-
-    // No permitir agregar sin seleccionar cantidad
-    if (cantidad <= 0) {
-
-        alert(
-            "Seleccioná una cantidad antes de agregar el producto."
-        );
-
-        return;
-    }
-
-
-    // No permitir precio sin cargar
-    if (!precio || precio <= 0) {
-
-        alert(
-            "Primero tenés que colocar el precio unitario de \"" +
-            nombre +
-            "\" en PRECIOS_BOX."
-        );
-
-        return;
-    }
-
-
-    // Agregar al carrito
-    agregarAlCarrito(
-        nombre,
-        precio,
-        cantidad
-    );
-
-
-  // Reiniciar a 6 (Media docena copetín)
-cantidadEl.innerText = "6";
-}
-
-
-// =========================================================
-// INICIALIZAR PRECIOS
-// =========================================================
-
-if (document.readyState === "loading") {
-
-    document.addEventListener(
-        "DOMContentLoaded",
-        actualizarPreciosBox
-    );
-
-} else {
-
-    actualizarPreciosBox();
-
-}
-// =========================================================
-// BOTÓN VOLVER ARRIBA
-// =========================================================
-
-const btnVolverArriba = document.getElementById("btn-volver-arriba");
-
-window.addEventListener("scroll", function() {
-
-    if (!btnVolverArriba) return;
-
-    if (window.scrollY > 400) {
-        btnVolverArriba.classList.add("visible");
-    } else {
-        btnVolverArriba.classList.remove("visible");
-    }
-
-});
-
-if (btnVolverArriba) {
-
-    btnVolverArriba.addEventListener("click", function(e) {
-
-        e.preventDefault();
-
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
-
-    });
-
-}    
-/* =========================================================
-   SELECTOR DE GUSTOS PARA BOX
-========================================================= */
-
-function mostrarGustosBox(boton) {
-
-    const box = boton.closest('.box-gustos');
-
-    box.classList.toggle('abierto');
-
-    if (box.classList.contains('abierto')) {
-        boton.innerHTML =
-            '<i class="fa-solid fa-minus"></i> Ocultar gustos';
-    } else {
-        boton.innerHTML =
-            '<i class="fa-solid fa-plus"></i> Elegir gustos';
-    }
-}
-
-
-function cambiarGusto(boton, cambio) {
-
-    const box = boton.closest('.box-gustos');
-
-    const cantidadElemento =
-        boton.parentElement.querySelector('.gusto-cantidad');
-
-    let cantidad =
-        parseInt(cantidadElemento.textContent) || 0;
-
-    const totalElemento =
-        box.querySelector('.gustos-total');
-
-    const limite =
-        parseInt(
-            box.querySelector('.box-gustos-contador')
-                .textContent.split('/')[1]
-        );
-
-    let totalActual = 0;
-
-    box.querySelectorAll('.gusto-cantidad').forEach(elemento => {
-        totalActual += parseInt(elemento.textContent) || 0;
-    });
-
-    if (cambio > 0 && totalActual >= limite) {
-        return;
-    }
-
-    cantidad += cambio;
-
-    if (cantidad < 0) {
-        cantidad = 0;
-    }
-
-    cantidadElemento.textContent = cantidad;
-
-    actualizarGustosBox(box);
-}
-
-
-function actualizarGustosBox(box) {
-
-    let total = 0;
-
-    const seleccionados = [];
-
-    box.querySelectorAll('.gusto-row').forEach(row => {
-
-        const nombre =
-            row.querySelector('span').textContent.trim();
-
-        const cantidad =
-            parseInt(
-                row.querySelector('.gusto-cantidad').textContent
-            ) || 0;
-
-        total += cantidad;
-
-        if (cantidad > 0) {
-            seleccionados.push(
-                `${nombre} ×${cantidad}`
-            );
-        }
-    });
-
-    box.querySelector('.gustos-total').textContent = total;
-
-    const limite =
-        parseInt(
-            box.querySelector('.box-gustos-contador')
-                .textContent.split('/')[1]
-        );
-
-    /* Bloquear los + cuando se alcanza el máximo */
-
-    box.querySelectorAll('.gusto-row').forEach(row => {
-
-        const botones =
-            row.querySelectorAll('.gusto-control button');
-
-        const cantidad =
-            parseInt(
-                row.querySelector('.gusto-cantidad').textContent
-            ) || 0;
-
-        botones[0].disabled = cantidad === 0;
-        botones[1].disabled = total >= limite;
-
-    });
-
-    /* Resumen */
-
-    const resumen =
-        box.querySelector('.gustos-resumen');
-
-    if (seleccionados.length > 0) {
-
-        resumen.textContent =
-            seleccionados.join(' · ');
-
-    } else {
-
-        resumen.textContent = '';
-
-    }
 }
 
 
 /* =========================================================
-   AGREGAR BOX CON LOS GUSTOS
+   INICIO
 ========================================================= */
 
-function agregarBoxConGustos(boton, nombre, precio, limite) {
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
 
-    const box =
-        boton.closest('.accordion-body')
-            .querySelector('.box-gustos');
+        toggleDireccion();
 
-    let total = 0;
-    const gustos = [];
+        cargarMenuDesdeGoogle();
 
-    box.querySelectorAll('.gusto-row').forEach(row => {
+        actualizarCarritoUI();
 
-        const nombreGusto =
-            row.querySelector('span').textContent.trim();
-
-        const cantidad =
-            parseInt(
-                row.querySelector('.gusto-cantidad').textContent
-            ) || 0;
-
-        total += cantidad;
-
-        if (cantidad > 0) {
-            gustos.push(
-                `${nombreGusto} ×${cantidad}`
-            );
-        }
-
-    });
-
-    if (total !== limite) {
-
-        alert(
-            `Debés seleccionar exactamente ${limite} empanaditas.\n\n` +
-            `Seleccionadas: ${total} de ${limite}`
-        );
-
-        return;
-    }
-
-    const detalle =
-        gustos.join(', ');
-
-    /*
-       Acá utilizamos la función existente del carrito
-       si está disponible.
-    */
-
-    if (typeof agregarAlCarrito === 'function') {
-
-        agregarAlCarrito(
-            nombre,
-            precio,
-            1,
-            detalle
-        );
-
-    } else if (typeof agregarProducto === 'function') {
-
-        agregarProducto(
-            nombre,
-            precio,
-            1,
-            detalle
-        );
-
-    } else {
-
-        console.log({
-            producto: nombre,
-            precio: precio,
-            cantidad: 1,
-            gustos: detalle
-        });
+        actualizarBotonCarrito();
 
     }
-}// =========================================================
-// IR AL CARRITO DESDE EL BOTÓN FLOTANTE
-// =========================================================
+);
 
-function irAlCarrito() {
-
-    const carritoSeccion =
-        document.getElementById("carrito");
-
-    if (carritoSeccion) {
-
-        carritoSeccion.scrollIntoView({
-            behavior: "smooth",
-            block: "start"
-        });
-
-    }
-
-}// =========================================================
-// ACORDEÓN DE EVENTOS
-// =========================================================
-
-function toggleEvent(id) {
-
-    const content = document.getElementById(id + "-content");
-    const button = document.querySelector(
-        `[onclick="toggleEvent('${id}')"]`
-    );
-
-    if (!content || !button) return;
-
-    const estabaAbierto = content.classList.contains("open");
-
-    // Cerrar todos
-    document.querySelectorAll(".event-content").forEach(function(elemento) {
-        elemento.classList.remove("open");
-    });
-
-    document.querySelectorAll(".event-toggle span").forEach(function(span) {
-        span.textContent = "+";
-    });
-
-    // Abrir el seleccionado
-    if (!estabaAbierto) {
-
-        content.classList.add("open");
-        button.querySelector("span").textContent = "−";
-
-        setTimeout(function() {
-            button.scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-            });
-        }, 50);
-    }
-}
 </script>
-
