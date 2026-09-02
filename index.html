@@ -1508,7 +1508,7 @@ function imprimirComanda() {
 
             <div class="campo">
 
-                FECHA: ${fechaPedido}<br>
+                FECHA: ${fechaPedido}
 
                 HORA: ${horaPedido}
 
@@ -1522,7 +1522,7 @@ function imprimirComanda() {
 
                 <strong>
                     CLIENTE:
-                </strong><br>
+                </strong>
 
                 ${nombreSeguro}
 
@@ -1699,20 +1699,11 @@ function imprimirComanda() {
                 }
 
 
-                .ticket {
-
-                    width: 72mm;
-
-                    margin: 0 auto;
-
-                    padding:
-
-                        2mm
-                        0
-                        1mm
-                        0;
-
-                }
+               .ticket {
+    width: 72mm;
+    margin: 0 auto;
+    padding: 0;
+}
 
 
                 .encabezado {
@@ -1843,17 +1834,12 @@ function imprimirComanda() {
                 }
 
 
-                .pie {
-
-                    text-align: center;
-
-                    font-size: 15px;
-
-                    font-weight: 900;
-
-                    padding-bottom: 1mm;
-
-                }
+             .pie {
+    text-align: center;
+    font-size: 15px;
+    font-weight: 900;
+    padding-bottom: 0;
+}
 
 
                 @media print {
