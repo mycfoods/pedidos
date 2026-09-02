@@ -1225,10 +1225,33 @@ async function cargarMenuDesdeGoogle() {
 
 
 /* =========================================================
+   CONTROL ANTI-DOBLE IMPRESIÓN
+========================================================= */
+
+let impresionEnCurso = false;
+
+
+/* =========================================================
    IMPRIMIR COMANDA
 ========================================================= */
 
 function imprimirComanda() {
+
+    /*
+       EVITA QUE DOS CLICS RÁPIDOS,
+       DOBLE EVENTO O DOBLE LLAMADA
+       GENEREN DOS TICKETS.
+    */
+
+    if (impresionEnCurso) {
+
+        console.warn(
+            "Impresión bloqueada: ya hay una impresión en curso."
+        );
+
+        return;
+    }
+
 
     if (carrito.length === 0) {
 
@@ -1293,9 +1316,9 @@ function imprimirComanda() {
             : "";
 
 
-    /* -------------------------
+    /* =====================================================
        VALIDACIONES
-    ------------------------- */
+    ===================================================== */
 
     if (!nombre) {
 
@@ -1304,7 +1327,6 @@ function imprimirComanda() {
         );
 
         if (nombreEl) {
-
             nombreEl.focus();
         }
 
@@ -1323,7 +1345,6 @@ function imprimirComanda() {
         );
 
         if (direccionEl) {
-
             direccionEl.focus();
         }
 
@@ -1338,7 +1359,6 @@ function imprimirComanda() {
         );
 
         if (horarioEl) {
-
             horarioEl.focus();
         }
 
@@ -1346,9 +1366,17 @@ function imprimirComanda() {
     }
 
 
-    /* -------------------------
+    /*
+       DESDE ACÁ BLOQUEAMOS LA FUNCIÓN.
+       Las validaciones ya pasaron correctamente.
+    */
+
+    impresionEnCurso = true;
+
+
+    /* =====================================================
        FECHA Y HORA
-    ------------------------- */
+    ===================================================== */
 
     const ahora =
         new Date();
@@ -1372,9 +1400,9 @@ function imprimirComanda() {
         );
 
 
-    /* -------------------------
+    /* =====================================================
        PRODUCTOS
-    ------------------------- */
+    ===================================================== */
 
     let total = 0;
 
@@ -1391,8 +1419,11 @@ function imprimirComanda() {
         total += subtotal;
 
 
-        /* QUITAR ACENTOS PARA LA
-           IMPRESORA */
+        /*
+           QUITAR ACENTOS PARA EVITAR
+           CARACTERES PROBLEMÁTICOS
+           EN LA IMPRESORA.
+        */
 
         let nombreProd =
             item.nombre
@@ -1415,7 +1446,7 @@ function imprimirComanda() {
 
 
     /* =====================================================
-       CONSTRUIR TICKET COMO TEXTO PLANO
+       CONSTRUIR TICKET
     ===================================================== */
 
     let ticket = `
@@ -1460,20 +1491,12 @@ ${notas.toUpperCase()}
     }
 
 
-    /* =====================================================
-       CORTE
-    ===================================================== */
-
-    const CUT_BYTE =
-        "\x1B\x69";
-
-
     ticket +=
 `--------------------------------
      MYCFOODS
 
 
-` + CUT_BYTE;
+`;
 
 
     /* =====================================================
@@ -1489,6 +1512,8 @@ ${notas.toUpperCase()}
 
 
     if (!ventana) {
+
+        impresionEnCurso = false;
 
         alert(
             "El navegador bloqueó la ventana de impresión."
@@ -1511,7 +1536,7 @@ ${notas.toUpperCase()}
 
             <meta charset="UTF-8">
 
-            <title></title>
+            <title>Comanda MYCFOODS</title>
 
             <style>
 
@@ -1540,7 +1565,7 @@ ${notas.toUpperCase()}
 
                 body {
 
-                    padding: 5mm;
+                    padding: 4mm;
 
                     font-family:
                         "Courier New",
@@ -1548,9 +1573,9 @@ ${notas.toUpperCase()}
 
                     font-size: 15px;
 
-                    font-weight: bold;
+                    font-weight: normal;
 
-                    line-height: 1.35;
+                    line-height: 1.25;
 
                     color: #000000;
 
@@ -1569,9 +1594,9 @@ ${notas.toUpperCase()}
 
                     font-size: 15px;
 
-                    font-weight: bold;
+                    font-weight: normal;
 
-                    line-height: 1.35;
+                    line-height: 1.25;
 
                     white-space: pre-wrap;
 
@@ -1596,7 +1621,7 @@ ${notas.toUpperCase()}
 
                     body {
 
-                        padding: 5mm;
+                        padding: 4mm;
 
                     }
 
@@ -1620,24 +1645,6 @@ ${notas.toUpperCase()}
 
             <pre>${ticket}</pre>
 
-            <script>
-
-                window.onload = function() {
-
-                    window.focus();
-
-                    window.print();
-
-                    setTimeout(function() {
-
-                        window.close();
-
-                    }, 500);
-
-                };
-
-            <\/script>
-
         </body>
 
         </html>
@@ -1647,6 +1654,53 @@ ${notas.toUpperCase()}
 
     ventana.document.close();
 
+
+    /*
+       IMPORTANTE:
+
+       La impresión se dispara UNA SOLA VEZ
+       desde el documento recién creado.
+
+       No usamos window.onload + print()
+       para evitar dobles disparos.
+    */
+
+    setTimeout(function() {
+
+        try {
+
+            ventana.focus();
+
+            ventana.print();
+
+        } catch (error) {
+
+            console.error(
+                "Error de impresión:",
+                error
+            );
+
+        }
+
+        /*
+           Cerramos la ventana después
+           de darle tiempo al navegador
+           para enviar el trabajo.
+
+           Liberamos el bloqueo después.
+        */
+
+        setTimeout(function() {
+
+            try {
+                ventana.close();
+            } catch (e) {}
+
+            impresionEnCurso = false;
+
+        }, 1200);
+
+    }, 300);
 }
 
 
