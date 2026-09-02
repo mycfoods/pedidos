@@ -1098,7 +1098,7 @@ async function cargarMenuDesdeGoogle() {
 
 
 /* =========================================================
-   IMPRIMIR COMANDA (Texto Plano ESC/POS para Driver Genérico)
+   IMPRIMIR COMANDA (Texto Plano Puro - Sin Códigos Binarios)
 ========================================================= */
 
 function imprimirComanda() {
@@ -1155,63 +1155,52 @@ function imprimirComanda() {
         
         let nombreProd = item.nombre.replace(/á/g, 'a').replace(/é/g, 'e').replace(/í/g, 'i').replace(/ó/g, 'o').replace(/ú/g, 'u').replace(/ñ/g, 'n');
         
-        productosTexto += `${item.cantidad}x ${nombreProd}\n`;
+        productosTexto += `${item.cantidad} x ${nombreProd}\n`;
         productosTexto += `   $${subtotal.toLocaleString("es-AR")}\n`;
     });
 
-    /* COMANDOS ESC/POS BÁSICOS */
-    const ESC = "\x1B";
-    const INIT = ESC + "@";          
-    const CENTER = ESC + "a" + "\x01"; 
-    const LEFT = ESC + "a" + "\x00";   
-    const BOLD_ON = ESC + "E" + "\x01";
-    const BOLD_OFF = ESC + "E" + "\x00";
-    const BIG_ON = ESC + "!" + "\x30"; 
-    const NORMAL = ESC + "!" + "\x00"; 
-    const CUT = "\x1D" + "V" + "\x41" + "\x00"; 
+    /* CONSTRUCCIÓN DEL TICKET LIMPIO (SIN BITS ESC/POS) */
+    let ticket = `     MYCFOODS     
+      COMANDA     
+--------------------------------
+FECHA: ${fechaPedido}
+HORA:  ${horaPedido}
+--------------------------------
+CLIENTE: ${nombre.toUpperCase()}
+ENTREGA: ${tipoEntrega.toUpperCase()}
+`;
 
-    let ticket = INIT;
-
-    ticket += CENTER + BOLD_ON + BIG_ON + "MYCFOODS\n";
-    ticket += "COMANDA\n" + NORMAL + BOLD_OFF;
-    ticket += "--------------------------------\n";
-    
-    ticket += LEFT + BOLD_ON;
-    ticket += `FECHA: ${fechaPedido}\n`;
-    ticket += `HORA:  ${horaPedido}\n`;
-    ticket += "--------------------------------\n";
-    ticket += `CLIENTE: ${nombre.toUpperCase()}\n`;
-    ticket += `ENTREGA: ${tipoEntrega.toUpperCase()}\n`;
-    
     if (tipoEntrega === "Delivery") {
         ticket += `DIRECCION:\n${direccion.toUpperCase()}\n`;
     }
-    
-    ticket += `HORARIO: ${horario}\n`;
-    ticket += `PAGO:    ${pago}\n`;
-    ticket += "--------------------------------\n";
-    ticket += "PEDIDO:\n" + BOLD_OFF;
-    
-    ticket += productosTexto;
-    
-    ticket += BOLD_ON + "--------------------------------\n";
-    ticket += `TOTAL: $${total.toLocaleString("es-AR")}\n`;
-    
-    if (notas) {
-        ticket += "--------------------------------\n";
-        ticket += `OBSERVACIONES:\n${notas}\n`;
-    }
-    
-    ticket += "--------------------------------\n";
-    ticket += CENTER + "MYCFOODS\n\n\n" + CUT;
 
+    ticket += `HORARIO: ${horario}
+PAGO:    ${pago}
+--------------------------------
+PEDIDO:
+${productosTexto}--------------------------------
+TOTAL: $${total.toLocaleString("es-AR")}
+`;
+
+    if (notas) {
+        ticket += `--------------------------------
+OBSERVACIONES:
+${notas.toUpperCase()}
+`;
+    }
+
+    ticket += `--------------------------------
+     MYCFOODS     
+\n\n`;
+
+    /* VENTANA OCULTA PARA IMPRESIÓN LIMPIA */
     const ventana = window.open("", "_blank", "width=200,height=200");
     if (!ventana) {
         alert("El navegador bloqueó la ventana de impresión.");
         return;
     }
 
-    ventana.document.write(`<pre style="font-family: monospace; font-size: 16px;">${ticket}</pre>`);
+    ventana.document.write(`<pre style="font-family: monospace; font-size: 15px; font-weight: bold;">${ticket}</pre>`);
     ventana.document.close();
     
     setTimeout(() => {
@@ -1220,8 +1209,6 @@ function imprimirComanda() {
         ventana.close();
     }, 300);
 }
-
-
 /* =========================================================
    INICIO
 ========================================================= */
