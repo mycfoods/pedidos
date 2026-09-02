@@ -1098,7 +1098,7 @@ async function cargarMenuDesdeGoogle() {
 
 
 /* =========================================================
-   IMPRIMIR COMANDA (Texto Plano Puro - Sin Códigos Binarios)
+   IMPRIMIR COMANDA (Texto Plano ESC/POS para Driver Genérico)
 ========================================================= */
 
 function imprimirComanda() {
@@ -1159,7 +1159,7 @@ function imprimirComanda() {
         productosTexto += `   $${subtotal.toLocaleString("es-AR")}\n`;
     });
 
-    /* CONSTRUCCIÓN DEL TICKET LIMPIO (SIN BITS ESC/POS) */
+    /* CONSTRUCCIÓN DEL TICKET */
     let ticket = `     MYCFOODS     
       COMANDA     
 --------------------------------
@@ -1189,11 +1189,17 @@ ${notas.toUpperCase()}
 `;
     }
 
+    /* CIERRE, AVANCE Y COMANDO DE CORTE AUTOMÁTICO */
+    const CUT_PAPER = "\x1D\x56\x41\x00";
+
     ticket += `--------------------------------
      MYCFOODS     
-\n\n`;
 
- /* VENTANA OCULTA PARA IMPRESIÓN (AGRANDADA Y LIMPIA) */
+
+
+` + CUT_PAPER;
+
+    /* VENTANA OCULTA PARA IMPRESIÓN */
     const ventana = window.open("", "_blank", "width=400,height=600");
     if (!ventana) {
         alert("El navegador bloqueó la ventana de impresión.");
