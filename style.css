@@ -580,4 +580,21 @@ details[open] .prod-name i {
         border-bottom: 1px solid var(--border-color);
     }
     .menu-toggle:checked ~ .nav-links { max-height: 350px; }
+}@media print {
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: #fff;
+  }
+  .comanda-container {
+    width: 72mm; /* Ajusta según el ancho de tu rollo (58mm u 80mm) */
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 13px;
+    font-weight: bold;
+    color: #000;
+  }
+  /* Oculta elementos de la web que no deban salir en el ticket */
+  header, footer, .no-print {
+    display: none !important;
+  }
 }
