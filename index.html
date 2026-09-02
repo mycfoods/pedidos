@@ -880,7 +880,6 @@
 
 let carrito = [];
 
-
 /* =========================================================
    CARRITO
 ========================================================= */
@@ -890,7 +889,6 @@ function actualizarBotonCarrito() {
     if (!contador) return;
     contador.innerText = carrito.length;
 }
-
 
 /* =========================================================
    CANTIDAD DE PRODUCTOS
@@ -912,7 +910,6 @@ function modificarCantidadMenu(btn, cambio) {
     qtyVal.innerText = cantidad;
 }
 
-
 /* =========================================================
    AGREGAR PRODUCTO DESDE EL MENÚ
 ========================================================= */
@@ -930,7 +927,6 @@ function agregarDesdeMenu(btn, nombre, precio) {
         qtyVal.innerText = "1";
     }
 }
-
 
 /* =========================================================
    AGREGAR AL CARRITO
@@ -953,7 +949,6 @@ function agregarAlCarrito(nombre, precio, cantidad = 1) {
     actualizarBotonCarrito();
 }
 
-
 /* =========================================================
    CAMBIAR CANTIDAD DESDE EL CARRITO
 ========================================================= */
@@ -971,7 +966,6 @@ function cambiarCantidad(index, cambio) {
     actualizarBotonCarrito();
 }
 
-
 /* =========================================================
    VACIAR CARRITO
 ========================================================= */
@@ -981,7 +975,6 @@ function vaciarCarrito() {
     actualizarCarritoUI();
     actualizarBotonCarrito();
 }
-
 
 /* =========================================================
    ACTUALIZAR CARRITO
@@ -1030,7 +1023,6 @@ function actualizarCarritoUI() {
     totalEl.innerText = "$" + total.toLocaleString("es-AR");
 }
 
-
 /* =========================================================
    ENTREGA
 ========================================================= */
@@ -1043,7 +1035,6 @@ function toggleDireccion() {
 
     direccion.style.display = tipoEl.value === "Take Away" ? "none" : "block";
 }
-
 
 /* =========================================================
    MENÚ DEL DÍA DESDE GOOGLE SHEETS
@@ -1092,7 +1083,6 @@ async function cargarMenuDesdeGoogle() {
         }
     }
 }
-
 
 /* =========================================================
    IMPRIMIR COMANDA
@@ -1231,7 +1221,6 @@ ${notas.toUpperCase()}
     
     ventana.document.close();
 }
-
 
 /* =========================================================
    INICIO
