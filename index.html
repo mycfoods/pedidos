@@ -886,11 +886,8 @@ let carrito = [];
 ========================================================= */
 
 function actualizarBotonCarrito() {
-
     const contador = document.getElementById("floating-cart-count");
-
     if (!contador) return;
-
     contador.innerText = carrito.length;
 }
 
@@ -900,17 +897,12 @@ function actualizarBotonCarrito() {
 ========================================================= */
 
 function modificarCantidadMenu(btn, cambio) {
-
     const container = btn.closest(".qty-selector");
-
     if (!container) return;
-
     const qtyVal = container.querySelector(".qty-val");
-
     if (!qtyVal) return;
 
     let cantidad = parseInt(qtyVal.innerText) || 1;
-
     cantidad += cambio;
 
     if (cantidad < 1) {
@@ -926,16 +918,11 @@ function modificarCantidadMenu(btn, cambio) {
 ========================================================= */
 
 function agregarDesdeMenu(btn, nombre, precio) {
-
     const container = btn.closest(".item-controls-inline");
-
     if (!container) return;
 
     const qtyVal = container.querySelector(".qty-val");
-
-    const cantidad = qtyVal
-        ? parseInt(qtyVal.innerText) || 1
-        : 1;
+    const cantidad = qtyVal ? parseInt(qtyVal.innerText) || 1 : 1;
 
     agregarAlCarrito(nombre, precio, cantidad);
 
@@ -950,23 +937,16 @@ function agregarDesdeMenu(btn, nombre, precio) {
 ========================================================= */
 
 function agregarAlCarrito(nombre, precio, cantidad = 1) {
-
-    const itemExistente = carrito.find(
-        item => item.nombre === nombre
-    );
+    const itemExistente = carrito.find(item => item.nombre === nombre);
 
     if (itemExistente) {
-
         itemExistente.cantidad += cantidad;
-
     } else {
-
         carrito.push({
             nombre: nombre,
             precio: Number(precio),
             cantidad: cantidad
         });
-
     }
 
     actualizarCarritoUI();
@@ -979,7 +959,6 @@ function agregarAlCarrito(nombre, precio, cantidad = 1) {
 ========================================================= */
 
 function cambiarCantidad(index, cambio) {
-
     if (!carrito[index]) return;
 
     carrito[index].cantidad += cambio;
@@ -998,9 +977,7 @@ function cambiarCantidad(index, cambio) {
 ========================================================= */
 
 function vaciarCarrito() {
-
     carrito = [];
-
     actualizarCarritoUI();
     actualizarBotonCarrito();
 }
@@ -1011,19 +988,14 @@ function vaciarCarrito() {
 ========================================================= */
 
 function actualizarCarritoUI() {
-
     const container = document.getElementById("cart-items");
     const totalEl = document.getElementById("cart-total");
 
     if (!container || !totalEl) return;
 
     if (carrito.length === 0) {
-
-        container.innerHTML =
-            '<p class="empty-msg">El carrito está vacío.</p>';
-
+        container.innerHTML = '<p class="empty-msg">El carrito está vacío.</p>';
         totalEl.innerText = "$0";
-
         return;
     }
 
@@ -1031,55 +1003,31 @@ function actualizarCarritoUI() {
     let total = 0;
 
     carrito.forEach(function(item, index) {
-
         const subtotal = item.precio * item.cantidad;
-
         total += subtotal;
 
         html += `
             <div class="cart-item-row">
-
                 <div class="cart-item-info">
-
                     <strong>${item.nombre}</strong>
-
                     <span>
                         $${item.precio.toLocaleString("es-AR")}
                         x ${item.cantidad}
                         =
                         $${subtotal.toLocaleString("es-AR")}
                     </span>
-
                 </div>
-
                 <div class="cart-item-controls">
-
-                    <button
-                        class="btn-qty"
-                        onclick="cambiarCantidad(${index}, -1)"
-                    >
-                        -
-                    </button>
-
+                    <button class="btn-qty" onclick="cambiarCantidad(${index}, -1)">-</button>
                     <span>${item.cantidad}</span>
-
-                    <button
-                        class="btn-qty"
-                        onclick="cambiarCantidad(${index}, 1)"
-                    >
-                        +
-                    </button>
-
+                    <button class="btn-qty" onclick="cambiarCantidad(${index}, 1)">+</button>
                 </div>
-
             </div>
         `;
     });
 
     container.innerHTML = html;
-
-    totalEl.innerText =
-        "$" + total.toLocaleString("es-AR");
+    totalEl.innerText = "$" + total.toLocaleString("es-AR");
 }
 
 
@@ -1088,16 +1036,12 @@ function actualizarCarritoUI() {
 ========================================================= */
 
 function toggleDireccion() {
-
     const tipoEl = document.getElementById("cliente-entrega");
     const direccion = document.getElementById("group-direccion");
 
     if (!tipoEl || !direccion) return;
 
-    direccion.style.display =
-        tipoEl.value === "Take Away"
-            ? "none"
-            : "block";
+    direccion.style.display = tipoEl.value === "Take Away" ? "none" : "block";
 }
 
 
@@ -1105,101 +1049,54 @@ function toggleDireccion() {
    MENÚ DEL DÍA DESDE GOOGLE SHEETS
 ========================================================= */
 
-const URL_MENU =
-"https://script.google.com/macros/s/AKfycby9nZR0UMXbHR71rsV4k6y5iZi_IuptX5CJHQqyQEvfs0D7_4__kD-tnKToRggo1B5W/exec";
-
+const URL_MENU = "https://script.google.com/macros/s/AKfycby9nZR0UMXbHR71rsV4k6y5iZi_IuptX5CJHQqyQEvfs0D7_4__kD-tnKToRggo1B5W/exec";
 
 async function cargarMenuDesdeGoogle() {
-
-    const detalle =
-        document.getElementById("texto-menu-actual");
+    const detalle = document.getElementById("texto-menu-actual");
 
     try {
-
         const respuesta = await fetch(URL_MENU);
 
         if (!respuesta.ok) {
-
-            throw new Error(
-                "Error HTTP: " + respuesta.status
-            );
-
+            throw new Error("Error HTTP: " + respuesta.status);
         }
 
         const datos = await respuesta.json();
 
         if (!datos.menu_dia) {
-
-            throw new Error(
-                "No existe menu_dia en la respuesta"
-            );
-
+            throw new Error("No existe menu_dia en la respuesta");
         }
 
         const menu = datos.menu_dia;
 
-
         /* DESCRIPCIÓN */
-
         if (detalle && menu.detalle) {
-
             detalle.innerText = menu.detalle;
-
         }
-
 
         /* PRECIO */
-
-        const precio =
-            document.querySelector(
-                ".cat-menu-dia .price"
-            );
-
+        const precio = document.querySelector(".cat-menu-dia .price");
         if (precio && menu.precio) {
-
-            precio.innerText =
-                "$" +
-                Number(menu.precio)
-                    .toLocaleString("es-AR");
-
+            precio.innerText = "$" + Number(menu.precio).toLocaleString("es-AR");
         }
 
-
         /* BOTÓN AGREGAR */
-
-        const botonAgregar =
-            document.querySelector(
-                ".cat-menu-dia .btn-add"
-            );
-
+        const botonAgregar = document.querySelector(".cat-menu-dia .btn-add");
         if (botonAgregar && menu.precio) {
-
             botonAgregar.onclick = function() {
-
-                agregarDesdeMenu(
-                    this,
-                    "Menú del Día",
-                    Number(menu.precio)
-                );
-
+                agregarDesdeMenu(this, "Menú del Día", Number(menu.precio));
             };
-
         }
 
     } catch (error) {
-
-        console.error(
-            "Error cargando menú:",
-            error
-        );
-
+        console.error("Error cargando menú:", error);
         if (detalle) {
-
-            detalle.innerText =
-                "No se pudo cargar el menú";
-
+            detalle.innerText = "No se pudo cargar el menú";
         }
-        }      
+    }
+}
+
+
 /* =========================================================
    IMPRIMIR COMANDA (Texto Plano ESC/POS para Driver Genérico)
 ========================================================= */
@@ -1256,25 +1153,23 @@ function imprimirComanda() {
         const subtotal = item.precio * item.cantidad;
         total += subtotal;
         
-        // Limpiamos nombres de productos de tildes conflictivas si el driver genera basura
         let nombreProd = item.nombre.replace(/á/g, 'a').replace(/é/g, 'e').replace(/í/g, 'i').replace(/ó/g, 'o').replace(/ú/g, 'u').replace(/ñ/g, 'n');
         
         productosTexto += `${item.cantidad}x ${nombreProd}\n`;
         productosTexto += `   $${subtotal.toLocaleString("es-AR")}\n`;
     });
 
-    // COMANDOS ESC/POS BÁSICOS
+    /* COMANDOS ESC/POS BÁSICOS */
     const ESC = "\x1B";
-    const INIT = ESC + "@";          // Inicializa impresora
-    const CENTER = ESC + "a" + "\x01"; // Centrado
-    const LEFT = ESC + "a" + "\x00";   // Izquierda
-    const BOLD_ON = ESC + "E" + "\x01";// Negrita ON
-    const BOLD_OFF = ESC + "E" + "\x00";// Negrita OFF
-    const BIG_ON = ESC + "!" + "\x30"; // Letra grande y doble ancho
-    const NORMAL = ESC + "!" + "\x00"; // Letra normal
-    const CUT = "\x1D" + "V" + "\x41" + "\x00"; // Corte de papel
+    const INIT = ESC + "@";          
+    const CENTER = ESC + "a" + "\x01"; 
+    const LEFT = ESC + "a" + "\x00";   
+    const BOLD_ON = ESC + "E" + "\x01";
+    const BOLD_OFF = ESC + "E" + "\x00";
+    const BIG_ON = ESC + "!" + "\x30"; 
+    const NORMAL = ESC + "!" + "\x00"; 
+    const CUT = "\x1D" + "V" + "\x41" + "\x00"; 
 
-    // CONSTRUCCIÓN DEL TICKET LIMPIO
     let ticket = INIT;
 
     ticket += CENTER + BOLD_ON + BIG_ON + "MYCFOODS\n";
@@ -1310,7 +1205,6 @@ function imprimirComanda() {
     ticket += "--------------------------------\n";
     ticket += CENTER + "MYCFOODS\n\n\n" + CUT;
 
-    /* VENTANA OCULTA PARA ENVIAR AL DRIVER GENÉRICO */
     const ventana = window.open("", "_blank", "width=200,height=200");
     if (!ventana) {
         alert("El navegador bloqueó la ventana de impresión.");
@@ -1321,27 +1215,10 @@ function imprimirComanda() {
     ventana.document.close();
     
     setTimeout(() => {
+        ventana.focus();
         ventana.print();
         ventana.close();
-    }, 250);
-}
-
-    /* =====================================================
-       IMPRIMIR CUANDO LA VENTANA TERMINÓ DE CARGAR
-    ===================================================== */
-
-    ventana.onload = function() {
-
-        ventana.focus();
-
-        setTimeout(function() {
-
-            ventana.print();
-
-        }, 300);
-
-    };
-
+    }, 300);
 }
 
 
@@ -1352,15 +1229,10 @@ function imprimirComanda() {
 document.addEventListener(
     "DOMContentLoaded",
     function() {
-
         toggleDireccion();
-
         cargarMenuDesdeGoogle();
-
         actualizarCarritoUI();
-
         actualizarBotonCarrito();
-
     }
 );
 
