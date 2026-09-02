@@ -1435,12 +1435,19 @@ function imprimirComanda() {
                 .replace(/ñ/g, "n");
 
 
-        productosTexto +=
-            `${item.cantidad} x ${nombreProd}\n`;
+        /*
+           PRODUCTO Y PRECIO EN LA MISMA LINEA.
+           Separamos el precio visualmente hacia
+           la derecha sin depender de un ancho fijo.
+        */
+
+        const precioTexto =
+            "$" +
+            subtotal.toLocaleString("es-AR");
 
 
         productosTexto +=
-            `   $${subtotal.toLocaleString("es-AR")}\n`;
+            `${item.cantidad} x ${nombreProd}    ${precioTexto}\n`;
 
     });
 
@@ -1552,7 +1559,7 @@ ${notas.toUpperCase()}
                 html,
                 body {
 
-                    width: 80mm;
+                    width: 72mm;
 
                     margin: 0;
 
@@ -1563,27 +1570,46 @@ ${notas.toUpperCase()}
                 }
 
 
-              body {
-    padding: 4mm;
-    font-family: "Arial", monospace;
-    font-size: 15px;
-    font-weight: bold;
-    line-height: 1.25;
-    color: #000000;
-}
+                body {
 
-pre {
-width: 100%;
-box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: "Arial", monospace;
-    font-size: 15px;
-    font-weight: bold;
-    line-height: 1.25;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-}
+                    padding: 4mm;
+
+                    font-family: Arial, sans-serif;
+
+                    font-size: 15px;
+
+                    font-weight: bold;
+
+                    line-height: 1.25;
+
+                    color: #000000;
+
+                }
+
+
+                pre {
+
+                    width: 100%;
+
+                    box-sizing: border-box;
+
+                    margin: 0;
+
+                    padding: 0;
+
+                    font-family: Arial, sans-serif;
+
+                    font-size: 15px;
+
+                    font-weight: bold;
+
+                    line-height: 1.25;
+
+                    white-space: pre-wrap;
+
+                    word-wrap: break-word;
+
+                }
 
 
                 @media print {
@@ -1591,7 +1617,7 @@ box-sizing: border-box;
                     html,
                     body {
 
-                        width: 80mm;
+                        width: 72mm;
 
                         margin: 0;
 
@@ -1608,6 +1634,8 @@ box-sizing: border-box;
 
 
                     pre {
+
+                        width: 100%;
 
                         margin: 0;
 
@@ -1639,11 +1667,7 @@ box-sizing: border-box;
     /*
        IMPORTANTE:
 
-       La impresión se dispara UNA SOLA VEZ
-       desde el documento recién creado.
-
-       No usamos window.onload + print()
-       para evitar dobles disparos.
+       La impresión se dispara UNA SOLA VEZ.
     */
 
     setTimeout(function() {
@@ -1663,13 +1687,6 @@ box-sizing: border-box;
 
         }
 
-        /*
-           Cerramos la ventana después
-           de darle tiempo al navegador
-           para enviar el trabajo.
-
-           Liberamos el bloqueo después.
-        */
 
         setTimeout(function() {
 
