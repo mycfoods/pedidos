@@ -1545,121 +1545,67 @@ ${notas.toUpperCase()}
 
             <title>Comanda MYCFOODS</title>
 
-            <style>
+           <style>
+        @page {
+            size: 80mm auto;
+            margin: 0;
+        }
 
-                @page {
+        html,
+        body {
+            width: 80mm;
+            margin: 0;
+            padding: 0;
+            background: #ffffff;
+        }
 
-                    size: 80mm auto;
+        body {
+            padding: 2mm 4mm;
+            font-family: Arial, sans-serif;
+            font-size: 15px;
+            font-weight: bold;
+            line-height: 1.25;
+            color: #000000;
+            text-align: left;
+        }
 
-                    margin: 0;
+        .ticket-container {
+            width: 100%;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            text-align: left;
+        }
 
-                }
+        @media print {
+            html,
+            body {
+                width: 80mm;
+                margin: 0;
+                padding: 0;
+            }
 
+            body {
+                padding: 2mm 4mm;
+                text-align: left;
+            }
 
-                html,
-                body {
+            .ticket-container {
+                width: 100%;
+                margin: 0;
+                padding: 0;
+            }
+        }
+    </style>
+</head>
 
-                    width: 80mm;
-
-                    margin: 0;
-
-                    padding: 0;
-
-                    background: #ffffff;
-
-                }
-
-
-                body {
-
-                    padding: 4mm;
-
-                    font-family: Arial, sans-serif;
-
-                    font-size: 15px;
-
-                    font-weight: bold;
-
-                    line-height: 1.25;
-
-                    color: #000000;
-text-align: center;
-                }
-
-
-                pre {
-
-                    width: 100%;
-
-                    box-sizing: border-box;
-
-                    margin: 0;
-
-                    padding: 0;
-
-                    font-family: Arial, sans-serif;
-
-                    font-size: 15px;
-
-                    font-weight: bold;
-
-                    line-height: 1.25;
-
-                    white-space: pre-wrap;
-
-                    word-wrap: break-word;
-text-align: center;
-                }
-
-
-                @media print {
-
-                    html,
-                    body {
-
-                        width: 80mm;
-
-                        margin: 0;
-
-                        padding: 0;
-
-                    }
-
-
-                    body {
-
-                        padding: 4mm;
-
-                    }
-
-
-                    pre {
-
-                        width: 100%;
-
-                        margin: 0;
-
-                        padding: 0;
-
-                    }
-
-                }
-
-            </style>
-
-        </head>
-
-
-        <body>
-
-            <pre>${ticket}</pre>
-
-        </body>
-
-        </html>
-
-    `);
-
+<body>
+    <div class="ticket-container">${ticket}</div>
+</body>
+</html>
+);
 
     ventana.document.close();
 
