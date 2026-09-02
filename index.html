@@ -1193,14 +1193,36 @@ ${notas.toUpperCase()}
      MYCFOODS     
 \n\n`;
 
-    /* VENTANA OCULTA PARA IMPRESIÓN LIMPIA */
-    const ventana = window.open("", "_blank", "width=200,height=200");
+ /* VENTANA OCULTA PARA IMPRESIÓN (AGRANDADA Y LIMPIA) */
+    const ventana = window.open("", "_blank", "width=400,height=600");
     if (!ventana) {
         alert("El navegador bloqueó la ventana de impresión.");
         return;
     }
 
-    ventana.document.write(`<pre style="font-family: monospace; font-size: 15px; font-weight: bold;">${ticket}</pre>`);
+    ventana.document.write(`
+        <html>
+        <head>
+            <title> </title>
+            <style>
+                body {
+                    margin: 0;
+                    padding: 10px;
+                }
+                pre {
+                    font-family: monospace;
+                    font-size: 15px;
+                    font-weight: bold;
+                    white-space: pre-wrap;
+                }
+            </style>
+        </head>
+        <body>
+            <pre>${ticket}</pre>
+        </body>
+        </html>
+    `);
+    
     ventana.document.close();
     
     setTimeout(() => {
