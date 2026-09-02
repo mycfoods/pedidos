@@ -1084,11 +1084,13 @@ async function cargarMenuDesdeGoogle() {
     }
 }
 
+```javascript
 /* =========================================================
    IMPRIMIR COMANDA
 ========================================================= */
 
 function imprimirComanda() {
+
     if (carrito.length === 0) {
         alert("El carrito está vacío.");
         return;
@@ -1108,6 +1110,10 @@ function imprimirComanda() {
     const pago = pagoEl ? pagoEl.value : "";
     const notas = notasEl ? notasEl.value.trim() : "";
 
+    /* =========================
+       VALIDACIONES
+    ========================= */
+
     if (!nombre) {
         alert("Ingresá el nombre del cliente.");
         if (nombreEl) nombreEl.focus();
@@ -1126,114 +1132,335 @@ function imprimirComanda() {
         return;
     }
 
+    /* =========================
+       FECHA Y HORA
+    ========================= */
+
     const ahora = new Date();
-    const horaPedido = ahora.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false });
-    const fechaPedido = ahora.toLocaleDateString("es-AR");
 
-    let total = 0;
-    let productosTexto = "";
-
-    carrito.forEach(function(item) {
-        const subtotal = item.precio * item.cantidad;
-        total += subtotal;
-        
-        let nombreProd = item.nombre.replace(/á/g, 'a').replace(/é/g, 'e').replace(/í/g, 'i').replace(/ó/g, 'o').replace(/ú/g, 'u').replace(/ñ/g, 'n');
-        
-        productosTexto += `${item.cantidad} x ${nombreProd}\n`;
-        productosTexto += `   $${subtotal.toLocaleString("es-AR")}\n`;
+    const horaPedido = ahora.toLocaleTimeString("es-AR", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false
     });
 
-    let ticket = `     MYCFOODS     
-      COMANDA     
---------------------------------
-FECHA: ${fechaPedido}
-HORA:  ${horaPedido}
---------------------------------
-CLIENTE: ${nombre.toUpperCase()}
-ENTREGA: ${tipoEntrega.toUpperCase()}
-`;
+    const fechaPedido = ahora.toLocaleDateString("es-AR");
+
+    /* =========================
+       PRODUCTOS
+    ========================= */
+
+    let total = 0;
+    let productosHTML = "";
+
+    carrito.forEach(function(item) {
+
+        const subtotal = item.precio * item.cantidad;
+        total += subtotal;
+
+        const nombreProd = String(item.nombre)
+            .replace(/á/g, "a")
+            .replace(/é/g, "e")
+            .replace(/í/g, "i")
+            .replace(/ó/g, "o")
+            .replace(/ú/g, "u")
+            .replace(/ñ/g, "n");
+
+        productosHTML += `
+            <div class="producto">
+                <div class="producto-nombre">
+                    ${item.cantidad} x ${nombreProd}
+                </div>
+
+                <div class="producto-precio">
+                    $${subtotal.toLocaleString("es-AR")}
+                </div>
+            </div>
+        `;
+    });
+
+    /* =========================
+       DIRECCIÓN
+    ========================= */
+
+    let direccionHTML = "";
 
     if (tipoEntrega === "Delivery") {
-        ticket += `DIRECCION:\n${direccion.toUpperCase()}\n`;
+        direccionHTML = `
+            <div class="campo">
+                <strong>DIRECCION:</strong><br>
+                ${direccion.toUpperCase()}
+            </div>
+        `;
     }
 
-    ticket += `HORARIO: ${horario}
-PAGO:    ${pago}
---------------------------------
-PEDIDO:
-${productosTexto}--------------------------------
-TOTAL: $${total.toLocaleString("es-AR")}
-`;
+    /* =========================
+       OBSERVACIONES
+    ========================= */
+
+    let notasHTML = "";
 
     if (notas) {
-        ticket += `--------------------------------
-OBSERVACIONES:
-${notas.toUpperCase()}
-`;
+        notasHTML = `
+            <div class="separador"></div>
+
+            <div class="campo">
+                <strong>OBSERVACIONES:</strong><br>
+                ${notas.toUpperCase()}
+            </div>
+        `;
     }
 
-    const CUT_BYTE = "\x1B\x69";
+    /* =========================
+       TICKET
+    ========================= */
 
-    ticket += `--------------------------------
-     MYCFOODS     
+    const ticketHTML = `
+        <div class="ticket">
 
+            <div class="encabezado">
+                <div class="marca">MYCFOODS</div>
+                <div class="comanda">COMANDA</div>
+            </div>
 
+            <div class="separador"></div>
 
-` + CUT_BYTE;
+            <div class="campo">
+                FECHA: ${fechaPedido}<br>
+                HORA: ${horaPedido}
+            </div>
 
-    const ventana = window.open("", "_blank", "width=400,height=600");
+            <div class="separador"></div>
+
+            <div class="campo">
+                <strong>CLIENTE:</strong><br>
+                ${nombre.toUpperCase()}
+            </div>
+
+            <div class="campo">
+                <strong>ENTREGA:</strong>
+                ${tipoEntrega.toUpperCase()}
+            </div>
+
+            ${direccionHTML}
+
+            <div class="campo">
+                <strong>HORARIO:</strong>
+                ${horario}
+            </div>
+
+            <div class="campo">
+                <strong>PAGO:</strong>
+                ${pago.toUpperCase()}
+            </div>
+
+            <div class="separador"></div>
+
+            <div class="titulo-pedido">
+                PEDIDO
+            </div>
+
+            ${productosHTML}
+
+            <div class="separador"></div>
+
+            <div class="total">
+                TOTAL: $${total.toLocaleString("es-AR")}
+            </div>
+
+            ${notasHTML}
+
+            <div class="separador"></div>
+
+            <div class="pie">
+                MYCFOODS
+            </div>
+
+        </div>
+    `;
+
+    /* =========================
+       VENTANA DE IMPRESIÓN
+    ========================= */
+
+    const ventana = window.open(
+        "",
+        "_blank",
+        "width=400,height=700"
+    );
+
     if (!ventana) {
         alert("El navegador bloqueó la ventana de impresión.");
         return;
     }
 
+    ventana.document.open();
+
     ventana.document.write(`
+        <!DOCTYPE html>
         <html>
         <head>
-            <title> </title>
+
+            <meta charset="UTF-8">
+
+            <title>Comanda</title>
+
             <style>
+
+                @page {
+                    size: 80mm auto;
+                    margin: 0;
+                }
+
+                * {
+                    box-sizing: border-box;
+                }
+
+                html,
                 body {
                     margin: 0;
-                    padding: 10px;
+                    padding: 0;
+                    width: 80mm;
+                    background: #ffffff;
                 }
-                pre {
-                    font-family: monospace;
-                    font-size: 15px;
+
+                body {
+                    font-family: "Courier New", monospace;
+                    font-size: 14px;
                     font-weight: bold;
-                    white-space: pre-wrap;
+                    color: #000000;
                 }
+
+                .ticket {
+                    width: 72mm;
+                    margin: 0 auto;
+                    padding: 2mm 0 0 0;
+                }
+
+                .encabezado {
+                    text-align: center;
+                    line-height: 1.2;
+                }
+
+                .marca {
+                    font-size: 20px;
+                    font-weight: 900;
+                }
+
+                .comanda {
+                    font-size: 17px;
+                    font-weight: 900;
+                    margin-top: 1mm;
+                }
+
+                .separador {
+                    border-top: 2px dashed #000000;
+                    margin: 3mm 0;
+                    height: 0;
+                }
+
+                .campo {
+                    line-height: 1.35;
+                    margin: 1.5mm 0;
+                    word-wrap: break-word;
+                    overflow-wrap: anywhere;
+                }
+
+                .titulo-pedido {
+                    font-size: 16px;
+                    font-weight: 900;
+                    margin-bottom: 2mm;
+                }
+
+                .producto {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: flex-start;
+                    gap: 3mm;
+                    margin: 2mm 0;
+                    line-height: 1.3;
+                }
+
+                .producto-nombre {
+                    flex: 1;
+                    text-align: left;
+                    word-wrap: break-word;
+                    overflow-wrap: anywhere;
+                }
+
+                .producto-precio {
+                    white-space: nowrap;
+                    text-align: right;
+                }
+
+                .total {
+                    font-size: 18px;
+                    font-weight: 900;
+                    text-align: right;
+                    margin: 3mm 0;
+                }
+
+                .pie {
+                    text-align: center;
+                    font-size: 15px;
+                    font-weight: 900;
+                    padding-bottom: 2mm;
+                }
+
+                @media print {
+
+                    html,
+                    body {
+                        width: 80mm;
+                        margin: 0;
+                        padding: 0;
+                    }
+
+                    .ticket {
+                        margin: 0 auto;
+                    }
+
+                }
+
             </style>
+
         </head>
+
         <body>
-            <pre>${ticket}</pre>
+
+            ${ticketHTML}
+
             <script>
+
                 window.onload = function() {
+
                     window.focus();
-                    window.print();
+
                     setTimeout(function() {
-                        window.close();
-                    }, 500);
+
+                        window.print();
+
+                    }, 250);
+
                 };
-            
+
+                window.onafterprint = function() {
+
+                    setTimeout(function() {
+
+                        window.close();
+
+                    }, 300);
+
+                };
+
+            <\/script>
+
         </body>
         </html>
     `);
-    
+
     ventana.document.close();
 }
-
-/* =========================================================
-   INICIO
-========================================================= */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function() {
-        toggleDireccion();
-        cargarMenuDesdeGoogle();
-        actualizarCarritoUI();
-        actualizarBotonCarrito();
-    }
-);
-
-</script>
+```
