@@ -1205,607 +1205,130 @@ async function cargarMenuDesdeGoogle() {
 
 
 /* =========================================================
-   IMPRIMIR COMANDA
+   IMPRIMIR COMANDA (Texto Plano ESC/POS para Driver Genérico)
 ========================================================= */
 
 function imprimirComanda() {
-
     if (carrito.length === 0) {
-
         alert("El carrito está vacío.");
-
         return;
     }
-
 
     /* CAMPOS DEL CLIENTE */
+    const nombreEl = document.getElementById("cliente-nombre");
+    const entregaEl = document.getElementById("cliente-entrega");
+    const direccionEl = document.getElementById("cliente-direccion");
+    const horarioEl = document.getElementById("cliente-horario");
+    const pagoEl = document.getElementById("cliente-pago");
+    const notasEl = document.getElementById("cliente-notas");
 
-    const nombreEl =
-        document.getElementById("cliente-nombre");
-
-    const entregaEl =
-        document.getElementById("cliente-entrega");
-
-    const direccionEl =
-        document.getElementById("cliente-direccion");
-
-    const horarioEl =
-        document.getElementById("cliente-horario");
-
-    const pagoEl =
-        document.getElementById("cliente-pago");
-
-    const notasEl =
-        document.getElementById("cliente-notas");
-
-
-    const nombre =
-        nombreEl
-            ? nombreEl.value.trim()
-            : "";
-
-    const tipoEntrega =
-        entregaEl
-            ? entregaEl.value
-            : "";
-
-    const direccion =
-        direccionEl
-            ? direccionEl.value.trim()
-            : "";
-
-    const horario =
-        horarioEl
-            ? horarioEl.value.trim()
-            : "";
-
-    const pago =
-        pagoEl
-            ? pagoEl.value
-            : "";
-
-    const notas =
-        notasEl
-            ? notasEl.value.trim()
-            : "";
-
+    const nombre = nombreEl ? nombreEl.value.trim() : "";
+    const tipoEntrega = entregaEl ? entregaEl.value : "";
+    const direccion = direccionEl ? direccionEl.value.trim() : "";
+    const horario = horarioEl ? horarioEl.value.trim() : "";
+    const pago = pagoEl ? pagoEl.value : "";
+    const notas = notasEl ? notasEl.value.trim() : "";
 
     /* VALIDACIONES */
-
     if (!nombre) {
-
         alert("Ingresá el nombre del cliente.");
-
-        if (nombreEl) {
-            nombreEl.focus();
-        }
-
+        if (nombreEl) nombreEl.focus();
         return;
     }
 
-
-    if (
-        tipoEntrega === "Delivery"
-        &&
-        !direccion
-    ) {
-
+    if (tipoEntrega === "Delivery" && !direccion) {
         alert("Ingresá la dirección.");
-
-        if (direccionEl) {
-            direccionEl.focus();
-        }
-
+        if (direccionEl) direccionEl.focus();
         return;
     }
-
 
     if (!horario) {
-
         alert("Indicá el horario.");
-
-        if (horarioEl) {
-            horarioEl.focus();
-        }
-
+        if (horarioEl) horarioEl.focus();
         return;
     }
 
-
-    /* =====================================================
-       FECHA Y HORA
-    ===================================================== */
-
+    /* FECHA Y HORA */
     const ahora = new Date();
-
-
-    const horaPedido =
-        ahora.toLocaleTimeString(
-            "es-AR",
-            {
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit",
-                hour12: false
-            }
-        );
-
-
-    const fechaPedido =
-        ahora.toLocaleDateString("es-AR");
-
-
-    /* =====================================================
-       PRODUCTOS
-    ===================================================== */
+    const horaPedido = ahora.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false });
+    const fechaPedido = ahora.toLocaleDateString("es-AR");
 
     let total = 0;
-
-    let productosHTML = "";
-
+    let productosTexto = "";
 
     carrito.forEach(function(item) {
-
-        const subtotal =
-            item.precio * item.cantidad;
-
+        const subtotal = item.precio * item.cantidad;
         total += subtotal;
-
-
-        productosHTML += `
-            <div class="producto">
-
-                <div class="cantidad">
-                    ${item.cantidad} x
-                </div>
-
-                <div class="nombre">
-                    ${item.nombre}
-                </div>
-
-                <div class="precio">
-                    $${subtotal.toLocaleString("es-AR")}
-                </div>
-
-            </div>
-        `;
-
+        
+        // Limpiamos nombres de productos de tildes conflictivas si el driver genera basura
+        let nombreProd = item.nombre.replace(/á/g, 'a').replace(/é/g, 'e').replace(/í/g, 'i').replace(/ó/g, 'o').replace(/ú/g, 'u').replace(/ñ/g, 'n');
+        
+        productosTexto += `${item.cantidad}x ${nombreProd}\n`;
+        productosTexto += `   $${subtotal.toLocaleString("es-AR")}\n`;
     });
 
+    // COMANDOS ESC/POS BÁSICOS
+    const ESC = "\x1B";
+    const INIT = ESC + "@";          // Inicializa impresora
+    const CENTER = ESC + "a" + "\x01"; // Centrado
+    const LEFT = ESC + "a" + "\x00";   // Izquierda
+    const BOLD_ON = ESC + "E" + "\x01";// Negrita ON
+    const BOLD_OFF = ESC + "E" + "\x00";// Negrita OFF
+    const BIG_ON = ESC + "!" + "\x30"; // Letra grande y doble ancho
+    const NORMAL = ESC + "!" + "\x00"; // Letra normal
+    const CUT = "\x1D" + "V" + "\x41" + "\x00"; // Corte de papel
 
-    /* =====================================================
-       VENTANA DE IMPRESIÓN
-    ===================================================== */
+    // CONSTRUCCIÓN DEL TICKET LIMPIO
+    let ticket = INIT;
 
-    const ventana =
-        window.open(
-            "",
-            "_blank",
-            "width=400,height=700"
-        );
+    ticket += CENTER + BOLD_ON + BIG_ON + "MYCFOODS\n";
+    ticket += "COMANDA\n" + NORMAL + BOLD_OFF;
+    ticket += "--------------------------------\n";
+    
+    ticket += LEFT + BOLD_ON;
+    ticket += `FECHA: ${fechaPedido}\n`;
+    ticket += `HORA:  ${horaPedido}\n`;
+    ticket += "--------------------------------\n";
+    ticket += `CLIENTE: ${nombre.toUpperCase()}\n`;
+    ticket += `ENTREGA: ${tipoEntrega.toUpperCase()}\n`;
+    
+    if (tipoEntrega === "Delivery") {
+        ticket += `DIRECCION:\n${direccion.toUpperCase()}\n`;
+    }
+    
+    ticket += `HORARIO: ${horario}\n`;
+    ticket += `PAGO:    ${pago}\n`;
+    ticket += "--------------------------------\n";
+    ticket += "PEDIDO:\n" + BOLD_OFF;
+    
+    ticket += productosTexto;
+    
+    ticket += BOLD_ON + "--------------------------------\n";
+    ticket += `TOTAL: $${total.toLocaleString("es-AR")}\n`;
+    
+    if (notas) {
+        ticket += "--------------------------------\n";
+        ticket += `OBSERVACIONES:\n${notas}\n`;
+    }
+    
+    ticket += "--------------------------------\n";
+    ticket += CENTER + "MYCFOODS\n\n\n" + CUT;
 
-
+    /* VENTANA OCULTA PARA ENVIAR AL DRIVER GENÉRICO */
+    const ventana = window.open("", "_blank", "width=200,height=200");
     if (!ventana) {
-
-        alert(
-            "El navegador bloqueó la ventana de impresión."
-        );
-
+        alert("El navegador bloqueó la ventana de impresión.");
         return;
     }
 
-
-    ventana.document.write(`
-
-<!DOCTYPE html>
-
-<html>
-
-<head>
-
-<meta charset="UTF-8">
-
-<title>Comanda MYCFOODS</title>
-
-<style>
-
-@page {
-
-    size: 80mm auto;
-
-    margin: 0;
-
-}
-
-
-* {
-
-    box-sizing: border-box;
-
-}
-
-
-html {
-
-    width: 80mm;
-
-    margin: 0;
-
-    padding: 0;
-
-}
-
-
-body {
-
-    width: 80mm;
-
-    margin: 0;
-
-    padding: 3mm;
-
-    font-family: Arial, Helvetica, sans-serif;
-
-    font-size: 16px;
-
-    font-weight: bold;
-
-    line-height: 1.35;
-
-    color: #000;
-
-    background: #fff;
-
-    -webkit-print-color-adjust: exact;
-
-    print-color-adjust: exact;
-
-}
-
-
-/* CABECERA */
-
-.cabecera {
-
-    width: 100%;
-
-    text-align: center;
-
-    font-size: 23px;
-
-    font-weight: 900;
-
-    line-height: 1.2;
-
-    margin-bottom: 8px;
-
-}
-
-
-/* SEPARADORES */
-
-.linea {
-
-    width: 100%;
-
-    border-top: 2px solid #000;
-
-    margin: 8px 0;
-
-    height: 1px;
-
-}
-
-
-/* DATOS */
-
-.dato {
-
-    width: 100%;
-
-    font-size: 16px;
-
-    font-weight: bold;
-
-    line-height: 1.4;
-
-    margin: 5px 0;
-
-    overflow-wrap: break-word;
-
-    word-wrap: break-word;
-
-}
-
-
-/* PEDIDO */
-
-.pedido-titulo {
-
-    font-size: 18px;
-
-    font-weight: 900;
-
-    margin: 6px 0;
-
-}
-
-
-/* PRODUCTOS */
-
-.producto {
-
-    width: 100%;
-
-    display: grid;
-
-    grid-template-columns: 38px 1fr auto;
-
-    column-gap: 5px;
-
-    align-items: start;
-
-    margin: 7px 0;
-
-    font-size: 16px;
-
-    font-weight: bold;
-
-    line-height: 1.35;
-
-}
-
-
-/* CANTIDAD */
-
-.cantidad {
-
-    font-weight: 900;
-
-    white-space: nowrap;
-
-}
-
-
-/* NOMBRE */
-
-.nombre {
-
-    font-weight: 900;
-
-    overflow-wrap: break-word;
-
-    word-break: normal;
-
-}
-
-
-/* PRECIO */
-
-.precio {
-
-    font-weight: 900;
-
-    text-align: right;
-
-    white-space: nowrap;
-
-    margin-left: 4px;
-
-}
-
-
-/* TOTAL */
-
-.total {
-
-    width: 100%;
-
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: center;
-
-    font-size: 21px;
-
-    font-weight: 900;
-
-    line-height: 1.3;
-
-    margin-top: 10px;
-
-}
-
-
-/* OBSERVACIONES */
-
-.observaciones {
-
-    width: 100%;
-
-    font-size: 16px;
-
-    font-weight: bold;
-
-    line-height: 1.4;
-
-    margin-top: 8px;
-
-    overflow-wrap: break-word;
-
-    word-wrap: break-word;
-
-}
-
-
-/* PIE */
-
-.pie {
-
-    width: 100%;
-
-    text-align: center;
-
-    font-size: 17px;
-
-    font-weight: 900;
-
-    margin-top: 12px;
-
-    padding-bottom: 5mm;
-
-}
-
-</style>
-
-</head>
-
-
-<body>
-
-
-<div class="cabecera">
-
-    MYCFOODS
-
-    <br>
-
-    COMANDA
-
-</div>
-
-
-<div class="linea"></div>
-
-
-<div class="dato">
-
-    FECHA: ${fechaPedido}
-
-</div>
-
-
-<div class="dato">
-
-    HORA: ${horaPedido}
-
-</div>
-
-
-<div class="linea"></div>
-
-
-<div class="dato">
-
-    CLIENTE: ${nombre}
-
-</div>
-
-
-<div class="dato">
-
-    ENTREGA: ${tipoEntrega}
-
-</div>
-
-
-${
-    tipoEntrega === "Delivery"
-    ?
-    `
-    <div class="dato">
-
-        DIRECCIÓN:<br>
-
-        ${direccion}
-
-    </div>
-    `
-    :
-    ""
-}
-
-
-<div class="dato">
-
-    HORARIO: ${horario}
-
-</div>
-
-
-<div class="dato">
-
-    PAGO: ${pago}
-
-</div>
-
-
-<div class="linea"></div>
-
-
-<div class="pedido-titulo">
-
-    PEDIDO:
-
-</div>
-
-
-${productosHTML}
-
-
-<div class="linea"></div>
-
-
-<div class="total">
-
-    <span>TOTAL</span>
-
-    <span>
-        $${total.toLocaleString("es-AR")}
-    </span>
-
-</div>
-
-
-${
-    notas
-    ?
-    `
-    <div class="linea"></div>
-
-    <div class="observaciones">
-
-        OBSERVACIONES:<br>
-
-        ${notas}
-
-    </div>
-    `
-    :
-    ""
-}
-
-
-<div class="linea"></div>
-
-
-<div class="pie">
-
-    MYCFOODS
-
-</div>
-
-
-</body>
-
-</html>
-
-`);
-
-
+    ventana.document.write(`<pre style="font-family: monospace; font-size: 16px;">${ticket}</pre>`);
     ventana.document.close();
-
+    
+    setTimeout(() => {
+        ventana.print();
+        ventana.close();
+    }, 250);
+}
 
     /* =====================================================
        IMPRIMIR CUANDO LA VENTANA TERMINÓ DE CARGAR
