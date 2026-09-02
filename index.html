@@ -875,10 +875,12 @@
     <i class="fa-solid fa-cart-shopping"></i>
     <span id="floating-cart-count">0</span>
 </button>
+```html
 <!-- LÓGICA JAVASCRIPT -->
 <script>
 
 let carrito = [];
+
 
 /* =========================================================
    CARRITO
@@ -898,10 +900,12 @@ function actualizarBotonCarrito() {
 function modificarCantidadMenu(btn, cambio) {
     const container = btn.closest(".qty-selector");
     if (!container) return;
+
     const qtyVal = container.querySelector(".qty-val");
     if (!qtyVal) return;
 
     let cantidad = parseInt(qtyVal.innerText) || 1;
+
     cantidad += cambio;
 
     if (cantidad < 1) {
@@ -917,11 +921,15 @@ function modificarCantidadMenu(btn, cambio) {
 ========================================================= */
 
 function agregarDesdeMenu(btn, nombre, precio) {
+
     const container = btn.closest(".item-controls-inline");
     if (!container) return;
 
     const qtyVal = container.querySelector(".qty-val");
-    const cantidad = qtyVal ? parseInt(qtyVal.innerText) || 1 : 1;
+
+    const cantidad = qtyVal
+        ? parseInt(qtyVal.innerText) || 1
+        : 1;
 
     agregarAlCarrito(nombre, precio, cantidad);
 
@@ -936,16 +944,22 @@ function agregarDesdeMenu(btn, nombre, precio) {
 ========================================================= */
 
 function agregarAlCarrito(nombre, precio, cantidad = 1) {
-    const itemExistente = carrito.find(item => item.nombre === nombre);
+
+    const itemExistente =
+        carrito.find(item => item.nombre === nombre);
 
     if (itemExistente) {
+
         itemExistente.cantidad += cantidad;
+
     } else {
+
         carrito.push({
             nombre: nombre,
             precio: Number(precio),
             cantidad: cantidad
         });
+
     }
 
     actualizarCarritoUI();
@@ -958,6 +972,7 @@ function agregarAlCarrito(nombre, precio, cantidad = 1) {
 ========================================================= */
 
 function cambiarCantidad(index, cambio) {
+
     if (!carrito[index]) return;
 
     carrito[index].cantidad += cambio;
@@ -976,7 +991,9 @@ function cambiarCantidad(index, cambio) {
 ========================================================= */
 
 function vaciarCarrito() {
+
     carrito = [];
+
     actualizarCarritoUI();
     actualizarBotonCarrito();
 }
@@ -987,14 +1004,22 @@ function vaciarCarrito() {
 ========================================================= */
 
 function actualizarCarritoUI() {
-    const container = document.getElementById("cart-items");
-    const totalEl = document.getElementById("cart-total");
+
+    const container =
+        document.getElementById("cart-items");
+
+    const totalEl =
+        document.getElementById("cart-total");
 
     if (!container || !totalEl) return;
 
     if (carrito.length === 0) {
-        container.innerHTML = '<p class="empty-msg">El carrito está vacío.</p>';
+
+        container.innerHTML =
+            '<p class="empty-msg">El carrito está vacío.</p>';
+
         totalEl.innerText = "$0";
+
         return;
     }
 
@@ -1002,31 +1027,58 @@ function actualizarCarritoUI() {
     let total = 0;
 
     carrito.forEach(function(item, index) {
-        const subtotal = item.precio * item.cantidad;
+
+        const subtotal =
+            item.precio * item.cantidad;
+
         total += subtotal;
 
         html += `
             <div class="cart-item-row">
+
                 <div class="cart-item-info">
-                    <strong>${item.nombre}</strong>
+
+                    <strong>
+                        ${item.nombre}
+                    </strong>
+
                     <span>
                         $${item.precio.toLocaleString("es-AR")}
                         x ${item.cantidad}
                         =
                         $${subtotal.toLocaleString("es-AR")}
                     </span>
+
                 </div>
+
                 <div class="cart-item-controls">
-                    <button class="btn-qty" onclick="cambiarCantidad(${index}, -1)">-</button>
-                    <span>${item.cantidad}</span>
-                    <button class="btn-qty" onclick="cambiarCantidad(${index}, 1)">+</button>
+
+                    <button
+                        class="btn-qty"
+                        onclick="cambiarCantidad(${index}, -1)">
+                        -
+                    </button>
+
+                    <span>
+                        ${item.cantidad}
+                    </span>
+
+                    <button
+                        class="btn-qty"
+                        onclick="cambiarCantidad(${index}, 1)">
+                        +
+                    </button>
+
                 </div>
+
             </div>
         `;
     });
 
     container.innerHTML = html;
-    totalEl.innerText = "$" + total.toLocaleString("es-AR");
+
+    totalEl.innerText =
+        "$" + total.toLocaleString("es-AR");
 }
 
 
@@ -1035,12 +1087,19 @@ function actualizarCarritoUI() {
 ========================================================= */
 
 function toggleDireccion() {
-    const tipoEl = document.getElementById("cliente-entrega");
-    const direccion = document.getElementById("group-direccion");
+
+    const tipoEl =
+        document.getElementById("cliente-entrega");
+
+    const direccion =
+        document.getElementById("group-direccion");
 
     if (!tipoEl || !direccion) return;
 
-    direccion.style.display = tipoEl.value === "Take Away" ? "none" : "block";
+    direccion.style.display =
+        tipoEl.value === "Take Away"
+            ? "none"
+            : "block";
 }
 
 
@@ -1048,46 +1107,87 @@ function toggleDireccion() {
    MENÚ DEL DÍA DESDE GOOGLE SHEETS
 ========================================================= */
 
-const URL_MENU = "https://script.google.com/macros/s/AKfycby9nZR0UMXbHR71rsV4k6y5iZi_IuptX5CJHQqyQEvfs0D7_4__kD-tnKToRggo1B5W/exec";
+const URL_MENU =
+"https://script.google.com/macros/s/AKfycby9nZR0UMXbHR71rsV4k6y5iZi_IuptX5CJHQqyQEvfs0D7_4__kD-tnKToRggo1B5W/exec";
+
 
 async function cargarMenuDesdeGoogle() {
-    const detalle = document.getElementById("texto-menu-actual");
+
+    const detalle =
+        document.getElementById("texto-menu-actual");
 
     try {
-        const respuesta = await fetch(URL_MENU);
+
+        const respuesta =
+            await fetch(URL_MENU);
 
         if (!respuesta.ok) {
-            throw new Error("Error HTTP: " + respuesta.status);
+            throw new Error(
+                "Error HTTP: " + respuesta.status
+            );
         }
 
-        const datos = await respuesta.json();
+        const datos =
+            await respuesta.json();
 
         if (!datos.menu_dia) {
-            throw new Error("No existe menu_dia en la respuesta");
+            throw new Error(
+                "No existe menu_dia en la respuesta"
+            );
         }
 
-        const menu = datos.menu_dia;
+        const menu =
+            datos.menu_dia;
 
         if (detalle && menu.detalle) {
-            detalle.innerText = menu.detalle;
+
+            detalle.innerText =
+                menu.detalle;
         }
 
-        const precio = document.querySelector(".cat-menu-dia .price");
+        const precio =
+            document.querySelector(
+                ".cat-menu-dia .price"
+            );
+
         if (precio && menu.precio) {
-            precio.innerText = "$" + Number(menu.precio).toLocaleString("es-AR");
+
+            precio.innerText =
+                "$" +
+                Number(menu.precio)
+                    .toLocaleString("es-AR");
         }
 
-        const botonAgregar = document.querySelector(".cat-menu-dia .btn-add");
+        const botonAgregar =
+            document.querySelector(
+                ".cat-menu-dia .btn-add"
+            );
+
         if (botonAgregar && menu.precio) {
-            botonAgregar.onclick = function() {
-                agregarDesdeMenu(this, "Menú del Día", Number(menu.precio));
-            };
+
+            botonAgregar.onclick =
+                function() {
+
+                    agregarDesdeMenu(
+                        this,
+                        "Menú del Día",
+                        Number(menu.precio)
+                    );
+
+                };
         }
 
     } catch (error) {
-        console.error("Error cargando menú:", error);
+
+        console.error(
+            "Error cargando menú:",
+            error
+        );
+
         if (detalle) {
-            detalle.innerText = "No se pudo cargar el menú";
+
+            detalle.innerText =
+                "No se pudo cargar el menú";
         }
     }
 }
@@ -1098,6 +1198,7 @@ async function cargarMenuDesdeGoogle() {
 ========================================================= */
 
 function escaparHTML(texto) {
+
     return String(texto || "")
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
@@ -1112,246 +1213,694 @@ function escaparHTML(texto) {
 ========================================================= */
 
 function imprimirComanda() {
+
     if (carrito.length === 0) {
+
         alert("El carrito está vacío.");
+
         return;
     }
 
-    const nombreEl = document.getElementById("cliente-nombre");
-    const entregaEl = document.getElementById("cliente-entrega");
-    const direccionEl = document.getElementById("cliente-direccion");
-    const horarioEl = document.getElementById("cliente-horario");
-    const pagoEl = document.getElementById("cliente-pago");
-    const notasEl = document.getElementById("cliente-notas");
 
-    const nombre = nombreEl ? nombreEl.value.trim() : "";
-    const tipoEntrega = entregaEl ? entregaEl.value : "";
-    const direccion = direccionEl ? direccionEl.value.trim() : "";
-    const horario = horarioEl ? horarioEl.value.trim() : "";
-    const pago = pagoEl ? pagoEl.value : "";
-    const notas = notasEl ? notasEl.value.trim() : "";
+    const nombreEl =
+        document.getElementById("cliente-nombre");
+
+    const entregaEl =
+        document.getElementById("cliente-entrega");
+
+    const direccionEl =
+        document.getElementById("cliente-direccion");
+
+    const horarioEl =
+        document.getElementById("cliente-horario");
+
+    const pagoEl =
+        document.getElementById("cliente-pago");
+
+    const notasEl =
+        document.getElementById("cliente-notas");
+
+
+    const nombre =
+        nombreEl
+            ? nombreEl.value.trim()
+            : "";
+
+    const tipoEntrega =
+        entregaEl
+            ? entregaEl.value
+            : "";
+
+    const direccion =
+        direccionEl
+            ? direccionEl.value.trim()
+            : "";
+
+    const horario =
+        horarioEl
+            ? horarioEl.value.trim()
+            : "";
+
+    const pago =
+        pagoEl
+            ? pagoEl.value
+            : "";
+
+    const notas =
+        notasEl
+            ? notasEl.value.trim()
+            : "";
+
+
+    /* =========================
+       VALIDACIONES
+    ========================= */
 
     if (!nombre) {
-        alert("Ingresá el nombre del cliente.");
-        if (nombreEl) nombreEl.focus();
+
+        alert(
+            "Ingresá el nombre del cliente."
+        );
+
+        if (nombreEl) {
+            nombreEl.focus();
+        }
+
         return;
     }
 
-    if (tipoEntrega === "Delivery" && !direccion) {
-        alert("Ingresá la dirección.");
-        if (direccionEl) direccionEl.focus();
+
+    if (
+        tipoEntrega === "Delivery"
+        &&
+        !direccion
+    ) {
+
+        alert(
+            "Ingresá la dirección."
+        );
+
+        if (direccionEl) {
+            direccionEl.focus();
+        }
+
         return;
     }
+
 
     if (!horario) {
-        alert("Indicá el horario.");
-        if (horarioEl) horarioEl.focus();
+
+        alert(
+            "Indicá el horario."
+        );
+
+        if (horarioEl) {
+            horarioEl.focus();
+        }
+
         return;
     }
 
+
+    /* =========================
+       FECHA Y HORA
+    ========================= */
+
     const ahora = new Date();
-    const horaPedido = ahora.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false });
-    const fechaPedido = ahora.toLocaleDateString("es-AR");
+
+    const horaPedido =
+        ahora.toLocaleTimeString(
+            "es-AR",
+            {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+                hour12: false
+            }
+        );
+
+    const fechaPedido =
+        ahora.toLocaleDateString("es-AR");
+
+
+    /* =========================
+       PRODUCTOS
+    ========================= */
 
     let total = 0;
+
     let productosHTML = "";
 
+
     carrito.forEach(function(item) {
-        const subtotal = item.precio * item.cantidad;
+
+        const subtotal =
+            item.precio * item.cantidad;
+
         total += subtotal;
-        
-        let nombreProd = item.nombre.replace(/á/g, 'a').replace(/é/g, 'e').replace(/í/g, 'i').replace(/ó/g, 'o').replace(/ú/g, 'u').replace(/ñ/g, 'n');
-        
+
+
+        let nombreProd =
+            String(item.nombre)
+                .replace(/á/g, "a")
+                .replace(/é/g, "e")
+                .replace(/í/g, "i")
+                .replace(/ó/g, "o")
+                .replace(/ú/g, "u")
+                .replace(/ñ/g, "n");
+
+
         productosHTML += `
+
             <div class="producto">
-                <div class="producto-nombre">${item.cantidad} x ${nombreProd.toUpperCase()}</div>
-                <div class="producto-precio">$${subtotal.toLocaleString("es-AR")}</div>
+
+                <div class="producto-nombre">
+                    ${item.cantidad}
+                    x
+                    ${escaparHTML(
+                        nombreProd.toUpperCase()
+                    )}
+                </div>
+
+                <div class="producto-precio">
+                    $${subtotal.toLocaleString("es-AR")}
+                </div>
+
             </div>
+
         `;
     });
 
+
+    /* =========================
+       TICKET
+    ========================= */
+
     let ticketHTML = `
+
         <div class="ticket">
+
             <div class="encabezado">
-                <div class="marca">MYCFOODS</div>
-                <div class="comanda">COMANDA</div>
+
+                <div class="marca">
+                    MYCFOODS
+                </div>
+
+                <div class="comanda">
+                    COMANDA
+                </div>
+
             </div>
+
+
             <div class="separador"></div>
-            <div class="campo">FECHA: ${fechaPedido}</div>
-            <div class="campo">HORA: ${horaPedido}</div>
+
+
+            <div class="campo">
+                FECHA: ${escaparHTML(fechaPedido)}
+            </div>
+
+            <div class="campo">
+                HORA: ${escaparHTML(horaPedido)}
+            </div>
+
+
             <div class="separador"></div>
-            <div class="campo">CLIENTE: ${nombre.toUpperCase()}</div>
-            <div class="campo">ENTREGA: ${tipoEntrega.toUpperCase()}</div>
+
+
+            <div class="campo">
+                CLIENTE:
+                ${escaparHTML(nombre.toUpperCase())}
+            </div>
+
+            <div class="campo">
+                ENTREGA:
+                ${escaparHTML(tipoEntrega.toUpperCase())}
+            </div>
     `;
+
+
+    /* =========================
+       DIRECCIÓN
+    ========================= */
 
     if (tipoEntrega === "Delivery") {
-        ticketHTML += `<div class="campo">DIRECCION:<br>${direccion.toUpperCase()}</div>`;
-    }
 
-    ticketHTML += `
-            <div class="campo">HORARIO: ${horario}</div>
-            <div class="campo">PAGO: ${pago}</div>
-            <div class="separador"></div>
-            <div class="titulo-pedido">PEDIDO:</div>
-            ${productosHTML}
-            <div class="separador"></div>
-            <div class="total">TOTAL: $${total.toLocaleString("es-AR")}</div>
-    `;
-
-    if (notas) {
         ticketHTML += `
-            <div class="separador"></div>
-            <div class="campo">OBSERVACIONES:<br>${notas.toUpperCase()}</div>
+
+            <div class="campo">
+                DIRECCION:<br>
+                ${escaparHTML(
+                    direccion.toUpperCase()
+                )}
+            </div>
+
         `;
     }
 
+
     ticketHTML += `
+
+            <div class="campo">
+                HORARIO:
+                ${escaparHTML(horario)}
+            </div>
+
+            <div class="campo">
+                PAGO:
+                ${escaparHTML(
+                    pago.toUpperCase()
+                )}
+            </div>
+
+
             <div class="separador"></div>
-            <div class="pie">MYCFOODS</div>
-        </div>
+
+
+            <div class="titulo-pedido">
+                PEDIDO:
+            </div>
+
+            ${productosHTML}
+
+
+            <div class="separador"></div>
+
+
+            <div class="total">
+                TOTAL:
+                $${total.toLocaleString("es-AR")}
+            </div>
     `;
 
-    const CUT_BYTE = "\x1B\x69";
-    ticketHTML += CUT_BYTE;
 
-    const ventana = window.open("", "_blank", "width=400,height=600");
+    /* =========================
+       OBSERVACIONES
+    ========================= */
+
+    if (notas) {
+
+        ticketHTML += `
+
+            <div class="separador"></div>
+
+            <div class="campo">
+                OBSERVACIONES:<br>
+                ${escaparHTML(
+                    notas.toUpperCase()
+                )}
+            </div>
+
+        `;
+    }
+
+
+    /* =========================
+       PIE
+    ========================= */
+
+    ticketHTML += `
+
+            <div class="separador"></div>
+
+            <div class="pie">
+                MYCFOODS
+            </div>
+
+        </div>
+
+    `;
+
+
+    /* =====================================================
+       VENTANA DE IMPRESIÓN
+    ===================================================== */
+
+    const ventana =
+        window.open(
+            "",
+            "_blank",
+            "width=400,height=600"
+        );
+
+
     if (!ventana) {
-        alert("El navegador bloqueó la ventana de impresión.");
+
+        alert(
+            "El navegador bloqueó la ventana de impresión."
+        );
+
         return;
     }
 
+
     ventana.document.open();
+
+
     ventana.document.write(`
+
         <!DOCTYPE html>
+
         <html>
+
         <head>
+
             <meta charset="UTF-8">
+
             <title>Comanda</title>
+
+
             <style>
+
                 @page {
+
                     size: 80mm auto;
-                    margin: 0mm;
-                }
-                * {
-                    box-sizing: border-box;
-                }
-                html, body {
-                    width: 80mm;
-                    height: auto;
+
                     margin: 0;
+
+                }
+
+
+                * {
+
+                    box-sizing: border-box;
+
+                }
+
+
+                html {
+
+                    width: 80mm;
+
+                    margin: 0;
+
                     padding: 0;
+
+                }
+
+
+                body {
+
+                    width: 80mm;
+
+                    margin: 0;
+
+                    padding: 0;
+
                     background: #ffffff;
+
                     color: #000000;
-                    font-family: "Courier New", monospace;
+
+                    font-family:
+                        "Courier New",
+                        monospace;
+
                     font-size: 14px;
+
                     font-weight: bold;
-                    line-height: 1.25;
+
+                    line-height: 1.2;
+
                 }
+
+
                 .ticket {
+
                     width: 72mm;
+
                     margin: 0 auto;
-                    padding: 2mm 0 4mm 0;
+
+                    padding: 0;
+
                 }
+
+
                 .encabezado {
+
                     text-align: center;
+
                     line-height: 1.1;
+
                 }
+
+
                 .marca {
+
                     font-size: 21px;
+
                     font-weight: 900;
+
                 }
+
+
                 .comanda {
+
                     font-size: 17px;
+
                     font-weight: 900;
+
                     margin-top: 1mm;
+
                 }
+
+
+                /* =========================
+                   LINEAS DIVISORAS
+                ========================= */
+
                 .separador {
-                    border-top: 1px dashed #000000 !important;
-                    margin: 2.5mm 0;
-                    height: 1px;
+
+                    border-top:
+                        2px dashed #000000;
+
+                    margin:
+                        2mm 0;
+
+                    height: 0;
+
                     width: 100%;
-                    overflow: hidden;
+
                 }
+
+
+                /* =========================
+                   CAMPOS
+                ========================= */
+
                 .campo {
-                    line-height: 1.3;
-                    margin: 1.5mm 0;
+
+                    line-height: 1.2;
+
+                    margin:
+                        1mm 0;
+
                     word-wrap: break-word;
+
                     overflow-wrap: anywhere;
+
                 }
+
+
+                /* =========================
+                   PEDIDO
+                ========================= */
+
                 .titulo-pedido {
+
                     font-size: 16px;
+
                     font-weight: 900;
-                    margin-bottom: 2mm;
+
+                    margin-bottom: 1.5mm;
+
                 }
+
+
                 .producto {
+
                     display: flex;
-                    justify-content: space-between;
-                    align-items: flex-start;
+
+                    justify-content:
+                        space-between;
+
+                    align-items:
+                        flex-start;
+
                     gap: 3mm;
-                    margin: 1.5mm 0;
-                    line-height: 1.25;
+
+                    margin:
+                        1mm 0;
+
+                    line-height: 1.2;
+
                 }
+
+
                 .producto-nombre {
+
                     flex: 1;
+
                     min-width: 0;
+
                     text-align: left;
+
                     word-wrap: break-word;
+
                     overflow-wrap: anywhere;
+
                 }
+
+
                 .producto-precio {
-                    white-space: nowrap;
+
+                    white-space:
+                        nowrap;
+
                     text-align: right;
+
                 }
+
+
+                /* =========================
+                   TOTAL
+                ========================= */
+
                 .total {
+
                     font-size: 19px;
+
                     font-weight: 900;
+
                     text-align: right;
-                    margin: 2.5mm 0;
+
+                    margin:
+                        2mm 0;
+
                 }
+
+
+                /* =========================
+                   PIE
+                ========================= */
+
                 .pie {
+
                     text-align: center;
+
                     font-size: 15px;
+
                     font-weight: 900;
-                    margin-top: 3mm;
+
+                    margin-top: 2mm;
+
+                    margin-bottom: 0;
+
+                    padding: 0;
+
                 }
+
+
+                /* =========================
+                   IMPRESIÓN
+                ========================= */
+
                 @media print {
-                    html, body {
+
+                    html {
+
                         width: 80mm;
-                        height: auto;
+
                         margin: 0;
+
                         padding: 0;
+
                     }
+
+
+                    body {
+
+                        width: 80mm;
+
+                        margin: 0;
+
+                        padding: 0;
+
+                    }
+
+
                     .ticket {
+
                         width: 72mm;
+
                         margin: 0 auto;
-                        padding-bottom: 2mm;
+
+                        padding: 0;
+
                     }
+
                 }
+
             </style>
+
         </head>
+
+
         <body>
+
             ${ticketHTML}
+
         </body>
+
         </html>
+
     `);
+
+
     ventana.document.close();
 
+
+    /* =====================================================
+       IMPRIMIR
+    ===================================================== */
+
     ventana.onload = function() {
+
         setTimeout(function() {
+
             ventana.focus();
+
             ventana.print();
+
         }, 400);
+
     };
 
+
+    /* =====================================================
+       CERRAR VENTANA
+    ===================================================== */
+
     ventana.onafterprint = function() {
+
         setTimeout(function() {
+
             try {
+
                 ventana.close();
+
             } catch (e) {
-                console.log("No se pudo cerrar la ventana.", e);
+
+                console.log(
+                    "No se pudo cerrar la ventana.",
+                    e
+                );
+
             }
+
         }, 300);
+
     };
+
 }
 
 
@@ -1362,11 +1911,17 @@ function imprimirComanda() {
 document.addEventListener(
     "DOMContentLoaded",
     function() {
+
         toggleDireccion();
+
         cargarMenuDesdeGoogle();
+
         actualizarCarritoUI();
+
         actualizarBotonCarrito();
+
     }
 );
 
 </script>
+```
