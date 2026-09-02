@@ -1204,180 +1204,20 @@ async function cargarMenuDesdeGoogle() {
 }
 
 
-/* =========================================================
-   IMPRIMIR COMANDA
-========================================================= */
-
-function imprimirComanda() {
-
-    if (carrito.length === 0) {
-
-        alert("El carrito está vacío.");
-
-        return;
-    }
-
-
-    const nombreEl =
-        document.getElementById("cliente-nombre");
-
-    const entregaEl =
-        document.getElementById("cliente-entrega");
-
-    const direccionEl =
-        document.getElementById("cliente-direccion");
-
-    const horarioEl =
-        document.getElementById("cliente-horario");
-
-    const pagoEl =
-        document.getElementById("cliente-pago");
-
-    const notasEl =
-        document.getElementById("cliente-notas");
-
-
-    const nombre =
-        nombreEl ? nombreEl.value.trim() : "";
-
-    const tipoEntrega =
-        entregaEl ? entregaEl.value : "";
-
-    const direccion =
-        direccionEl ? direccionEl.value.trim() : "";
-
-    const horario =
-        horarioEl ? horarioEl.value.trim() : "";
-
-    const pago =
-        pagoEl ? pagoEl.value : "";
-
-    const notas =
-        notasEl ? notasEl.value.trim() : "";
-
-
-    /* VALIDACIONES */
-
-    if (!nombre) {
-
-        alert("Ingresá el nombre del cliente.");
-
-        if (nombreEl) {
-            nombreEl.focus();
-        }
-
-        return;
-    }
-
-
-    if (
-        tipoEntrega === "Delivery" &&
-        !direccion
-    ) {
-
-        alert("Ingresá la dirección.");
-
-        if (direccionEl) {
-            direccionEl.focus();
-        }
-
-        return;
-    }
-
-
-    if (!horario) {
-
-        alert("Indicá el horario.");
-
-        if (horarioEl) {
-            horarioEl.focus();
-        }
-
-        return;
-    }
-
-
-    /* FECHA Y HORA EXACTA DEL PEDIDO */
-
-    const ahora = new Date();
-
-    const fechaPedido =
-        ahora.toLocaleDateString("es-AR");
-
-    const horaPedido =
-        ahora.toLocaleTimeString("es-AR", {
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-            hour12: false
-        });
-
-
-    /* PRODUCTOS */
-
-    let total = 0;
-
-    let productosHTML = "";
-
-
-    carrito.forEach(function(item) {
-
-        const subtotal =
-            item.precio * item.cantidad;
-
-        total += subtotal;
-
-
-        productosHTML += `
-
-            <div class="producto">
-
-                <div class="cantidad">
-                    ${item.cantidad} x
-                </div>
-
-                <div class="nombre">
-                    ${item.nombre}
-                </div>
-
-                <div class="precio">
-                    $${subtotal.toLocaleString("es-AR")}
-                </div>
-
-            </div>
-
-        `;
-
-    });
-
-
-    /* VENTANA DE IMPRESIÓN */
-
-    const ventana =
-        window.open("", "_blank");
-
-
-    if (!ventana) {
-
-        alert(
-            "El navegador bloqueó la ventana de impresión."
-        );
-
-        return;
-    }
-
-
-    ventana.document.write(`
-
+// VENTANA DE IMPRESIÓN
+const ventana = window.open("", "_blank");
+
+if (!ventana) {
+    alert("El navegador bloqueó la ventana de impresión.");
+    return;
+}
+
+ventana.document.write(`
 <!DOCTYPE html>
-
 <html>
-
 <head>
 
 <meta charset="UTF-8">
-
-<title>Comanda MYCFOODS</title>
 
 <style>
 
@@ -1388,329 +1228,175 @@ function imprimirComanda() {
 
 html,
 body {
-
     width: 80mm;
-
     margin: 0;
-
     padding: 0;
-
 }
 
 body {
+    margin: 0;
+    padding: 3mm;
+    width: 80mm;
 
-    padding: 4mm;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    font-weight: bold;
 
-    font-family:
-        "Courier New",
-        Courier,
-        monospace;
-
-    font-size: 12px;
-
-    line-height: 1.4;
+    line-height: 1.35;
 
     color: #000;
 
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
 }
 
 .cabecera {
-
     text-align: center;
-
+    font-size: 22px;
     font-weight: bold;
-
-    font-size: 18px;
-
-    line-height: 1.4;
-
     margin-bottom: 8px;
-
 }
 
 .linea {
-
-    border-top:
-        1px dashed #000;
-
-    margin:
-        7px 0;
-
+    border-top: 2px solid #000;
+    margin: 8px 0;
 }
 
 .dato {
-
-    margin:
-        4px 0;
-
-    line-height:
-        1.4;
-
-    word-break:
-        break-word;
-
-}
-
-.titulo {
-
-    font-weight:
-        bold;
-
-    margin:
-        5px 0;
-
+    font-size: 16px;
+    margin: 5px 0;
+    word-wrap: break-word;
 }
 
 .producto {
-
-    margin:
-        7px 0;
-
-    line-height:
-        1.4;
-
-}
-
-.cantidad {
-
-    display:
-        inline;
-
-    font-weight:
-        bold;
-
-}
-
-.nombre {
-
-    display:
-        inline;
-
-    font-weight:
-        bold;
-
+    margin: 8px 0;
+    font-size: 16px;
+    line-height: 1.4;
 }
 
 .precio {
-
-    display:
-        block;
-
-    margin-left:
-        20px;
-
+    margin-left: 10px;
 }
 
 .total {
+    display: flex;
+    justify-content: space-between;
 
-    font-size:
-        16px;
+    font-size: 20px;
+    font-weight: bold;
 
-    font-weight:
-        bold;
-
-    margin-top:
-        8px;
-
+    margin-top: 10px;
 }
 
 .observaciones {
-
-    margin-top:
-        7px;
-
-    line-height:
-        1.4;
-
-    word-break:
-        break-word;
-
+    font-size: 16px;
+    margin-top: 8px;
 }
 
 .pie {
-
-    text-align:
-        center;
-
-    font-weight:
-        bold;
-
-    margin-top:
-        10px;
-
+    text-align: center;
+    font-size: 16px;
+    margin-top: 12px;
 }
 
 </style>
 
 </head>
 
-
 <body>
 
-
 <div class="cabecera">
-
-MYCFOODS
-
-<br>
-
-COMANDA
-
+    MYCFOODS<br>
+    COMANDA
 </div>
-
 
 <div class="linea"></div>
 
-
 <div class="dato">
-
-<strong>FECHA:</strong>
-${fechaPedido}
-
+    FECHA: ${fechaPedido}
 </div>
 
-
 <div class="dato">
-
-<strong>HORA PEDIDO:</strong>
-${horaPedido}
-
+    HORA: ${horaPedido}
 </div>
-
 
 <div class="linea"></div>
 
-
 <div class="dato">
-
-<strong>CLIENTE:</strong>
-${nombre}
-
+    CLIENTE: ${nombre}
 </div>
 
-
 <div class="dato">
-
-<strong>ENTREGA:</strong>
-${tipoEntrega}
-
+    ENTREGA: ${tipoEntrega}
 </div>
-
 
 ${
     tipoEntrega === "Delivery"
-        ? `
-
-<div class="dato">
-
-<strong>DIRECCIÓN:</strong>
-
-<br>
-
-${direccion}
-
-</div>
-
-`
-        : ""
+    ? `
+        <div class="dato">
+            DIRECCIÓN:<br>
+            ${direccion}
+        </div>
+      `
+    : ""
 }
 
-
 <div class="dato">
-
-<strong>HORARIO:</strong>
-${horario}
-
+    HORARIO: ${horario}
 </div>
 
-
 <div class="dato">
-
-<strong>PAGO:</strong>
-${pago}
-
+    PAGO: ${pago}
 </div>
-
 
 <div class="linea"></div>
 
-
-<div class="titulo">
-
-DETALLE DEL PEDIDO
-
+<div class="dato">
+    PEDIDO:
 </div>
-
-
-<div class="linea"></div>
-
 
 ${productosHTML}
 
-
 <div class="linea"></div>
 
-
 <div class="total">
-
-TOTAL:
-$${total.toLocaleString("es-AR")}
-
+    <span>TOTAL</span>
+    <span>$${total.toLocaleString("es-AR")}</span>
 </div>
-
 
 ${
     notas
-        ? `
+    ? `
+        <div class="linea"></div>
 
-<div class="linea"></div>
-
-<div class="observaciones">
-
-<strong>OBSERVACIONES:</strong>
-
-<br>
-
-${notas}
-
-</div>
-
-`
-        : ""
+        <div class="observaciones">
+            OBSERVACIONES:<br>
+            ${notas}
+        </div>
+      `
+    : ""
 }
 
-
 <div class="linea"></div>
-
 
 <div class="pie">
-
-MYCFOODS
-
+    MYCFOODS
 </div>
 
-
 </body>
-
 </html>
-
 `);
 
+ventana.document.close();
 
-    ventana.document.close();
+ventana.onload = function() {
 
+    ventana.focus();
 
-    ventana.onload = function() {
+    ventana.print();
 
-        ventana.focus();
-
-        ventana.print();
-
-    };
-
+};
 }
-
-
 /* =========================================================
    INICIO
 ========================================================= */
