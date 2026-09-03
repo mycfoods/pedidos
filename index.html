@@ -5,28 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MYCFOODS COMANDAS</title>
     <link rel="stylesheet" href="style.css">
-    <!-- FontAwesome para Íconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* Estilos adicionales para Mostrador y Caja integrados */
-        .nav-links { display: flex; align-items: center; gap: 15px; }
-        .btn-module { background: var(--primary-color, #ff6b00); color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.9rem; }
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
+        .nav-links { display: flex; align-items: center; gap: 12px; }
+        .btn-module { background: #ff6b00; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.9rem; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; }
         .modal-content { background: #1a1a1a; padding: 25px; border-radius: 8px; width: 90%; max-width: 600px; max-height: 85vh; overflow-y: auto; color: #fff; border: 1px solid #444; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
         .modal-close { background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; }
     </style>
 </head>
- <body>
+<body>
 
 <nav class="navbar">
     <div class="container logo-container">
         <a href="#menu" class="logo">
             <i class="fa-solid fa-utensils"></i> MYC<span>FOODS</span>
         </a>
-
         <div class="nav-links">
             <button class="btn-module" onclick="abrirMostrador()"><i class="fa-solid fa-store"></i> Mostrador</button>
             <button class="btn-module" onclick="abrirCaja()"><i class="fa-solid fa-cash-register"></i> Caja</button>
@@ -36,153 +32,151 @@
     </div>
 </nav>
 
-  <!-- SECCIÓN MENÚ -->
-    <section id="menu" class="section">
-        <div class="container">
-            <div class="section-title">
-                <span class="sub-title">NUESTRA CARTA</span>
-                <h2>Menú</h2>
-                <p>Conoce nuestra variedad de productos</p>
+<section id="menu" class="section">
+    <div class="container">
+        <div class="section-title">
+            <span class="sub-title">NUESTRA CARTA</span>
+            <h2>Menú</h2>
+            <p>Conoce nuestra variedad de productos</p>
+        </div>
+
+        <div class="menu-tabs-container">
+            <input type="radio" name="menu-filter" id="tab-wraps" checked>
+            <input type="radio" name="menu-filter" id="tab-menu-dia">
+            <input type="radio" name="menu-filter" id="tab-minutas">
+            <input type="radio" name="menu-filter" id="tab-adicionales">
+            <input type="radio" name="menu-filter" id="tab-ensaladas">
+            <input type="radio" name="menu-filter" id="tab-empanadas">
+            <input type="radio" name="menu-filter" id="tab-tartas">
+            <input type="radio" name="menu-filter" id="tab-sandwichs">
+
+            <div class="tabs-header">
+                <label for="tab-wraps" class="tab-btn">Wraps</label>
+                <label for="tab-menu-dia" class="tab-btn">Menú del Día</label>
+                <label for="tab-minutas" class="tab-btn">Minutas</label>
+                <label for="tab-adicionales" class="tab-btn">Adicionales</label>
+                <label for="tab-ensaladas" class="tab-btn">Ensaladas</label>
+                <label for="tab-empanadas" class="tab-btn">Empanadas</label>
+                <label for="tab-tartas" class="tab-btn">Tartas</label>
+                <label for="tab-sandwichs" class="tab-btn">Sandwichs Ciabatta</label>
             </div>
 
-            <div class="menu-tabs-container">
-                <input type="radio" name="menu-filter" id="tab-wraps" checked>
-                <input type="radio" name="menu-filter" id="tab-menu-dia">
-                <input type="radio" name="menu-filter" id="tab-minutas">
-                <input type="radio" name="menu-filter" id="tab-adicionales">
-                <input type="radio" name="menu-filter" id="tab-ensaladas">
-                <input type="radio" name="menu-filter" id="tab-empanadas">
-                <input type="radio" name="menu-filter" id="tab-tartas">
-                <input type="radio" name="menu-filter" id="tab-sandwichs">
+            <div class="menu-accordion-grid">
+                <details class="accordion-item cat-wraps">
+                    <summary class="accordion-header">
+                        <span class="prod-name"><i class="fa-solid fa-chevron-right"></i> Wrap Ceasar</span>
+                        <span class="badge-click">Ver detalle</span>
+                    </summary>
+                    <div class="accordion-body">
+                        <p class="desc">Pollo, mix de lechuga, aderezo ceasar y parmesano.</p>
+                        <div class="item-action">
+                            <span class="price">$14.500</span>
+                            <div class="item-controls-inline">
+                                <div class="qty-selector">
+                                    <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, -1)">-</button>
+                                    <span class="qty-val">1</span>
+                                    <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, 1)">+</button>
+                                </div>
+                                <button class="btn-add" onclick="agregarDesdeMenu(this, 'Wrap Ceasar', 14500)">+ Agregar</button>
+                            </div>
+                        </div>
+                    </div>
+                </details>
 
-                <div class="tabs-header">
-                    <label for="tab-wraps" class="tab-btn">Wraps</label>
-                    <label for="tab-menu-dia" class="tab-btn">Menú del Día</label>
-                    <label for="tab-minutas" class="tab-btn">Minutas</label>
-                    <label for="tab-adicionales" class="tab-btn">Adicionales</label>
-                    <label for="tab-ensaladas" class="tab-btn">Ensaladas</label>
-                    <label for="tab-empanadas" class="tab-btn">Empanadas</label>
-                    <label for="tab-tartas" class="tab-btn">Tartas</label>
-                    <label for="tab-sandwichs" class="tab-btn">Sandwichs Ciabatta</label>
+                <details class="accordion-item cat-menu-dia">
+                    <summary class="accordion-header">
+                        <span class="prod-name"><i class="fa-solid fa-chevron-right"></i> Menú del Día</span>
+                        <span class="badge-click">Ver detalle</span>
+                    </summary>
+                    <div class="accordion-body">
+                        <p class="desc" id="texto-menu-actual">Cargando menú...</p>
+                        <div class="item-action">
+                            <span class="price">$13.500</span>
+                            <div class="item-controls-inline">
+                                <div class="qty-selector">
+                                    <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, -1)">-</button>
+                                    <span class="qty-val">1</span>
+                                    <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, 1)">+</button>
+                                </div>
+                                <button class="btn-add" onclick="agregarDesdeMenu(this, 'Menú del Día', 13500)">+ Agregar</button>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="carrito" class="section bg-darker">
+    <div class="container">
+        <div class="section-title">
+            <span class="sub-title">TU PEDIDO</span>
+            <h2>Carrito de Compras</h2>
+        </div>
+
+        <div class="cart-box">
+            <div id="cart-items" class="cart-items-list">
+                <p class="empty-msg">Tu carrito está vacío. ¡Agregá tus platos preferidos!</p>
+            </div>
+
+            <div class="checkout-form" style="margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
+                <h3 style="color: var(--primary-color); font-size: 1.1rem; margin-bottom: 15px;">
+                    <i class="fa-solid fa-user-pen"></i> Datos para la Entrega
+                </h3>
+                
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label for="cliente-nombre" style="display: block; font-size: 0.85rem; margin-bottom: 5px;">Nombre y Apellido *</label>
+                    <input type="text" id="cliente-nombre" placeholder="Ej: Maria Perez" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff;">
                 </div>
 
-                <div class="menu-accordion-grid">
-                    <details class="accordion-item cat-wraps">
-                        <summary class="accordion-header">
-                            <span class="prod-name"><i class="fa-solid fa-chevron-right"></i> Wrap Ceasar</span>
-                            <span class="badge-click">Ver detalle</span>
-                        </summary>
-                        <div class="accordion-body">
-                            <p class="desc">Pollo, mix de lechuga, aderezo ceasar y parmesano.</p>
-                            <div class="item-action">
-                                <span class="price">$14.500</span>
-                                <div class="item-controls-inline">
-                                    <div class="qty-selector">
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, -1)">-</button>
-                                        <span class="qty-val">1</span>
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, 1)">+</button>
-                                    </div>
-                                    <button class="btn-add" onclick="agregarDesdeMenu(this, 'Wrap Ceasar', 14500)">+ Agregar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </details>
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label for="cliente-entrega" style="display: block; font-size: 0.85rem; margin-bottom: 5px;">Tipo de Entrega *</label>
+                    <select id="cliente-entrega" onchange="toggleDireccion()" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff;">
+                        <option value="Delivery">Delivery (Tigre Centro)</option>
+                        <option value="Take Away">Retiro por local (Luis Pereyra 440)</option>
+                    </select>
+                </div>
 
-                    <details class="accordion-item cat-menu-dia">
-                        <summary class="accordion-header">
-                            <span class="prod-name"><i class="fa-solid fa-chevron-right"></i> Menú del Día</span>
-                            <span class="badge-click">Ver detalle</span>
-                        </summary>
-                        <div class="accordion-body">
-                            <p class="desc" id="texto-menu-actual">Cargando menú...</p>
-                            <div class="item-action">
-                                <span class="price">$13.500</span>
-                                <div class="item-controls-inline">
-                                    <div class="qty-selector">
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, -1)">-</button>
-                                        <span class="qty-val">1</span>
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, 1)">+</button>
-                                    </div>
-                                    <button class="btn-add" onclick="agregarDesdeMenu(this, 'Menú del Día', 13500)">+ Agregar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </details>
+                <div class="form-group" id="group-direccion" style="margin-bottom: 12px;">
+                    <label for="cliente-direccion" style="display: block; font-size: 0.85rem; margin-bottom: 5px;">Dirección de Entrega *</label>
+                    <input type="text" id="cliente-direccion" placeholder="Ej: Av. Cánovas 123, Apto 2B" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff;">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label for="cliente-horario" style="display: block; font-size: 0.85rem; margin-bottom: 5px;">Horario deseado de Entrega / Retiro *</label>
+                    <input type="time" id="cliente-horario" min="09:00" max="20:00" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff;">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label for="cliente-pago" style="display: block; font-size: 0.85rem; margin-bottom: 5px;">Forma de Pago *</label>
+                    <select id="cliente-pago" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff;">
+                        <option value="Efectivo">Efectivo</option>
+                        <option value="Transferencia">Transferencia</option>
+                        <option value="Tarjeta">Tarjeta de Débito / Crédito</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label for="cliente-notas" style="display: block; font-size: 0.85rem; margin-bottom: 5px;">Aclaraciones / Notas (Opcional)</label>
+                    <input type="text" id="cliente-notas" placeholder="Ej: Sin aderezo / Timbre no funciona" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff;">
+                </div>
+            </div>
+
+            <div class="cart-summary">
+                <div class="total-row">
+                    <span>Total:</span>
+                    <span id="cart-total">$0</span>
+                </div>
+                
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
+                    <button class="btn-clear-cart" onclick="vaciarCarrito()">Vaciar Carrito</button>
+                    <button class="btn-send-whatsapp" onclick="imprimirComanda()" style="flex: 1;"><i class="fa-solid fa-print"></i> Imprimir</button>
                 </div>
             </div>
         </div>
-    </section>
-
-    <!-- SECCIÓN CARRITO -->
-    <section id="carrito" class="section bg-darker">
-        <div class="container">
-            <div class="section-title">
-                <span class="sub-title">TU PEDIDO</span>
-                <h2>Carrito de Compras</h2>
-            </div>
-
-            <div class="cart-box">
-                <div id="cart-items" class="cart-items-list">
-                    <p class="empty-msg">Tu carrito está vacío. ¡Agregá tus platos preferidos!</p>
-                </div>
-
-                <div class="checkout-form" style="margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
-                    <h3 style="color: var(--primary-color); font-size: 1.1rem; margin-bottom: 15px;">
-                        <i class="fa-solid fa-user-pen"></i> Datos para la Entrega
-                    </h3>
-                    
-                    <div class="form-group" style="margin-bottom: 12px;">
-                        <label for="cliente-nombre" style="display: block; font-size: 0.85rem; margin-bottom: 5px;">Nombre y Apellido *</label>
-                        <input type="text" id="cliente-nombre" placeholder="Ej: Maria Perez" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff;">
-                    </div>
-
-                    <div class="form-group" style="margin-bottom: 12px;">
-                        <label for="cliente-entrega" style="display: block; font-size: 0.85rem; margin-bottom: 5px;">Tipo de Entrega *</label>
-                        <select id="cliente-entrega" onchange="toggleDireccion()" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff;">
-                            <option value="Delivery">Delivery (Tigre Centro)</option>
-                            <option value="Take Away">Retiro por local (Luis Pereyra 440)</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group" id="group-direccion" style="margin-bottom: 12px;">
-                        <label for="cliente-direccion" style="display: block; font-size: 0.85rem; margin-bottom: 5px;">Dirección de Entrega *</label>
-                        <input type="text" id="cliente-direccion" placeholder="Ej: Av. Cánovas 123, Apto 2B" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff;">
-                    </div>
-
-                    <div class="form-group" style="margin-bottom: 12px;">
-                        <label for="cliente-horario" style="display: block; font-size: 0.85rem; margin-bottom: 5px;">Horario deseado de Entrega / Retiro *</label>
-                        <input type="time" id="cliente-horario" min="09:00" max="20:00" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff;">
-                    </div>
-
-                    <div class="form-group" style="margin-bottom: 12px;">
-                        <label for="cliente-pago" style="display: block; font-size: 0.85rem; margin-bottom: 5px;">Forma de Pago *</label>
-                        <select id="cliente-pago" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff;">
-                            <option value="Efectivo">Efectivo</option>
-                            <option value="Transferencia">Transferencia</option>
-                            <option value="Tarjeta">Tarjeta de Débito / Crédito</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group" style="margin-bottom: 15px;">
-                        <label for="cliente-notas" style="display: block; font-size: 0.85rem; margin-bottom: 5px;">Aclaraciones / Notas (Opcional)</label>
-                        <input type="text" id="cliente-notas" placeholder="Ej: Sin aderezo / Timbre no funciona" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff;">
-                    </div>
-                </div>
-
-                <div class="cart-summary">
-                    <div class="total-row">
-                        <span>Total:</span>
-                        <span id="cart-total">$0</span>
-                    </div>
-                    
-                    <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
-                        <button class="btn-clear-cart" onclick="vaciarCarrito()">Vaciar Carrito</button>
-                        <button class="btn-send-whatsapp" onclick="imprimirComanda()" style="flex: 1;"><i class="fa-solid fa-print"></i> Imprimir</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+    </div>
+</section>
 
 <!-- MODAL MOSTRADOR -->
 <div id="modal-mostrador" class="modal-overlay">
@@ -191,8 +185,9 @@
             <h3>Panel de Mostrador</h3>
             <button class="modal-close" onclick="cerrarMostrador()">&times;</button>
         </div>
-        <p>Control rápido de salón y pedidos activos.</p>
-        <div id="mostrador-contenido"></div>
+        <div id="mostrador-contenido">
+            <p>Control de salón, comandas y estado de pedidos activos.</p>
+        </div>
     </div>
 </div>
 
@@ -203,12 +198,12 @@
             <h3>Panel de Caja</h3>
             <button class="modal-close" onclick="cerrarCaja()">&times;</button>
         </div>
-        <p>Resumen de cobros, arqueo y efectivo diario.</p>
-        <div id="caja-contenido"></div>
+        <div id="caja-contenido">
+            <p>Arqueo diario, control de efectivo y cierres de caja.</p>
+        </div>
     </div>
 </div>
 
-<!-- BOTÓN FLOTANTE -->
 <button id="floating-cart-btn" onclick="irAlCarrito()" aria-label="Ver carrito">
     <i class="fa-solid fa-cart-shopping"></i>
     <span id="floating-cart-count">0</span>
@@ -286,15 +281,15 @@ function actualizarCarritoUI() {
         const subtotal = item.precio * item.cantidad;
         total += subtotal;
         html += `
-            <div class="cart-item-row">
+            <div class="cart-item-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 8px;">
                 <div class="cart-item-info">
-                    <strong>${item.nombre}</strong>
+                    <strong>${item.nombre}</strong><br>
                     <span>$${item.precio.toLocaleString("es-AR")} x ${item.cantidad} = $${subtotal.toLocaleString("es-AR")}</span>
                 </div>
-                <div class="cart-item-controls">
-                    <button class="btn-qty" onclick="cambiarCantidad(${index}, -1)">-</button>
+                <div class="cart-item-controls" style="display: flex; gap: 5px; align-items: center;">
+                    <button class="btn-qty" onclick="cambiarCantidad(${index}, -1)" style="padding: 2px 8px;">-</button>
                     <span>${item.cantidad}</span>
-                    <button class="btn-qty" onclick="cambiarCantidad(${index}, 1)">+</button>
+                    <button class="btn-qty" onclick="cambiarCantidad(${index}, 1)" style="padding: 2px 8px;">+</button>
                 </div>
             </div>`;
     });
@@ -386,7 +381,6 @@ function imprimirComanda() {
     }, 300);
 }
 
-/* FUNCIONES DE MOSTRADOR Y CAJA */
 function abrirMostrador() { document.getElementById("modal-mostrador").style.display = "flex"; }
 function cerrarMostrador() { document.getElementById("modal-mostrador").style.display = "none"; }
 function abrirCaja() { document.getElementById("modal-caja").style.display = "flex"; }
