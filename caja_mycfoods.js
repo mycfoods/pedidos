@@ -1,7 +1,5 @@
 /* =========================================================
-   MYCFOODS — MOSTRADOR + CAJA
-   CAJA PRINCIPAL para el index.html existente.
-   MOSTRADOR integrado como módulo de venta rápida.
+   MYCFOODS — MOSTRADOR + CAJA (Actualizado con funciones de caja)
 ========================================================= */
 (function () {
   'use strict';
@@ -116,9 +114,7 @@
     const el=document.getElementById('mycfoods-pos');
     if(!el) return;
 
-    // Cierra la caja si está abierta para que no se encimen
     document.getElementById('mycfoods-caja')?.classList.remove('open');
-
     el.classList.add('open');
     renderPOS();
   }
@@ -432,76 +428,15 @@
     <meta charset="UTF-8">
     <title>Comanda MYCFOODS</title>
     <style>
-        @page {
-            size: 80mm auto;
-            margin: 0;
-        }
-        html,
-        body {
-            width: 80mm;
-            margin: 0;
-            padding: 0;
-            background: #ffffff;
-        }
-        body {
-            padding: 2mm 3mm;
-            font-family: Arial, sans-serif;
-            font-size: 15px;
-            font-weight: bold;
-            line-height: 1.25;
-            color: #000000;
-            text-align: left;
-        }
-        .ticket-container {
-            width: 100%;
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            text-align: left;
-        }
-        .head {
-            text-align: center;
-            font-size: 18px;
-            margin-bottom: 5px;
-        }
-        .line {
-            border-top: 1px dashed #000;
-            margin: 5px 0;
-        }
-        .pitem {
-            display: flex;
-            justify-content: space-between;
-            margin: 4px 0;
-        }
-        .total {
-            display: flex;
-            justify-content: space-between;
-            font-size: 16px;
-            margin-top: 5px;
-        }
-        .center {
-            text-align: center;
-            margin-top: 5px;
-        }
-        @media print {
-            html,
-            body {
-                width: 80mm;
-                margin: 0;
-                padding: 0;
-            }
-            body {
-                padding: 2mm 3mm;
-                text-align: left;
-            }
-            .ticket-container {
-                width: 100%;
-                margin: 0;
-                padding: 0;
-            }
-        }
+        @page { size: 80mm auto; margin: 0; }
+        html, body { width: 80mm; margin: 0; padding: 0; background: #ffffff; }
+        body { padding: 2mm 3mm; font-family: Arial, sans-serif; font-size: 15px; font-weight: bold; line-height: 1.25; color: #000000; text-align: left; }
+        .ticket-container { width: 100%; box-sizing: border-box; margin: 0; padding: 0; white-space: pre-wrap; word-wrap: break-word; text-align: left; }
+        .head { text-align: center; font-size: 18px; margin-bottom: 5px; }
+        .line { border-top: 1px dashed #000; margin: 5px 0; }
+        .pitem { display: flex; justify-content: space-between; margin: 4px 0; }
+        .total { display: flex; justify-content: space-between; font-size: 16px; margin-top: 5px; }
+        .center { text-align: center; margin-top: 5px; }
     </style>
 </head>
 <body>
@@ -552,9 +487,7 @@
       }catch(e){}
 
       setTimeout(()=>{
-        try{
-          w.close();
-        }catch(e){}
+        try{ w.close(); }catch(e){}
         printBusy=false;
       },900);
     },250);
@@ -563,7 +496,7 @@
   function injectStyles(){
     const s=document.createElement('style');
     s.textContent=`
-      #mycfoods-pos{
+      #mycfoods-pos, #mycfoods-caja{
         display:none;
         position:fixed;
         inset:0;
@@ -572,21 +505,7 @@
         padding:18px;
         overflow:auto;
       }
-      #mycfoods-caja{
-        display:none;
-        position:fixed;
-        inset:0;
-        background:#080808;
-        z-index:10000;
-        padding:18px;
-        overflow:auto;
-      }
-      #mycfoods-pos.open{
-        display:flex;
-        justify-content:center;
-        align-items:flex-start;
-      }
-      #mycfoods-caja.open{
+      #mycfoods-pos.open, #mycfoods-caja.open{
         display:flex;
         justify-content:center;
         align-items:flex-start;
@@ -601,337 +520,62 @@
         padding:18px;
         color:#fff;
       }
-      .mc-top{
-        display:flex;
-        align-items:center;
-        justify-content:space-between;
-        gap:12px;
-        margin-bottom:14px;
-      }
-      .mc-title{
-        font-size:20px;
-        font-weight:800;
-      }
-      .mc-sub{
-        font-size:12px;
-        color:#999;
-      }
-      .mc-close{
-        background:transparent;
-        border:1px solid #333;
-        color:#fff;
-        border-radius:8px;
-        padding:8px 12px;
-        cursor:pointer;
-      }
-      .mc-layout{
-        display:grid;
-        grid-template-columns:1fr 350px;
-        gap:16px;
-      }
-      .mc-cats,
-      .mc-pay-buttons,
-      .mc-delivery-buttons{
-        display:flex;
-        gap:7px;
-        flex-wrap:wrap;
-        margin-bottom:12px;
-      }
-      .mc-chip,
-      .mc-pay{
-        background:#171717;
-        border:1px solid #303030;
-        color:#aaa;
-        border-radius:20px;
-        padding:8px 12px;
-        cursor:pointer;
-      }
-      .mc-chip.active,
-      .mc-pay.active{
-        background:var(--accent,#FFB020);
-        color:#0b0b0b;
-        border-color:var(--accent,#FFB020);
-        font-weight:800;
-      }
-      .mc-products{
-        display:grid;
-        grid-template-columns:repeat(auto-fill,minmax(190px,1fr));
-        gap:8px;
-      }
-      .mc-product{
-        display:flex;
-        justify-content:space-between;
-        gap:8px;
-        text-align:left;
-        background:#151515;
-        border:1px solid #292929;
-        color:#fff;
-        border-radius:9px;
-        padding:13px;
-        cursor:pointer;
-        min-height:58px;
-      }
-      .mc-product:hover{
-        border-color:var(--accent,#FFB020);
-        transform:translateY(-1px);
-      }
-      .mc-product strong,
-      .mc-total{
-        color:var(--accent,#FFB020);
-      }
-      .mc-side{
-        background:#0b0b0b;
-        border:1px solid #292929;
-        border-radius:10px;
-        padding:13px;
-      }
-      .mc-cart{
-        max-height:330px;
-        overflow:auto;
-      }
-      .mc-line{
-        display:flex;
-        justify-content:space-between;
-        gap:8px;
-        padding:9px 0;
-        border-bottom:1px solid #222;
-      }
-      .mc-line small{
-        display:block;
-        color:#888;
-      }
-      .mc-line-right{
-        display:flex;
-        align-items:center;
-        gap:5px;
-      }
-      .mc-line-right button{
-        width:25px;
-        height:25px;
-        border-radius:5px;
-        background:#191919;
-        border:1px solid #333;
-        color:#fff;
-        cursor:pointer;
-      }
-      .mc-line-right strong{
-        margin-left:5px;
-      }
-      .mc-total-row{
-        display:flex;
-        justify-content:space-between;
-        font-size:23px;
-        font-weight:800;
-        padding:14px 0;
-      }
-      .mc-received{
-        width:100%;
-        padding:11px;
-        background:#111;
-        border:1px solid #333;
-        border-radius:7px;
-        color:#fff;
-        font-size:18px;
-        margin:7px 0;
-      }
-      .mc-change-row{
-        display:flex;
-        justify-content:space-between;
-        padding:8px 0;
-        color:#aaa;
-      }
-      .mc-change{
-        color:#fff;
-        font-weight:800;
-      }
-      .mc-confirm{
-        width:100%;
-        padding:14px;
-        border:0;
-        border-radius:8px;
-        background:var(--accent,#FFB020);
-        color:#0b0b0b;
-        font-size:16px;
-        font-weight:900;
-        cursor:pointer;
-      }
-      .mc-confirm:disabled{
-        opacity:.35;
-        cursor:not-allowed;
-      }
-      .mc-actions{
-        display:flex;
-        gap:8px;
-        margin-top:10px;
-      }
-      .mc-secondary{
-        flex:1;
-        padding:10px;
-        background:transparent;
-        border:1px solid #333;
-        color:#bbb;
-        border-radius:7px;
-        cursor:pointer;
-      }
-      .mc-empty{
-        text-align:center;
-        color:#777;
-        padding:25px;
-      }
-      .mc-stats{
-        display:grid;
-        grid-template-columns:repeat(4,1fr);
-        gap:9px;
-        margin-bottom:14px;
-      }
-      .mc-stat{
-        background:#151515;
-        border:1px solid #292929;
-        border-radius:9px;
-        padding:12px;
-      }
-      .mc-stat span{
-        display:block;
-        color:#888;
-        font-size:11px;
-      }
-      .mc-stat b{
-        font-size:20px;
-        margin-top:5px;
-        display:block;
-      }
-      .mc-tabs{
-        display:flex;
-        gap:6px;
-        flex-wrap:wrap;
-        margin-bottom:14px;
-      }
-      .mc-tab{
-        padding:8px 12px;
-        background:#171717;
-        border:1px solid #333;
-        color:#aaa;
-        border-radius:7px;
-        cursor:pointer;
-      }
-      .mc-tab.active{
-        background:#FFB020;
-        color:#0b0b0b;
-      }
-      .mc-section{
-        background:#151515;
-        border:1px solid #292929;
-        border-radius:9px;
-        padding:14px;
-        margin-bottom:12px;
-      }
-      .mc-section h3{
-        margin:0 0 10px;
-        font-size:15px;
-      }
-      .mc-movement{
-        display:grid;
-        grid-template-columns:1fr auto 28px;
-        gap:8px;
-        align-items:center;
-        padding:9px 0;
-        border-bottom:1px solid #222;
-      }
-      .mc-movement span,
-      .mc-movement small{
-        display:block;
-        color:#888;
-        font-size:11px;
-      }
-      .mc-movement b{
-        font-size:13px;
-      }
-      .mc-movement button{
-        background:transparent;
-        border:0;
-        color:#777;
-        font-size:20px;
-        cursor:pointer;
-      }
-      .mc-methods>div{
-        display:flex;
-        justify-content:space-between;
-        padding:8px 0;
-        border-bottom:1px solid #222;
-      }
-      .mc-form{
-        display:grid;
-        grid-template-columns:repeat(3,1fr);
-        gap:8px;
-      }
-      .mc-form label{
-        font-size:11px;
-        color:#888;
-      }
-      .mc-form input, .mc-form select{
-        width:100%;
-        margin-top:4px;
-        padding:9px;
-        background:#101010;
-        border:1px solid #333;
-        color:#fff;
-        border-radius:6px;
-      }
-      .mc-save{
-        margin-top:10px;
-        padding:10px 15px;
-        background:#FFB020;
-        border:0;
-        border-radius:7px;
-        font-weight:800;
-        cursor:pointer;
-      }
-      .mc-opening{
-        display:flex;
-        gap:8px;
-        align-items:end;
-      }
-      .mc-opening input{
-        padding:10px;
-        background:#101010;
-        border:1px solid #333;
-        color:#fff;
-        border-radius:6px;
-      }
-      .mc-be{
-        display:grid;
-        grid-template-columns:repeat(3,1fr);
-        gap:8px;
-      }
-      .mc-be .mc-stat{
-        background:#101010;
-      }
-      .mc-note{
-        color:#777;
-        font-size:11px;
-        margin-top:8px;
-      }
+      .mc-top{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; }
+      .mc-title{ font-size:20px; font-weight:800; }
+      .mc-sub{ font-size:12px; color:#999; }
+      .mc-close, .mc-secondary{ background:transparent; border:1px solid #333; color:#fff; border-radius:8px; padding:8px 12px; cursor:pointer; }
+      .mc-layout{ display:grid; grid-template-columns:1fr 350px; gap:16px; }
+      .mc-cats, .mc-pay-buttons, .mc-delivery-buttons{ display:flex; gap:7px; flex-wrap:wrap; margin-bottom:12px; }
+      .mc-chip, .mc-pay{ background:#171717; border:1px solid #303030; color:#aaa; border-radius:20px; padding:8px 12px; cursor:pointer; }
+      .mc-chip.active, .mc-pay.active{ background:var(--accent,#FFB020); color:#0b0b0b; border-color:var(--accent,#FFB020); font-weight:800; }
+      .mc-products{ display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:8px; }
+      .mc-product{ display:flex; justify-content:space-between; gap:8px; text-align:left; background:#151515; border:1px solid #292929; color:#fff; border-radius:9px; padding:13px; cursor:pointer; min-height:58px; }
+      .mc-product:hover{ border-color:var(--accent,#FFB020); transform:translateY(-1px); }
+      .mc-product strong, .mc-total{ color:var(--accent,#FFB020); }
+      .mc-side{ background:#0b0b0b; border:1px solid #292929; border-radius:10px; padding:13px; }
+      .mc-cart{ max-height:330px; overflow:auto; }
+      .mc-line{ display:flex; justify-content:space-between; gap:8px; padding:9px 0; border-bottom:1px solid #222; }
+      .mc-line small{ display:block; color:#888; }
+      .mc-line-right{ display:flex; align-items:center; gap:5px; }
+      .mc-line-right button{ width:25px; height:25px; border-radius:5px; background:#191919; border:1px solid #333; color:#fff; cursor:pointer; }
+      .mc-line-right strong{ margin-left:5px; }
+      .mc-total-row{ display:flex; justify-content:space-between; font-size:23px; font-weight:800; padding:14px 0; }
+      .mc-received{ width:100%; padding:11px; background:#111; border:1px solid #333; border-radius:7px; color:#fff; font-size:18px; margin:7px 0; }
+      .mc-change-row{ display:flex; justify-content:space-between; padding:8px 0; color:#aaa; }
+      .mc-change{ color:#fff; font-weight:800; }
+      .mc-confirm{ width:100%; padding:14px; border:0; border-radius:8px; background:var(--accent,#FFB020); color:#0b0b0b; font-size:16px; font-weight:900; cursor:pointer; }
+      .mc-confirm:disabled{ opacity:.35; cursor:not-allowed; }
+      .mc-actions{ display:flex; gap:8px; margin-top:10px; }
+      .mc-empty{ text-align:center; color:#777; padding:25px; }
+      .mc-stats{ display:grid; grid-template-columns:repeat(4,1fr); gap:9px; margin-bottom:14px; }
+      .mc-stat{ background:#151515; border:1px solid #292929; border-radius:9px; padding:12px; }
+      .mc-stat span{ display:block; color:#888; font-size:11px; }
+      .mc-stat b{ font-size:20px; margin-top:5px; display:block; }
+      .mc-tabs{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; }
+      .mc-tab{ padding:8px 12px; background:#171717; border:1px solid #333; color:#aaa; border-radius:7px; cursor:pointer; }
+      .mc-tab.active{ background:#FFB020; color:#0b0b0b; }
+      .mc-section{ background:#151515; border:1px solid #292929; border-radius:9px; padding:14px; margin-bottom:12px; }
+      .mc-section h3{ margin:0 0 10px; font-size:15px; }
+      .mc-movement{ display:grid; grid-template-columns:1fr auto 28px; gap:8px; align-items:center; padding:9px 0; border-bottom:1px solid #222; }
+      .mc-movement span, .mc-movement small{ display:block; color:#888; font-size:11px; }
+      .mc-movement b{ font-size:13px; }
+      .mc-movement button{ background:transparent; border:0; color:#777; font-size:20px; cursor:pointer; }
+      .mc-methods>div{ display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #222; }
+      .mc-form{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+      .mc-form label{ font-size:11px; color:#888; }
+      .mc-form input, .mc-form select{ width:100%; margin-top:4px; padding:9px; background:#101010; border:1px solid #333; color:#fff; border-radius:6px; }
+      .mc-save{ margin-top:10px; padding:10px 15px; background:#FFB020; border:0; border-radius:7px; font-weight:800; cursor:pointer; }
+      .mc-opening{ display:flex; gap:8px; align-items:end; }
+      .mc-opening input{ padding:10px; background:#101010; border:1px solid #333; color:#fff; border-radius:6px; }
+      .mc-be{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+      .mc-be .mc-stat{ background:#101010; }
+      .mc-note{ color:#777; font-size:11px; margin-top:8px; }
       @media(max-width:800px){
-        .mc-layout{
-          grid-template-columns:1fr;
-        }
-        .mc-stats{
-          grid-template-columns:repeat(2,1fr);
-        }
-        .mc-form,
-        .mc-be{
-          grid-template-columns:1fr;
-        }
-        .mc-panel{
-          padding:12px;
-        }
-        .mc-products{
-          grid-template-columns:repeat(2,1fr);
-        }
-        .mc-product{
-          padding:10px;
-          font-size:12px;
-        }
+        .mc-layout{ grid-template-columns:1fr; }
+        .mc-stats{ grid-template-columns:repeat(2,1fr); }
+        .mc-form, .mc-be{ grid-template-columns:1fr; }
+        .mc-panel{ padding:12px; }
+        .mc-products{ grid-template-columns:repeat(2,1fr); }
       }
     `;
     document.head.appendChild(s);
@@ -985,41 +629,19 @@
         return;
       }
 
-      if(e.target.closest('[data-close-pos]')){
-        closePOS();
-        return;
-      }
-
-      if(e.target.closest('[data-open-pos]')){
-        openPOS();
-        return;
-      }
-
-      if(e.target.closest('[data-open-caja]')){
-        showMainCaja();
-        return;
-      }
-
-      if(e.target.closest('[data-clear-pos]')){
-        posCart=[];
-        renderPOS();
-        return;
-      }
-
-      if(e.target.closest('.mc-confirm')){
-        confirmPOS();
-        return;
-      }
+      if(e.target.closest('[data-close-pos]')){ closePOS(); return; }
+      if(e.target.closest('[data-open-pos]')){ openPOS(); return; }
+      if(e.target.closest('[data-open-caja]')){ showMainCaja(); return; }
+      if(e.target.closest('[data-clear-pos]')){ posCart=[]; renderPOS(); return; }
+      if(e.target.closest('.mc-confirm')){ confirmPOS(); return; }
 
       const cv=e.target.closest('[data-cview]');
       if(cv){
         document.querySelectorAll('#mycfoods-caja .mc-tab').forEach(x=>x.classList.remove('active'));
         cv.classList.add('active');
-
         document.querySelectorAll('#mycfoods-caja .mc-cview').forEach(x=>{
           x.style.display=x.dataset.view===cv.dataset.cview?'block':'none';
         });
-
         renderCaja();
         return;
       }
@@ -1038,21 +660,13 @@
         const cat=document.querySelector('[data-exp-cat]').value.trim()||'Gasto general';
         const method=document.querySelector('[data-exp-method]').value;
 
-        if(amount<=0){
-          alert('Ingresá un monto.');
-          return;
-        }
+        if(amount<=0){ alert('Ingresá un monto.'); return; }
 
         const now=new Date();
-
         addTx({
           id:uid(),
           date:today(),
-          time:now.toLocaleTimeString('es-AR',{
-            hour:'2-digit',
-            minute:'2-digit',
-            hour12:false
-          }),
+          time:now.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit',hour12:false}),
           type:'egreso',
           category:cat,
           method,
@@ -1063,7 +677,6 @@
 
         document.querySelector('[data-exp-amount]').value='';
         document.querySelector('[data-exp-cat]').value='';
-
         alert('Gasto registrado.');
         return;
       }
@@ -1082,26 +695,21 @@
         state.config.fixedCosts=document.querySelector('[data-be="fixed"]').value;
         state.config.variablePct=document.querySelector('[data-be="variable"]').value;
         state.config.avgTicket=document.querySelector('[data-be="avg"]').value;
-
         saveState();
         renderCaja();
-
         alert('Configuración guardada.');
         return;
       }
     });
 
     document.addEventListener('input',function(e){
-      if(e.target.classList.contains('mc-received')){
-        renderPOS();
-      }
+      if(e.target.classList.contains('mc-received')){ renderPOS(); }
     });
 
     document.addEventListener('keydown',function(e){
       if(e.key==='Escape'){
         closePOS();
-        const caja=document.getElementById('mycfoods-caja');
-        if(caja) caja.classList.remove('open');
+        document.getElementById('mycfoods-caja')?.classList.remove('open');
       }
     });
   }
@@ -1128,10 +736,7 @@
     document.body.classList.add('mycfoods-caja-mode');
     const caja=document.getElementById('mycfoods-caja');
     if(caja) caja.classList.add('open');
-
-    const pos=document.getElementById('mycfoods-pos');
-    if(pos) pos.classList.remove('open');
-
+    document.getElementById('mycfoods-pos')?.classList.remove('open');
     renderCaja();
   }
 
@@ -1145,7 +750,6 @@
       currentCategory=categories()[0]||'';
       renderPOS();
       renderCaja();
-       showMainCaja()
     },700);
   }
 
