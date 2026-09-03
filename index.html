@@ -19,10 +19,11 @@
             <i class="fa-solid fa-utensils"></i> MYC<span>FOODS</span>
         </a>
 
-        <div class="nav-links">
-            <a href="#menu">Menú</a>
-            <a href="#carrito">Carrito</a>
-        </div>
+      <div class="nav-links">
+    <a href="#menu">Menú</a>
+    <a href="#carrito">Carrito</a>
+    <a href="caja.html">Caja</a>
+</div>
     </div>
 </nav>
 
@@ -875,7 +876,7 @@
     <i class="fa-solid fa-cart-shopping"></i>
     <span id="floating-cart-count">0</span>
 </button>
-
+<script src="caja-core.js"></script>
 <!-- LÓGICA JAVASCRIPT -->
 <script>
 
@@ -1451,7 +1452,16 @@ function imprimirComanda() {
 
     });
 
+    /* =====================================================
+       REGISTRAR VENTA EN CAJA
+    ===================================================== */
 
+    cajaRegistrarVentaDesdePedido({
+        nombre: nombre,
+        tipoEntrega: tipoEntrega,
+        pago: pago,
+        total: total
+    });
     /* =====================================================
        CONSTRUIR TICKET
     ===================================================== */
