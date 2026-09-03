@@ -1145,6 +1145,7 @@
       currentCategory=categories()[0]||'';
       renderPOS();
       renderCaja();
+       showMainCaja()
     },700);
   }
 
