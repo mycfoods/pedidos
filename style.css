@@ -1,3 +1,4 @@
+```css
 :root {
     --bg-main: #0b0b0b;
     --bg-card: #141414;
@@ -13,6 +14,11 @@
     --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
+
+/* =========================================================
+   BASE
+========================================================= */
+
 * {
     margin: 0;
     padding: 0;
@@ -27,25 +33,28 @@ body {
     font-family: var(--font-main);
     background-color: var(--bg-main);
     color: var(--text-white);
-    line-height: 1.6;
+    line-height: 1.4;
 }
 
 .container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0 15px;
 }
 
-/* NAVEGACIÓN CORREGIDA (Ya no es un banner fijo negro) */
+
+/* =========================================================
+   NAVEGACIÓN
+========================================================= */
+
 .navbar {
-    position: absolute; /* Cambiado de fixed a absolute para que no te siga al scrollear */
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    background: transparent; /* Quitamos el fondo negro sólido */
+    background: transparent;
     z-index: 1000;
-    padding: 25px 0;
-    border-bottom: none; /* Quitamos la línea divisoria si querés un estilo más limpio */
+    padding: 15px 0;
 }
 
 .logo-container {
@@ -61,14 +70,15 @@ body {
     text-decoration: none;
 }
 
-.logo i, .logo span {
+.logo i,
+.logo span {
     color: var(--accent);
 }
 
 .nav-links {
     display: flex;
     align-items: center;
-    gap: 25px;
+    gap: 20px;
 }
 
 .nav-links a {
@@ -91,122 +101,16 @@ body {
     font-weight: 700 !important;
 }
 
-.menu-toggle, .menu-icon {
+.menu-toggle,
+.menu-icon {
     display: none;
 }
 
-/* HERO */
-.hero {
-    height: 100vh;
-    min-height: 600px;
-    background: linear-gradient(180deg, rgba(11,11,11,0.7) 0%, rgba(11,11,11,1) 100%), 
-                url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 0 20px;
-}
 
-.hero-content {
-    max-width: 800px;
-}
+/* =========================================================
+   MENÚ
+========================================================= */
 
-.brand-badge {
-    display: inline-block;
-    border: 1px solid var(--accent);
-    color: var(--accent);
-    padding: 6px 16px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 700;
-    letter-spacing: 2px;
-    margin-bottom: 20px;
-}
-
-.hero h1 {
-    font-size: 4rem;
-    font-weight: 800;
-    margin-bottom: 10px;
-}
-
-.hero-subtitle {
-    font-size: 1.4rem;
-    color: var(--text-gray);
-    margin-bottom: 35px;
-}
-
-.hero-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    flex-wrap: wrap;
-}
-
-.btn {
-    display: inline-block;
-    padding: 12px 30px;
-    border-radius: 30px;
-    font-weight: 700;
-    text-decoration: none;
-    transition: var(--transition);
-}
-
-.btn-primary {
-    background: var(--accent);
-    color: var(--bg-main);
-}
-
-.btn-secondary {
-    border: 1px solid var(--text-white);
-    color: var(--text-white);
-}
-
-/* SECCIONES Y TITULOS */
-.section {
-    padding: 90px 0;
-}
-
-.bg-darker {
-    background-color: var(--bg-card);
-}
-
-.section-title {
-    text-align: center;
-    margin-bottom: 50px;
-}
-
-.sub-title {
-    color: var(--accent);
-    font-size: 0.85rem;
-    font-weight: 700;
-    letter-spacing: 2px;
-    display: block;
-    margin-bottom: 8px;
-}
-
-.section-title h2 {
-    font-size: 2.5rem;
-    font-weight: 800;
-}
-
-.section-title p {
-    color: var(--text-gray);
-    margin-top: 8px;
-}
-
-.about-card {
-    max-width: 800px;
-    margin: 0 auto;
-    background: var(--bg-main);
-    border: 1px solid var(--border-color);
-    padding: 40px;
-    border-radius: 12px;
-    text-align: center;
-    border-left: 4px solid var(--accent);
-}
-
-/* MENÚ INTERACTIVO DESPLEGABLE */
 .menu-tabs-container input[type="radio"] {
     display: none;
 }
@@ -214,19 +118,19 @@ body {
 .tabs-header {
     display: flex;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
     flex-wrap: wrap;
-    margin-bottom: 40px;
+    margin-bottom: 18px;
 }
 
 .tab-btn {
-    padding: 10px 20px;
+    padding: 8px 16px;
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: 20px;
     cursor: pointer;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     transition: var(--transition);
     color: var(--text-gray);
 }
@@ -236,7 +140,9 @@ body {
     color: var(--accent);
 }
 
-/* Estados Activos de Botones (Todas las 8 Categorías) */
+
+/* CATEGORÍA ACTIVA */
+
 #tab-wraps:checked ~ .tabs-header label[for="tab-wraps"],
 #tab-menu-dia:checked ~ .tabs-header label[for="tab-menu-dia"],
 #tab-minutas:checked ~ .tabs-header label[for="tab-minutas"],
@@ -250,10 +156,13 @@ body {
     border-color: var(--accent);
 }
 
+
+/* LISTA DE PRODUCTOS */
+
 .menu-accordion-grid {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 8px;
     max-width: 850px;
     margin: 0 auto;
 }
@@ -261,7 +170,7 @@ body {
 .accordion-item {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
-    border-radius: 8px;
+    border-radius: 7px;
     overflow: hidden;
     transition: var(--transition);
 }
@@ -271,7 +180,7 @@ body {
 }
 
 .accordion-header {
-    padding: 18px 20px;
+    padding: 12px 15px;
     cursor: pointer;
     font-weight: 700;
     display: flex;
@@ -286,7 +195,7 @@ body {
 
 .prod-name i {
     color: var(--accent);
-    margin-right: 8px;
+    margin-right: 6px;
     transition: var(--transition);
 }
 
@@ -295,23 +204,26 @@ details[open] .prod-name i {
 }
 
 .badge-click {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     color: var(--text-gray);
     background: rgba(255,255,255,0.05);
-    padding: 4px 10px;
+    padding: 3px 8px;
     border-radius: 12px;
 }
 
+
+/* DETALLE DEL PRODUCTO */
+
 .accordion-body {
-    padding: 15px 20px 20px 20px;
+    padding: 10px 15px 12px;
     border-top: 1px solid var(--border-color);
     background: #0f0f0f;
 }
 
 .desc {
     color: var(--text-gray);
-    font-size: 0.9rem;
-    margin-bottom: 15px;
+    font-size: 0.85rem;
+    margin-bottom: 10px;
 }
 
 .item-action {
@@ -321,7 +233,7 @@ details[open] .prod-name i {
 }
 
 .price {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     font-weight: 800;
     color: var(--accent);
 }
@@ -330,7 +242,7 @@ details[open] .prod-name i {
     background: var(--accent);
     color: var(--bg-main);
     border: none;
-    padding: 8px 16px;
+    padding: 7px 14px;
     border-radius: 20px;
     font-weight: 700;
     cursor: pointer;
@@ -341,13 +253,15 @@ details[open] .prod-name i {
     background: var(--accent-hover);
 }
 
-/* Contadores por tarjeta (Si usás suma/resta directa) */
+
+/* CONTADOR */
+
 .card-counter {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     background-color: var(--bg-main);
-    padding: 4px 12px;
+    padding: 3px 10px;
     border-radius: 20px;
     border: 1px solid var(--border-color);
 }
@@ -358,7 +272,9 @@ details[open] .prod-name i {
     color: #fff;
 }
 
-/* Lógica de Filtros CSS - Muestra solo la categoría seleccionada */
+
+/* FILTROS */
+
 #tab-wraps:checked ~ .menu-accordion-grid .accordion-item:not(.cat-wraps),
 #tab-menu-dia:checked ~ .menu-accordion-grid .accordion-item:not(.cat-menu-dia),
 #tab-minutas:checked ~ .menu-accordion-grid .accordion-item:not(.cat-minutas),
@@ -370,49 +286,53 @@ details[open] .prod-name i {
     display: none;
 }
 
-/* CARRITO */
+
+/* =========================================================
+   CARRITO
+========================================================= */
+
 .cart-box {
     max-width: 800px;
-    margin: 0 auto;
+    margin: 10px auto 0;
     background: var(--bg-main);
     border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 30px;
+    border-radius: 10px;
+    padding: 15px;
 }
 
 .cart-items-list {
-    min-height: 100px;
-    margin-bottom: 25px;
+    min-height: 60px;
+    margin-bottom: 12px;
 }
 
 .empty-msg {
     text-align: center;
     color: var(--text-gray);
-    margin-top: 30px;
+    margin-top: 10px;
 }
 
 .cart-item-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 0;
+    padding: 8px 0;
     border-bottom: 1px solid var(--border-color);
 }
 
 .cart-item-info strong {
     display: block;
-    font-size: 1rem;
+    font-size: 0.95rem;
 }
 
 .cart-item-info span {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: var(--accent);
 }
 
 .cart-item-controls {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
 }
 
 .btn-qty {
@@ -432,27 +352,30 @@ details[open] .prod-name i {
     color: var(--accent);
 }
 
+
+/* RESUMEN */
+
 .cart-summary {
-    border-top: 2px solid var(--border-color);
-    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 12px;
     text-align: right;
 }
 
 .total-row {
-    font-size: 1.4rem;
+    font-size: 1.3rem;
     font-weight: 800;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .total-row span:last-child {
     color: var(--accent);
-    margin-left: 10px;
+    margin-left: 8px;
 }
 
 .note {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: var(--text-gray);
-    margin-bottom: 20px;
+    margin-bottom: 12px;
     text-align: center;
 }
 
@@ -461,9 +384,9 @@ details[open] .prod-name i {
     background: var(--whatsapp);
     color: #ffffff;
     border: none;
-    padding: 15px;
-    border-radius: 30px;
-    font-size: 1.1rem;
+    padding: 12px;
+    border-radius: 25px;
+    font-size: 1rem;
     font-weight: 700;
     cursor: pointer;
     transition: var(--transition);
@@ -473,14 +396,16 @@ details[open] .prod-name i {
     background: var(--whatsapp-dark);
 }
 
-/* BOTÓN DE VACIAR CARRITO */
+
+/* VACIAR CARRITO */
+
 .btn-clear-cart {
     background: transparent;
     color: #ff5252;
     border: 1px solid #ff5252;
-    padding: 6px 14px;
+    padding: 5px 12px;
     border-radius: 6px;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -491,81 +416,47 @@ details[open] .prod-name i {
     color: #fff;
 }
 
-/* CATERING & INFO */
-.catering-grid, .info-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 25px;
-}
 
-.catering-box, .info-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    padding: 35px 25px;
-    border-radius: 10px;
-    text-align: center;
-}
-
-.catering-box i, .info-card i {
-    font-size: 2.5rem;
-    color: var(--accent);
-    margin-bottom: 15px;
-}
-
-/* FOOTER */
-.footer {
-    background: #050505;
-    padding: 70px 0 30px 0;
-    text-align: center;
-    border-top: 1px solid var(--border-color);
-}
-
-.motivational-phrase {
-    font-style: italic;
-    font-size: 1.25rem;
-    max-width: 750px;
-    margin: 0 auto 35px auto;
-    color: var(--text-white);
-}
-
-.btn-whatsapp-footer {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    background: var(--whatsapp);
-    color: #ffffff;
-    padding: 14px 28px;
-    border-radius: 30px;
-    font-weight: 700;
-    text-decoration: none;
-}
-
-.social-links { margin-top: 25px; }
-.social-links a { color: var(--accent); text-decoration: none; font-weight: 700; }
-.footer-divider { border: none; border-top: 1px solid var(--border-color); margin: 35px 0 20px 0; }
-.footer-bottom { font-size: 0.85rem; color: var(--text-gray); }
+/* =========================================================
+   WHATSAPP
+========================================================= */
 
 .whatsapp-float {
     position: fixed;
-    bottom: 25px;
-    right: 25px;
+    bottom: 18px;
+    right: 18px;
     background-color: var(--whatsapp);
     color: #ffffff;
-    width: 60px;
-    height: 60px;
+    width: 55px;
+    height: 55px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 30px;
+    font-size: 28px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.5);
     z-index: 999;
     text-decoration: none;
 }
 
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
 @media (max-width: 768px) {
-    .hero h1 { font-size: 2.8rem; }
-    .menu-icon { display: block; color: var(--text-white); font-size: 1.5rem; cursor: pointer; }
+
+    .container {
+        padding: 0 10px;
+    }
+
+    .menu-icon {
+        display: block;
+        color: var(--text-white);
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+
     .nav-links {
         position: absolute;
         top: 100%;
@@ -573,28 +464,78 @@ details[open] .prod-name i {
         width: 100%;
         background: var(--bg-main);
         flex-direction: column;
-        padding: 20px 0;
+        padding: 15px 0;
         max-height: 0;
         overflow: hidden;
         transition: max-height 0.3s ease-out;
         border-bottom: 1px solid var(--border-color);
     }
-    .menu-toggle:checked ~ .nav-links { max-height: 350px; }
-}@media print {
-  body {
-    margin: 0;
-    padding: 0;
-    background-color: #fff;
-  }
-  .comanda-container {
-    width: 72mm; /* Ajusta según el ancho de tu rollo (58mm u 80mm) */
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 13px;
-    font-weight: bold;
-    color: #000;
-  }
-  /* Oculta elementos de la web que no deban salir en el ticket */
-  header, footer, .no-print {
-    display: none !important;
-  }
+
+    .menu-toggle:checked ~ .nav-links {
+        max-height: 350px;
+    }
+
+    .tabs-header {
+        gap: 6px;
+        margin-bottom: 12px;
+    }
+
+    .tab-btn {
+        padding: 7px 12px;
+        font-size: 0.8rem;
+    }
+
+    .menu-accordion-grid {
+        gap: 6px;
+    }
+
+    .accordion-header {
+        padding: 10px 12px;
+    }
+
+    .accordion-body {
+        padding: 8px 12px 10px;
+    }
+
+    .cart-box {
+        margin-top: 8px;
+        padding: 12px;
+    }
+
+    .whatsapp-float {
+        width: 50px;
+        height: 50px;
+        font-size: 25px;
+        bottom: 12px;
+        right: 12px;
+    }
 }
+
+
+/* =========================================================
+   IMPRESIÓN
+========================================================= */
+
+@media print {
+
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: #fff;
+    }
+
+    .comanda-container {
+        width: 72mm;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 13px;
+        font-weight: bold;
+        color: #000;
+    }
+
+    header,
+    footer,
+    .no-print {
+        display: none !important;
+    }
+}
+```
