@@ -1530,16 +1530,16 @@ ${notas.toUpperCase()}
     }
 
 
-    ventana.document.open();
+  ventana.document.open();
 
+ventana.document.write(`
 
-    ventana.document.write(`
-
-      <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <title>Comanda MYCFOODS</title>
+
     <style>
         @page {
             size: 80mm auto;
@@ -1595,12 +1595,14 @@ ${notas.toUpperCase()}
         }
     </style>
 </head>
+
 <body>
     <div class="ticket-container">${ticket}</div>
 </body>
-</html>);
-    ventana.document.close();
 
+</html>`);
+
+ventana.document.close();
 
     /*
        IMPORTANTE:
