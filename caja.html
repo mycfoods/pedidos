@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MYCFOODS · CAJA</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="caja.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="container logo-container">
+        <a href="index.html#menu" class="logo">
+            <i class="fa-solid fa-utensils"></i> MYC<span>FOODS</span>
+        </a>
+        <div class="nav-links">
+            <a href="index.html#menu">Pedidos</a>
+            <a href="caja.html">Caja</a>
+        </div>
+    </div>
+</nav>
+
+<div class="caja-page">
+    <div class="container" style="text-align:center; margin-bottom:26px;">
+        <span class="sub-title">ADMINISTRACIÓN</span>
+        <h2 style="font-size:2rem; font-weight:800;">Caja</h2>
+    </div>
+
+    <div class="caja-tabs">
+        <button class="caja-tab-btn active" data-tab="resumen"><i class="fa-solid fa-wallet"></i> Resumen</button>
+        <button class="caja-tab-btn" data-tab="movimientos"><i class="fa-solid fa-coins"></i> Movimientos</button>
+        <button class="caja-tab-btn" data-tab="mayor"><i class="fa-solid fa-sitemap"></i> Libro mayor</button>
+        <button class="caja-tab-btn" data-tab="equilibrio"><i class="fa-solid fa-calculator"></i> Punto equilibrio</button>
+        <button class="caja-tab-btn" data-tab="reportes"><i class="fa-solid fa-chart-column"></i> Reportes</button>
+    </div>
+
+    <div class="caja-panel active" id="panel-resumen"></div>
+    <div class="caja-panel" id="panel-movimientos"></div>
+    <div class="caja-panel" id="panel-mayor"></div>
+    <div class="caja-panel" id="panel-equilibrio"></div>
+    <div class="caja-panel" id="panel-reportes"></div>
+</div>
+
+<div id="caja-print-area"></div>
+
+<script src="caja-core.js"></script>
+<script src="caja.js"></script>
+</body>
+</html>
