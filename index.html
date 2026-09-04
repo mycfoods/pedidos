@@ -43,6 +43,44 @@
             font-size: 0.68rem;
             padding: 3px 8px;
         }
+
+        /* SALÓN: módulo independiente del carrito PEDIDOS */
+        .mycfoods-mode-selector { position: sticky; top: 70px; z-index: 90; display:flex; justify-content:center; gap:8px; padding:10px 15px; background:rgba(11,11,11,.96); border-bottom:1px solid rgba(255,255,255,.08); backdrop-filter:blur(8px); }
+        .mycfoods-mode-btn { border:1px solid var(--border-color); background:var(--bg-card); color:var(--text-gray); padding:9px 18px; border-radius:20px; font-family:inherit; font-weight:700; font-size:.8rem; cursor:pointer; }
+        .mycfoods-mode-btn.active { background:var(--accent); color:#111; border-color:var(--accent); }
+        #salon { display:none; padding-top:125px; min-height:calc(100vh - 80px); }
+        .salon-layout { display:grid; grid-template-columns:minmax(0,1.55fr) minmax(320px,.8fr); gap:22px; align-items:start; }
+        .salon-products-box,.salon-cart-box { background:var(--bg-card); border:1px solid var(--border-color); border-radius:12px; padding:18px; }
+        .salon-products-title,.salon-cart-title { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px; }
+        .salon-products-title h3,.salon-cart-title h3 { margin:0; font-size:1.05rem; }
+        .salon-category-bar { display:flex; flex-wrap:wrap; gap:7px; margin-bottom:14px; }
+        .salon-category-btn { border:1px solid var(--border-color); background:transparent; color:var(--text-gray); padding:7px 11px; border-radius:16px; font-family:inherit; font-size:.72rem; font-weight:700; cursor:pointer; }
+        .salon-category-btn.active { background:var(--accent); color:#111; border-color:var(--accent); }
+        .salon-product-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:10px; }
+        .salon-product-btn { width:100%; min-height:76px; text-align:left; border:1px solid var(--border-color); background:var(--bg-main); color:var(--text-white); border-radius:9px; padding:11px; font-family:inherit; cursor:pointer; }
+        .salon-product-btn:hover { border-color:var(--accent); }
+        .salon-product-name { display:block; font-size:.8rem; font-weight:700; line-height:1.2; margin-bottom:7px; }
+        .salon-product-price { color:var(--accent); font-weight:800; font-size:.85rem; }
+        .salon-cart-list { max-height:46vh; overflow-y:auto; margin-bottom:14px; }
+        .salon-empty { color:var(--text-gray); text-align:center; padding:28px 10px; font-size:.85rem; }
+        .salon-cart-row { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px; align-items:center; padding:11px 0; border-bottom:1px solid rgba(255,255,255,.08); }
+        .salon-cart-row strong { display:block; font-size:.82rem; margin-bottom:4px; }
+        .salon-cart-subtotal { color:var(--text-gray); font-size:.74rem; }
+        .salon-qty { display:flex; align-items:center; gap:7px; }
+        .salon-qty button { width:28px; height:28px; border:1px solid var(--border-color); border-radius:6px; background:var(--bg-card-hover); color:#fff; cursor:pointer; font-weight:800; }
+        .salon-total-row { display:flex; justify-content:space-between; align-items:center; padding:13px 0; border-top:1px solid rgba(255,255,255,.1); border-bottom:1px solid rgba(255,255,255,.1); margin-bottom:14px; font-weight:800; }
+        .salon-total-value { color:var(--accent); font-size:1.25rem; }
+        .salon-field { margin-bottom:11px; }
+        .salon-field label { display:block; margin-bottom:5px; color:var(--text-gray); font-size:.76rem; font-weight:700; }
+        .salon-field select,.salon-field input { width:100%; box-sizing:border-box; padding:10px; border-radius:7px; border:1px solid #444; background:#222; color:#fff; font-family:inherit; }
+        .salon-change-box { display:flex; justify-content:space-between; gap:10px; padding:10px; border-radius:7px; background:rgba(255,255,255,.04); margin-bottom:13px; font-size:.8rem; font-weight:700; }
+        .salon-actions { display:grid; grid-template-columns:.7fr 1.3fr; gap:9px; }
+        .salon-action-btn { border:0; border-radius:8px; padding:12px 10px; font-family:inherit; font-weight:800; cursor:pointer; }
+        .salon-clear-btn { background:#2a2a2a; color:#fff; border:1px solid var(--border-color); }
+        .salon-charge-btn { background:var(--accent); color:#111; }
+        .salon-clock { color:var(--text-gray); font-size:.72rem; }
+        @media(max-width:850px){ .salon-layout{grid-template-columns:1fr;} .salon-cart-list{max-height:none;} }
+        @media(max-width:600px){ .mycfoods-mode-selector{top:60px;} .mycfoods-mode-btn{flex:1;padding:9px 10px;} #salon{padding-top:110px;} }
     </style>
 </head>
  <body>
@@ -61,6 +99,11 @@
 </div>
     </div>
 </nav>
+
+<div class="mycfoods-mode-selector" id="mycfoods-mode-selector">
+    <button type="button" id="btn-modo-pedidos" class="mycfoods-mode-btn active" onclick="abrirPedidos()"><i class="fa-solid fa-clipboard-list"></i> PEDIDOS</button>
+    <button type="button" id="btn-modo-salon" class="mycfoods-mode-btn" onclick="abrirSalon()"><i class="fa-solid fa-store"></i> SALÓN</button>
+</div>
 
   <!-- SECCIÓN MENÚ -->
     <section id="menu" class="section">
@@ -820,6 +863,47 @@
                         </div>
                     </details>
 
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SALÓN · carrito independiente -->
+    <section id="salon" class="section bg-darker">
+        <div class="container">
+            <div class="section-title">
+                <span class="sub-title">VENTA RÁPIDA</span>
+                <h2>SALÓN</h2>
+                <p>Venta directa · <span id="salon-clock" class="salon-clock"></span></p>
+            </div>
+            <div class="salon-layout">
+                <div class="salon-products-box">
+                    <div class="salon-products-title"><h3><i class="fa-solid fa-utensils"></i> Productos</h3></div>
+                    <div id="salon-category-bar" class="salon-category-bar"></div>
+                    <div id="salon-product-grid" class="salon-product-grid"><div class="salon-empty">Cargando productos...</div></div>
+                </div>
+                <div class="salon-cart-box">
+                    <div class="salon-cart-title"><h3><i class="fa-solid fa-cart-shopping"></i> Venta</h3><span style="color:var(--accent);font-size:.75rem;font-weight:800;">SALÓN</span></div>
+                    <div id="salon-cart-items" class="salon-cart-list"><div class="salon-empty">Seleccioná productos para comenzar.</div></div>
+                    <div class="salon-total-row"><span>TOTAL</span><span id="salon-total" class="salon-total-value">$0</span></div>
+                    <div class="salon-field">
+                        <label for="salon-pago">FORMA DE PAGO</label>
+                        <select id="salon-pago" onchange="actualizarSalonPago()">
+                            <option value="Efectivo">Efectivo</option>
+                            <option value="Mercado Pago">Mercado Pago</option>
+                            <option value="Transferencia">Transferencia</option>
+                            <option value="Tarjeta">Tarjeta</option>
+                        </select>
+                    </div>
+                    <div id="salon-efectivo-box" class="salon-field">
+                        <label for="salon-recibido">EFECTIVO RECIBIDO</label>
+                        <input type="number" id="salon-recibido" min="0" step="1" placeholder="$ recibido" oninput="actualizarSalonVuelto()">
+                    </div>
+                    <div id="salon-vuelto-box" class="salon-change-box"><span>VUELTO</span><span id="salon-vuelto">$0</span></div>
+                    <div class="salon-actions">
+                        <button type="button" class="salon-action-btn salon-clear-btn" onclick="vaciarSalon()"><i class="fa-solid fa-trash"></i> Vaciar</button>
+                        <button type="button" class="salon-action-btn salon-charge-btn" onclick="cobrarSalon()"><i class="fa-solid fa-cash-register"></i> COBRAR + IMPRIMIR</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1701,6 +1785,115 @@ ventana.document.close();
 
 
 /* =========================================================
+   SALÓN · CARRITO RÁPIDO INDEPENDIENTE
+========================================================= */
+let salonCart = [];
+let salonMethod = "Efectivo";
+let salonCategory = "Todas";
+let salonImpresionEnCurso = false;
+
+function salonMoney(n){ return "$" + (Number(n)||0).toLocaleString("es-AR"); }
+function salonCleanName(text){ return String(text||"").replace(/\s+/g," ").trim(); }
+function salonGetProducts(){
+    const productos=[];
+    document.querySelectorAll(".menu-accordion-grid .accordion-item").forEach(function(card){
+        const nameEl=card.querySelector(".prod-name"), priceEl=card.querySelector(".price");
+        if(!nameEl||!priceEl)return;
+        const nombre=salonCleanName(nameEl.textContent);
+        const precio=Number((priceEl.textContent||"").replace(/[^0-9]/g,""));
+        if(!nombre||!precio)return;
+        const cls=Array.from(card.classList).find(function(c){return c.indexOf("cat-")===0;});
+        productos.push({nombre:nombre,precio:precio,categoria:cls?cls.replace("cat-","").replace(/-/g," "):"otros"});
+    });
+    return productos;
+}
+function salonEsc(text){ return String(text||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;"); }
+function renderSalonProductos(){
+    const grid=document.getElementById("salon-product-grid"), bar=document.getElementById("salon-category-bar");
+    if(!grid||!bar)return;
+    const productos=salonGetProducts();
+    if(!productos.length){grid.innerHTML='<div class="salon-empty">No hay productos disponibles.</div>';bar.innerHTML="";return;}
+    const cats=["Todas"];
+    productos.forEach(function(p){if(!cats.includes(p.categoria))cats.push(p.categoria);});
+    bar.innerHTML=cats.map(function(cat){return `<button type="button" class="salon-category-btn${salonCategory===cat?" active":""}" data-cat="${salonEsc(cat)}" onclick="seleccionarCategoriaSalon(this.dataset.cat)">${cat==="Todas"?"Todas":cat.toUpperCase()}</button>`;}).join("");
+    const filtrados=salonCategory==="Todas"?productos:productos.filter(function(p){return p.categoria===salonCategory;});
+    grid.innerHTML=filtrados.map(function(p){return `<button type="button" class="salon-product-btn" data-name="${salonEsc(p.nombre)}" data-price="${p.precio}" onclick="agregarSalon(this.dataset.name, Number(this.dataset.price))"><span class="salon-product-name">${salonEsc(p.nombre)}</span><span class="salon-product-price">${salonMoney(p.precio)}</span></button>`;}).join("");
+}
+function seleccionarCategoriaSalon(cat){salonCategory=cat;renderSalonProductos();}
+function agregarSalon(nombre,precio,cantidad=1){
+    const e=salonCart.find(function(x){return x.nombre===nombre;});
+    if(e)e.cantidad+=cantidad; else salonCart.push({nombre:nombre,precio:Number(precio)||0,cantidad:cantidad});
+    actualizarSalonUI();
+}
+function cambiarCantidadSalon(index,cambio){
+    if(!salonCart[index])return;
+    salonCart[index].cantidad+=cambio;
+    if(salonCart[index].cantidad<=0)salonCart.splice(index,1);
+    actualizarSalonUI();
+}
+function obtenerTotalSalon(){return salonCart.reduce(function(t,x){return t+x.precio*x.cantidad;},0);}
+function actualizarSalonUI(){
+    const c=document.getElementById("salon-cart-items"), t=document.getElementById("salon-total");
+    if(!c||!t)return;
+    if(!salonCart.length){c.innerHTML='<div class="salon-empty">Seleccioná productos para comenzar.</div>';t.innerText="$0";actualizarSalonVuelto();return;}
+    c.innerHTML=salonCart.map(function(x,i){const sub=x.precio*x.cantidad;return `<div class="salon-cart-row"><div><strong>${salonEsc(x.nombre)}</strong><span class="salon-cart-subtotal">${x.cantidad} x ${salonMoney(x.precio)} = ${salonMoney(sub)}</span></div><div class="salon-qty"><button type="button" onclick="cambiarCantidadSalon(${i},-1)">−</button><strong>${x.cantidad}</strong><button type="button" onclick="cambiarCantidadSalon(${i},1)">+</button></div></div>`;}).join("");
+    t.innerText=salonMoney(obtenerTotalSalon());
+    actualizarSalonVuelto();
+}
+function vaciarSalon(){salonCart=[];const r=document.getElementById("salon-recibido");if(r)r.value="";actualizarSalonUI();}
+function actualizarSalonPago(){
+    const p=document.getElementById("salon-pago");salonMethod=p?p.value:"Efectivo";
+    const eb=document.getElementById("salon-efectivo-box"),vb=document.getElementById("salon-vuelto-box"), ef=salonMethod==="Efectivo";
+    if(eb)eb.style.display=ef?"block":"none";if(vb)vb.style.display=ef?"flex":"none";
+    if(!ef){const r=document.getElementById("salon-recibido");if(r)r.value="";}
+    actualizarSalonVuelto();
+}
+function actualizarSalonVuelto(){
+    const v=document.getElementById("salon-vuelto");if(!v)return;
+    if(salonMethod!=="Efectivo"){v.innerText="$0";return;}
+    const r=document.getElementById("salon-recibido"), recibido=Number(r?r.value:0)||0, vuelto=recibido-obtenerTotalSalon();
+    v.innerText=salonMoney(vuelto>0?vuelto:0);
+}
+function abrirSalon(){
+    const m=document.getElementById("menu"),p=document.getElementById("carrito"),s=document.getElementById("salon"),f=document.getElementById("floating-cart-btn");
+    if(m)m.style.display="none";if(p)p.style.display="none";if(s)s.style.display="block";if(f)f.style.display="none";
+    document.getElementById("btn-modo-pedidos")?.classList.remove("active");document.getElementById("btn-modo-salon")?.classList.add("active");
+    renderSalonProductos();actualizarSalonUI();actualizarSalonPago();window.scrollTo({top:0,behavior:"smooth"});
+}
+function abrirPedidos(){
+    const m=document.getElementById("menu"),p=document.getElementById("carrito"),s=document.getElementById("salon"),f=document.getElementById("floating-cart-btn");
+    if(m)m.style.display="block";if(p)p.style.display="block";if(s)s.style.display="none";if(f)f.style.display="flex";
+    document.getElementById("btn-modo-salon")?.classList.remove("active");document.getElementById("btn-modo-pedidos")?.classList.add("active");window.scrollTo({top:0,behavior:"smooth"});
+}
+function actualizarRelojSalon(){const r=document.getElementById("salon-clock");if(r)r.innerText=new Date().toLocaleTimeString("es-AR",{hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false});}
+function salonSinAcentos(t){return String(t||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/ñ/g,"n").replace(/Ñ/g,"N");}
+function cobrarSalon(){
+    if(salonImpresionEnCurso)return;
+    if(!salonCart.length){alert("La venta SALÓN está vacía.");return;}
+    const total=obtenerTotalSalon(),pagoEl=document.getElementById("salon-pago"),pago=pagoEl?pagoEl.value:"Efectivo";
+    let recibido=0;
+    if(pago==="Efectivo"){
+        const r=document.getElementById("salon-recibido");recibido=Number(r?r.value:0)||0;
+        if(recibido<total){alert("El efectivo recibido es menor al total.");if(r)r.focus();return;}
+    }
+    salonImpresionEnCurso=true;
+    const ahora=new Date(),fecha=ahora.toLocaleDateString("es-AR"),hora=ahora.toLocaleTimeString("es-AR",{hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false});
+    let productos="";
+    salonCart.forEach(function(x){productos+=`${x.cantidad} x ${salonSinAcentos(x.nombre)}    $${(x.precio*x.cantidad).toLocaleString("es-AR")}\n`;});
+    let ticket=`\n MYCFOODS\n    SALON\n--------------------------------\nFECHA: ${fecha}\nHORA:  ${hora}\n--------------------------------\nCLIENTE: SALON\nPAGO:    ${salonSinAcentos(pago)}\n--------------------------------\nPEDIDO:\n${productos}--------------------------------\nTOTAL: $${total.toLocaleString("es-AR")}\n`;
+    if(pago==="Efectivo")ticket+=`RECIBIDO: $${recibido.toLocaleString("es-AR")}\nVUELTO:   $${(recibido-total).toLocaleString("es-AR")}\n`;
+    ticket+=`--------------------------------\n     MUCHAS GRACIAS\n`;
+    const ventana=window.open("","_blank","width=400,height=600");
+    if(!ventana){salonImpresionEnCurso=false;alert("El navegador bloqueó la ventana de impresión.");return;}
+    try{
+        if(typeof cajaRegistrarVentaSalon!=="function")throw new Error("No se encontró cajaRegistrarVentaSalon().");
+        cajaRegistrarVentaSalon({pago:pago,total:total});
+    }catch(e){console.error(e);try{ventana.close();}catch(_){}salonImpresionEnCurso=false;alert("No se pudo registrar la venta en Caja.");return;}
+    ventana.document.open();ventana.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Ticket SALON MYCFOODS</title><style>@page{size:80mm auto;margin:0}html,body{width:80mm;margin:0;padding:0;background:#fff}body{padding:2mm 3mm;box-sizing:border-box;font-family:Arial,sans-serif;font-size:15px;font-weight:bold;line-height:1.25;color:#000;text-align:left}.ticket-container{width:100%;white-space:pre-wrap;word-wrap:break-word}@media print{html,body{width:80mm;margin:0;padding:0}body{padding:2mm 3mm}}</style></head><body><div class="ticket-container">${ticket}</div></body></html>`);ventana.document.close();
+    setTimeout(function(){try{ventana.focus();ventana.print();}catch(e){console.error("Error de impresión SALÓN:",e);}setTimeout(function(){try{ventana.close();}catch(_){}salonCart=[];const r=document.getElementById("salon-recibido");if(r)r.value="";actualizarSalonUI();salonImpresionEnCurso=false;},1200);},300);
+}
+
+/* =========================================================
    INICIO
 ========================================================= */
 
@@ -1715,6 +1908,19 @@ document.addEventListener(
         actualizarCarritoUI();
 
         actualizarBotonCarrito();
+
+        renderSalonProductos();
+        actualizarSalonUI();
+        actualizarSalonPago();
+        actualizarRelojSalon();
+        setInterval(actualizarRelojSalon, 1000);
+
+        /* Si cambia el precio del Menú del Día desde Google,
+           SALÓN toma automáticamente el nuevo precio. */
+        const menuDiaPrecio = document.querySelector(".cat-menu-dia .price");
+        if (menuDiaPrecio && typeof MutationObserver !== "undefined") {
+            new MutationObserver(function() { renderSalonProductos(); }).observe(menuDiaPrecio, { childList: true, characterData: true, subtree: true });
+        }
 
     }
 );
