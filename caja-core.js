@@ -137,3 +137,19 @@ function cajaRegistrarVentaDesdePedido(opts) {
     note: "Pedido: " + opts.nombre,
   });
 }
+/* =========================================================
+   Registrar venta rápida de SALÓN.
+   NO modifica ni reemplaza la lógica de PEDIDOS.
+========================================================= */
+
+function cajaRegistrarVentaSalon(opts) {
+  cajaAddTransaction({
+    type: "ingreso",
+    ledger: opts.ledger || "principal",
+    date: cajaTodayStr(),
+    category: "Ventas salón",
+    method: opts.pago || "Efectivo",
+    amount: Number(opts.total) || 0,
+    note: "Venta SALÓN",
+  });
+}
