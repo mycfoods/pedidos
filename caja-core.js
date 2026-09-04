@@ -36,7 +36,14 @@ function cajaLoad() {
     const raw = localStorage.getItem(CAJA_STORAGE_KEY);
     if (!raw) return cajaDefaults();
     const parsed = JSON.parse(raw);
-    return Object.assign(cajaDefaults(), parsed);
+    const defaults = cajaDefaults();
+    const merged = Object.assign(defaults, parsed);
+    // Merge profundo de "config" para no perder campos si lo guardado es viejo/incompleto.
+    merged.config = Object.assign(defaults.config, parsed.config || {});
+    if (!Array.isArray(merged.config.fixedCosts)) merged.config.fixedCosts = [];
+    if (!merged.transactions) merged.transactions = [];
+    if (!merged.openings) merged.openings = {};
+    return merged;
   } catch (e) {
     console.error("Error leyendo caja:", e);
     return cajaDefaults();
