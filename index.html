@@ -9,6 +9,41 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Ajustes puntuales: aire arriba del menú + botonera de categorías compacta -->
+    <style>
+        #menu.section {
+            padding-top: 150px;
+        }
+
+        .tabs-header {
+            gap: 6px;
+            margin-bottom: 26px;
+        }
+
+        .tab-btn {
+            padding: 7px 14px;
+            font-size: 0.78rem;
+            border-radius: 16px;
+        }
+
+        .accordion-header {
+            padding: 14px 16px;
+        }
+
+        .prod-name {
+            font-size: 0.92rem;
+        }
+
+        .accordion-body {
+            padding: 12px 16px 16px 16px;
+        }
+
+        .badge-click {
+            font-size: 0.68rem;
+            padding: 3px 8px;
+        }
+    </style>
 </head>
  <body>
 
@@ -788,9 +823,6 @@
                 </div>
             </div>
         </div>
-        </section>
-
-
     </section>
 
     <!-- SECCIÓN CARRITO CON FORMULARIO -->
@@ -809,7 +841,7 @@
 
                 <!-- FORMULARIO DE DATOS DE ENVÍO -->
                 <div class="checkout-form" style="margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
-                    <h3 style="color: var(--primary-color); font-size: 1.1rem; margin-bottom: 15px;">
+                    <h3 style="color: var(--accent); font-size: 1.1rem; margin-bottom: 15px;">
                         <i class="fa-solid fa-user-pen"></i> Datos para la Entrega
                     </h3>
                     
@@ -895,6 +927,20 @@ function actualizarBotonCarrito() {
     if (!contador) return;
 
     contador.innerText = carrito.length;
+}
+
+
+/* =========================================================
+   IR AL CARRITO (botón flotante)
+========================================================= */
+
+function irAlCarrito() {
+
+    const destino = document.getElementById("carrito");
+
+    if (destino) {
+        destino.scrollIntoView({ behavior: "smooth" });
+    }
 }
 
 
@@ -1463,6 +1509,7 @@ function imprimirComanda() {
         pago: pago,
         total: total
     });
+
     /* =====================================================
        CONSTRUIR TICKET
     ===================================================== */
