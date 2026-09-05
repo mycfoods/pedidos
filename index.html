@@ -4,72 +4,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MYCFOODS COMANDAS</title>
 
 ```
+<title>MYCFOODS COMANDAS</title>
+
 <link rel="stylesheet" href="style.css">
 
 <!-- FontAwesome -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap"
+      rel="stylesheet">
 
+<!-- =====================================================
+     AJUSTES VISUALES EXCLUSIVOS DE LA PANTALLA POS
+     NO MODIFICA style.css
+====================================================== -->
 <style>
 
-    /* =========================================================
-       POS PRINCIPAL
-    ========================================================= */
+    #menu.section {
+        padding-top: 120px;
+    }
 
-    .pos-layout {
+    /* =================================================
+       PANTALLA PRINCIPAL POS
+    ================================================= */
+
+    .pos-screen {
         display: grid;
-        grid-template-columns: minmax(0, 1.65fr) minmax(330px, 0.85fr);
+        grid-template-columns: minmax(0, 1.65fr) minmax(320px, 0.85fr);
         gap: 18px;
         align-items: start;
-        width: 100%;
+    }
+
+    .pos-menu-panel,
+    .pos-cart-panel {
+        min-width: 0;
     }
 
     .pos-menu-panel {
-        width: 100%;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 16px;
     }
 
-    .pos-menu-panel .section-title {
-        margin-bottom: 18px;
+    .pos-cart-panel {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 16px;
+        position: sticky;
+        top: 90px;
+        max-height: calc(100vh - 110px);
+        overflow-y: auto;
     }
 
-    .pos-menu-panel .section-title p {
-        margin-bottom: 0;
+    .pos-menu-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 14px;
     }
 
+    .pos-menu-title h3 {
+        margin: 0;
+        color: var(--text-white);
+        font-size: 1rem;
+    }
 
-    /* =========================================================
+    .pos-menu-title span {
+        color: var(--text-gray);
+        font-size: 0.72rem;
+    }
+
+    /* =================================================
        CATEGORÍAS
-    ========================================================= */
+    ================================================= */
 
-    .pos-category-buttons {
+    .pos-categories {
         display: flex;
         flex-wrap: wrap;
         gap: 7px;
-        margin-bottom: 16px;
+        margin-bottom: 14px;
     }
 
     .pos-category-btn {
         border: 1px solid var(--border-color);
-        background: var(--bg-card);
+        background: var(--bg-main);
         color: var(--text-gray);
-        padding: 8px 13px;
-        border-radius: 18px;
+        border-radius: 7px;
+        padding: 8px 11px;
         font-family: var(--font-main);
-        font-size: 0.76rem;
+        font-size: 0.72rem;
         font-weight: 700;
         cursor: pointer;
         transition: var(--transition);
-        white-space: nowrap;
     }
 
     .pos-category-btn:hover {
-        color: var(--text-white);
         border-color: var(--accent);
+        color: var(--accent);
     }
 
     .pos-category-btn.active {
@@ -78,148 +116,145 @@
         border-color: var(--accent);
     }
 
-
-    /* =========================================================
+    /* =================================================
        BOTONERA DE PRODUCTOS
-    ========================================================= */
+    ================================================= */
 
-    .pos-products-grid {
+    .pos-products {
         display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 9px;
     }
 
     .pos-product-btn {
         min-height: 72px;
-        padding: 10px 11px;
+        padding: 10px 8px;
         border: 1px solid var(--border-color);
         border-radius: 9px;
-        background: var(--bg-card);
+        background: var(--bg-main);
         color: var(--text-white);
         font-family: var(--font-main);
         cursor: pointer;
-        transition: var(--transition);
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        text-align: center;
         gap: 6px;
+        text-align: center;
+        transition: var(--transition);
     }
 
     .pos-product-btn:hover {
         border-color: var(--accent);
-        background: var(--bg-card-hover);
         transform: translateY(-1px);
     }
 
     .pos-product-btn:active {
         transform: scale(0.97);
-        background: var(--accent);
-        color: var(--bg-main);
     }
 
     .pos-product-name {
-        font-size: 0.78rem;
+        font-size: 0.76rem;
         line-height: 1.2;
         font-weight: 700;
     }
 
     .pos-product-price {
-        font-size: 0.82rem;
-        font-weight: 800;
         color: var(--accent);
+        font-size: 0.76rem;
+        font-weight: 800;
     }
 
-    .pos-product-btn:active .pos-product-price {
-        color: var(--bg-main);
+    .pos-empty {
+        grid-column: 1 / -1;
+        text-align: center;
+        color: var(--text-gray);
+        padding: 30px 10px;
+        font-size: 0.85rem;
     }
 
+    /* =================================================
+       CARRITO COMPACTO
+    ================================================= */
 
-    /* =========================================================
-       CARRITO LATERAL
-    ========================================================= */
-
-    .pos-cart-wrapper {
-        min-width: 0;
-        position: sticky;
-        top: 82px;
-        max-height: calc(100vh - 95px);
-        overflow-y: auto;
+    .pos-cart-panel .section-title {
+        margin-bottom: 12px;
     }
 
-    .pos-cart-wrapper #carrito {
-        padding-top: 110px;
-        padding-bottom: 20px;
+    .pos-cart-panel .section-title .sub-title {
+        font-size: 0.65rem;
     }
 
-    .pos-cart-wrapper #carrito .section-title {
-        margin-bottom: 15px;
+    .pos-cart-panel .section-title h2 {
+        font-size: 1.15rem;
+        margin: 3px 0;
     }
 
-    .pos-cart-wrapper #carrito .section-title p {
+    .pos-cart-panel .section-title p {
         display: none;
     }
 
-    .pos-cart-wrapper .cart-box {
-        width: 100%;
+    .pos-cart-panel .cart-box {
+        padding: 0;
+        background: transparent;
+        box-shadow: none;
     }
 
-    .pos-cart-wrapper .cart-items-list {
-        max-height: 210px;
+    .pos-cart-panel .cart-items-list {
+        max-height: 230px;
         overflow-y: auto;
     }
 
-    .pos-cart-wrapper .checkout-form {
+    .pos-cart-panel .venta-mode-toggle {
+        margin-top: 12px !important;
+    }
+
+    .pos-cart-panel .venta-mode-btn {
+        padding: 9px 8px;
+        font-size: 0.72rem;
+    }
+
+    .pos-cart-panel .checkout-form {
         margin-top: 12px !important;
         padding-top: 12px !important;
     }
 
-    .pos-cart-wrapper .venta-mode-toggle {
-        margin-top: 12px !important;
-    }
-
-    .pos-cart-wrapper .form-group {
-        margin-bottom: 8px !important;
-    }
-
-    .pos-cart-wrapper input,
-    .pos-cart-wrapper select {
-        padding: 8px !important;
-        font-size: 0.78rem;
-    }
-
-    .pos-cart-wrapper label {
-        font-size: 0.72rem !important;
-    }
-
-    .pos-cart-wrapper h3 {
+    .pos-cart-panel .checkout-form h3 {
         font-size: 0.9rem !important;
+        margin-bottom: 10px !important;
+    }
+
+    .pos-cart-panel .form-group {
         margin-bottom: 9px !important;
     }
 
-    .pos-cart-wrapper .cart-summary {
+    .pos-cart-panel .form-group label {
+        font-size: 0.72rem !important;
+    }
+
+    .pos-cart-panel .form-group input,
+    .pos-cart-panel .form-group select {
+        padding: 8px !important;
+        font-size: 0.78rem !important;
+    }
+
+    .pos-cart-panel .cart-summary {
         margin-top: 12px;
     }
 
-    .pos-cart-wrapper .total-row {
-        font-size: 1rem;
-    }
-
-
-    /* =========================================================
-       BOTONES PEDIDO / SALÓN
-    ========================================================= */
+    /* =================================================
+       MODO DE VENTA
+    ================================================= */
 
     .venta-mode-btn {
         flex: 1;
-        padding: 9px 10px;
+        padding: 10px 14px;
         background: var(--bg-card);
         border: 1px solid var(--border-color);
         border-radius: 8px;
         color: var(--text-gray);
         font-weight: 700;
-        font-size: 0.74rem;
+        font-size: 0.85rem;
         cursor: pointer;
         font-family: var(--font-main);
         transition: var(--transition);
@@ -231,96 +266,48 @@
         border-color: var(--accent);
     }
 
-
-    /* =========================================================
-       CARRITO COMPACTO
-    ========================================================= */
-
-    .pos-cart-wrapper .cart-item-row {
-        padding: 8px 0;
-    }
-
-    .pos-cart-wrapper .cart-item-info strong {
-        font-size: 0.78rem;
-    }
-
-    .pos-cart-wrapper .cart-item-info span {
-        font-size: 0.7rem;
-    }
-
-    .pos-cart-wrapper .btn-qty {
-        width: 25px;
-        height: 25px;
-        min-width: 25px;
-    }
-
-
-    /* =========================================================
-       ESPACIADO PRINCIPAL
-    ========================================================= */
-
-    #menu.section {
-        padding-top: 110px;
-    }
-
-
-    /* =========================================================
+    /* =================================================
        MOBILE
-    ========================================================= */
+    ================================================= */
 
-    @media (max-width: 900px) {
+    @media (max-width: 1000px) {
 
-        .pos-layout {
-            grid-template-columns: 1fr;
+        .pos-screen {
+            grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.8fr);
+            gap: 12px;
         }
 
-        .pos-cart-wrapper {
-            position: static;
-            max-height: none;
-            overflow: visible;
-        }
-
-        .pos-cart-wrapper #carrito {
-            padding-top: 25px;
-        }
-
-        .pos-products-grid {
+        .pos-products {
             grid-template-columns: repeat(3, minmax(0, 1fr));
         }
+
+        .pos-menu-panel,
+        .pos-cart-panel {
+            padding: 12px;
+        }
     }
 
-
-    @media (max-width: 600px) {
+    @media (max-width: 760px) {
 
         #menu.section {
             padding-top: 100px;
         }
 
-        .pos-category-buttons {
-            gap: 5px;
+        .pos-screen {
+            grid-template-columns: 1fr;
         }
 
-        .pos-category-btn {
-            padding: 7px 10px;
-            font-size: 0.68rem;
+        .pos-cart-panel {
+            position: static;
+            max-height: none;
         }
 
-        .pos-products-grid {
+        .pos-products {
             grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 7px;
         }
 
-        .pos-product-btn {
-            min-height: 65px;
-            padding: 8px;
-        }
-
-        .pos-product-name {
-            font-size: 0.72rem;
-        }
-
-        .pos-product-price {
-            font-size: 0.76rem;
+        .pos-cart-panel .cart-items-list {
+            max-height: 300px;
         }
     }
 
@@ -341,7 +328,8 @@
 <div class="container logo-container">
 
     <a href="#menu" class="logo">
-        <i class="fa-solid fa-utensils"></i> MYC<span>FOODS</span>
+        <i class="fa-solid fa-utensils"></i>
+        MYC<span>FOODS</span>
     </a>
 
     <div class="nav-links">
@@ -356,97 +344,91 @@
 </nav>
 
 <!-- =========================================================
-     POS PRINCIPAL
-     MENÚ + CARRITO LADO A LADO
+     PANTALLA PRINCIPAL POS
 ========================================================= -->
-
-<div class="pos-layout">
-
-```
-<!-- =====================================================
-     MENÚ
-====================================================== -->
 
 <section id="menu" class="section">
 
-    <div class="container">
+```
+<div class="container">
+
+    <div class="section-title">
+
+        <span class="sub-title">PUNTO DE VENTA</span>
+
+        <h2>MYCFOODS</h2>
+
+        <p>Seleccioná los productos para agregarlos al pedido</p>
+
+    </div>
+
+
+    <div class="pos-screen">
+
+
+        <!-- =================================================
+             MENU / BOTONERA
+        ================================================== -->
 
         <div class="pos-menu-panel">
 
-            <div class="section-title">
+            <div class="pos-menu-title">
 
-                <span class="sub-title">
-                    NUESTRA CARTA
-                </span>
-
-                <h2>
+                <h3>
+                    <i class="fa-solid fa-utensils"></i>
                     Menú
-                </h2>
+                </h3>
 
-                <p>
-                    Seleccioná un producto para agregarlo al carrito
-                </p>
+                <span>
+                    Tocá un producto para agregar
+                </span>
 
             </div>
 
 
             <!-- CATEGORÍAS DINÁMICAS -->
 
-            <div
-                id="tabs-header-dynamic"
-                class="pos-category-buttons">
+            <div id="tabs-header-dynamic"
+                 class="pos-categories">
             </div>
 
 
             <!-- PRODUCTOS DINÁMICOS -->
 
-            <div
-                id="menu-accordion-dynamic"
-                class="pos-products-grid">
+            <div id="menu-accordion-dynamic"
+                 class="pos-products">
             </div>
 
         </div>
 
-    </div>
 
-</section>
+        <!-- =================================================
+             CARRITO
+             SE MANTIENE LA FUNCIONALIDAD ORIGINAL
+        ================================================== -->
 
-
-<!-- =====================================================
-     CARRITO
-     CONTENIDO ORIGINAL CONSERVADO
-====================================================== -->
-
-<div class="pos-cart-wrapper">
-
-    <section id="carrito" class="section bg-darker">
-
-        <div class="container">
+        <div id="carrito"
+             class="pos-cart-panel">
 
             <div class="section-title">
 
-                <span class="sub-title">
-                    TU PEDIDO
-                </span>
+                <span class="sub-title">TU PEDIDO</span>
 
-                <h2>
-                    Carrito de Compras
-                </h2>
+                <h2>Carrito</h2>
 
             </div>
 
 
             <div class="cart-box">
 
-
                 <!-- Lista de Ítems -->
 
-                <div
-                    id="cart-items"
-                    class="cart-items-list">
+                <div id="cart-items"
+                     class="cart-items-list">
 
                     <p class="empty-msg">
-                        Tu carrito está vacío. ¡Agregá tus platos preferidos!
+                        Tu carrito está vacío.
+                        ¡Agregá tus platos preferidos!
                     </p>
 
                 </div>
@@ -454,30 +436,29 @@
 
                 <!-- SELECTOR DE MODO DE VENTA -->
 
-                <div
-                    class="venta-mode-toggle"
-                    style="display:flex; gap:8px; margin-top:20px;">
+                <div class="venta-mode-toggle"
+                     style="display:flex; gap:8px; margin-top:20px;">
 
-                    <button
-                        type="button"
-                        class="venta-mode-btn active"
-                        data-mode="pedido"
-                        onclick="setModoVenta('pedido')">
+                    <button type="button"
+                            class="venta-mode-btn active"
+                            data-mode="pedido"
+                            onclick="setModoVenta('pedido')">
 
                         <i class="fa-solid fa-motorcycle"></i>
-                        Pedido (Delivery / Retiro)
+
+                        Pedido
 
                     </button>
 
 
-                    <button
-                        type="button"
-                        class="venta-mode-btn"
-                        data-mode="salon"
-                        onclick="setModoVenta('salon')">
+                    <button type="button"
+                            class="venta-mode-btn"
+                            data-mode="salon"
+                            onclick="setModoVenta('salon')">
 
                         <i class="fa-solid fa-utensils"></i>
-                        Venta Salón
+
+                        Salón
 
                     </button>
 
@@ -486,67 +467,64 @@
 
                 <!-- FORMULARIO DE DATOS DE ENVÍO -->
 
-                <div
-                    class="checkout-form"
-                    style="margin-top: 15px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
+                <div class="checkout-form"
+                     style="margin-top:15px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.1);">
 
+
+                    <!-- ===============================
+                         PEDIDO
+                    ================================ -->
 
                     <div id="campos-pedido">
 
-                        <h3
-                            style="color: var(--accent); font-size: 1.1rem; margin-bottom: 15px;">
+                        <h3 style="color:var(--accent); font-size:1.1rem; margin-bottom:15px;">
 
                             <i class="fa-solid fa-user-pen"></i>
+
                             Datos para la Entrega
 
                         </h3>
 
 
-                        <div
-                            class="form-group"
-                            style="margin-bottom: 12px;">
+                        <div class="form-group"
+                             style="margin-bottom:12px;">
 
-                            <label
-                                for="cliente-nombre"
-                                style="display: block; font-size: 0.85rem; margin-bottom: 5px;">
+                            <label for="cliente-nombre"
+                                   style="display:block; font-size:0.85rem; margin-bottom:5px;">
 
                                 Nombre y Apellido *
 
                             </label>
 
-                            <input
-                                type="text"
-                                id="cliente-nombre"
-                                placeholder="Ej: Maria Perez"
-                                required
-                                style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff;">
+                            <input type="text"
+                                   id="cliente-nombre"
+                                   placeholder="Ej: Maria Perez"
+                                   required
+                                   style="width:100%; padding:10px; border-radius:6px; border:1px solid #444; background:#222; color:#fff;">
 
                         </div>
 
 
-                        <div
-                            class="form-group"
-                            style="margin-bottom: 12px;">
+                        <div class="form-group"
+                             style="margin-bottom:12px;">
 
-                            <label
-                                for="cliente-entrega"
-                                style="display: block; font-size: 0.85rem; margin-bottom: 5px;">
+                            <label for="cliente-entrega"
+                                   style="display:block; font-size:0.85rem; margin-bottom:5px;">
 
                                 Tipo de Entrega *
 
                             </label>
 
-                            <select
-                                id="cliente-entrega"
-                                onchange="toggleDireccion()"
-                                style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff;">
+                            <select id="cliente-entrega"
+                                    onchange="toggleDireccion()"
+                                    style="width:100%; padding:10px; border-radius:6px; border:1px solid #444; background:#222; color:#fff;">
 
                                 <option value="Delivery">
                                     Delivery (Tigre Centro)
                                 </option>
 
                                 <option value="Take Away">
-                                    Retiro por local (Luis Pereyra 440)
+                                    Retiro por local
                                 </option>
 
                             </select>
@@ -554,66 +532,57 @@
                         </div>
 
 
-                        <div
-                            class="form-group"
-                            id="group-direccion"
-                            style="margin-bottom: 12px;">
+                        <div class="form-group"
+                             id="group-direccion"
+                             style="margin-bottom:12px;">
 
-                            <label
-                                for="cliente-direccion"
-                                style="display: block; font-size: 0.85rem; margin-bottom: 5px;">
+                            <label for="cliente-direccion"
+                                   style="display:block; font-size:0.85rem; margin-bottom:5px;">
 
                                 Dirección de Entrega *
 
                             </label>
 
-                            <input
-                                type="text"
-                                id="cliente-direccion"
-                                placeholder="Ej: Av. Cánovas 123, Apto 2B"
-                                style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff;">
+                            <input type="text"
+                                   id="cliente-direccion"
+                                   placeholder="Ej: Av. Cánovas 123, Apto 2B"
+                                   style="width:100%; padding:10px; border-radius:6px; border:1px solid #444; background:#222; color:#fff;">
 
                         </div>
 
 
-                        <div
-                            class="form-group"
-                            style="margin-bottom: 12px;">
+                        <div class="form-group"
+                             style="margin-bottom:12px;">
 
-                            <label
-                                for="cliente-horario"
-                                style="display: block; font-size: 0.85rem; margin-bottom: 5px;">
+                            <label for="cliente-horario"
+                                   style="display:block; font-size:0.85rem; margin-bottom:5px;">
 
-                                Horario deseado de Entrega / Retiro *
+                                Horario deseado *
 
                             </label>
 
-                            <input
-                                type="time"
-                                id="cliente-horario"
-                                min="09:00"
-                                max="20:00"
-                                required
-                                style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff;">
+                            <input type="time"
+                                   id="cliente-horario"
+                                   min="09:00"
+                                   max="20:00"
+                                   required
+                                   style="width:100%; padding:10px; border-radius:6px; border:1px solid #444; background:#222; color:#fff;">
 
                         </div>
 
 
-                        <div
-                            class="form-group"
-                            style="margin-bottom: 12px;">
+                        <div class="form-group"
+                             style="margin-bottom:12px;">
 
-                            <label
-                                for="cliente-pago"
-                                style="display: block; font-size: 0.85rem; margin-bottom: 5px;">
+                            <label for="cliente-pago"
+                                   style="display:block; font-size:0.85rem; margin-bottom:5px;">
 
                                 Forma de Pago *
 
                             </label>
 
-                            <select
-                                id="cliente-pago"
-                                style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff;">
+                            <select id="cliente-pago"
+                                    style="width:100%; padding:10px; border-radius:6px; border:1px solid #444; background:#222; color:#fff;">
 
                                 <option value="Efectivo">
                                     Efectivo
@@ -632,59 +601,54 @@
                         </div>
 
 
-                        <div
-                            class="form-group"
-                            style="margin-bottom: 15px;">
+                        <div class="form-group"
+                             style="margin-bottom:15px;">
 
-                            <label
-                                for="cliente-notas"
-                                style="display: block; font-size: 0.85rem; margin-bottom: 5px;">
+                            <label for="cliente-notas"
+                                   style="display:block; font-size:0.85rem; margin-bottom:5px;">
 
-                                Aclaraciones / Notas (Opcional)
+                                Aclaraciones / Notas
 
                             </label>
 
-                            <input
-                                type="text"
-                                id="cliente-notas"
-                                placeholder="Ej: Sin aderezo / Timbre no funciona"
-                                style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff;">
+                            <input type="text"
+                                   id="cliente-notas"
+                                   placeholder="Ej: Sin aderezo / Timbre no funciona"
+                                   style="width:100%; padding:10px; border-radius:6px; border:1px solid #444; background:#222; color:#fff;">
 
                         </div>
 
                     </div>
 
 
-                    <!-- VENTA SALÓN -->
+                    <!-- ===============================
+                         SALON
+                    ================================ -->
 
-                    <div
-                        id="campos-salon"
-                        style="display:none;">
+                    <div id="campos-salon"
+                         style="display:none;">
 
-                        <h3
-                            style="color: var(--accent); font-size: 1.1rem; margin-bottom: 15px;">
+                        <h3 style="color:var(--accent); font-size:1.1rem; margin-bottom:15px;">
 
                             <i class="fa-solid fa-utensils"></i>
+
                             Venta rápida en salón
 
                         </h3>
 
 
-                        <div
-                            class="form-group"
-                            style="margin-bottom: 12px;">
+                        <div class="form-group"
+                             style="margin-bottom:12px;">
 
-                            <label
-                                for="salon-pago"
-                                style="display: block; font-size: 0.85rem; margin-bottom: 5px;">
+                            <label for="salon-pago"
+                                   style="display:block; font-size:0.85rem; margin-bottom:5px;">
 
                                 Forma de Pago *
 
                             </label>
 
-                            <select
-                                id="salon-pago"
-                                style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff;">
+                            <select id="salon-pago"
+                                    style="width:100%; padding:10px; border-radius:6px; border:1px solid #444; background:#222; color:#fff;">
 
                                 <option value="Efectivo">
                                     Efectivo
@@ -707,15 +671,15 @@
                 </div>
 
 
-                <!-- RESUMEN -->
+                <!-- =================================================
+                     RESUMEN
+                ================================================== -->
 
                 <div class="cart-summary">
 
                     <div class="total-row">
 
-                        <span>
-                            Total:
-                        </span>
+                        <span>Total:</span>
 
                         <span id="cart-total">
                             $0
@@ -724,24 +688,22 @@
                     </div>
 
 
-                    <div
-                        style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
+                    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:15px;">
 
-                        <button
-                            class="btn-clear-cart"
-                            onclick="vaciarCarrito()">
+                        <button class="btn-clear-cart"
+                                onclick="vaciarCarrito()">
 
                             Vaciar Carrito
 
                         </button>
 
 
-                        <button
-                            class="btn-send-whatsapp"
-                            onclick="imprimirComanda()"
-                            style="flex: 1;">
+                        <button class="btn-send-whatsapp"
+                                onclick="imprimirComanda()"
+                                style="flex:1;">
 
                             <i class="fa-solid fa-print"></i>
+
                             Imprimir
 
                         </button>
@@ -754,21 +716,20 @@
 
         </div>
 
-    </section>
+    </div>
 
 </div>
 ```
 
-</div>
+</section>
 
 <!-- =========================================================
      BOTÓN FLOTANTE DEL CARRITO
 ========================================================= -->
 
-<button
- id="floating-cart-btn"
- onclick="irAlCarrito()"
- aria-label="Ver carrito">
+<button id="floating-cart-btn"
+     onclick="irAlCarrito()"
+     aria-label="Ver carrito">
 
 ```
 <i class="fa-solid fa-cart-shopping"></i>
@@ -789,13 +750,15 @@
 <script src="caja.js"></script>
 
 <!-- =========================================================
-     LÓGICA JAVASCRIPT
+     JAVASCRIPT POS
 ========================================================= -->
 
 <script>
 
 let carrito = [];
+
 let modoVenta = "pedido";
+
 let categoriaActiva = null;
 
 
@@ -847,30 +810,30 @@ function setModoVenta(modo) {
 
 
 /* =========================================================
-   RENDER DEL MENÚ
-   BOTONERA DINÁMICA
+   RENDER DEL MENU
+   PRODUCTOS DIRECTOS COMO BOTONES
 ========================================================= */
 
 function renderMenuPagina() {
 
-    const data =
-        menuLoad();
+    const data = menuLoad();
 
     const productos =
-        data.products || [];
+        Array.isArray(data.products)
+            ? data.products
+            : [];
 
 
     const categorias = [];
 
 
-    productos.forEach(function (p) {
+    productos.forEach(function (producto) {
 
         const categoria =
-            p.category || "Sin categoría";
+            producto.category || "Otros";
 
-        if (
-            categorias.indexOf(categoria) === -1
-        ) {
+
+        if (!categorias.includes(categoria)) {
 
             categorias.push(categoria);
 
@@ -881,7 +844,7 @@ function renderMenuPagina() {
 
     if (
         !categoriaActiva ||
-        categorias.indexOf(categoriaActiva) === -1
+        !categorias.includes(categoriaActiva)
     ) {
 
         categoriaActiva =
@@ -903,7 +866,9 @@ function renderMenuPagina() {
 
 
     if (!tabsHeader || !grid) {
+
         return;
+
     }
 
 
@@ -911,170 +876,165 @@ function renderMenuPagina() {
        SIN PRODUCTOS
     ===================================================== */
 
-    if (categorias.length === 0) {
+    if (productos.length === 0) {
 
         tabsHeader.innerHTML = "";
 
         grid.innerHTML = `
-            <p style="
-                color: var(--text-gray);
-                text-align:center;
-                grid-column:1/-1;
-                padding:30px 10px;
-            ">
-                Todavía no hay productos cargados en el menú.
-            </p>
+            <div class="pos-empty">
+                <i class="fa-solid fa-utensils"></i>
+                <br><br>
+                Todavía no hay productos cargados.
+                <br>
+                Podés agregarlos desde Caja → Menú.
+            </div>
         `;
 
         return;
+
     }
 
 
     /* =====================================================
-       BOTONES DE CATEGORÍAS
+       CATEGORÍAS
     ===================================================== */
 
-    tabsHeader.innerHTML =
-        categorias.map(function (cat) {
+    tabsHeader.innerHTML = "";
 
-            const activo =
-                cat === categoriaActiva
-                    ? " active"
-                    : "";
 
-            return `
-                <button
-                    type="button"
-                    class="pos-category-btn${activo}"
-                    data-category="${cajaEscapeHtml(cat)}">
+    categorias.forEach(function (categoria) {
 
-                    ${cajaEscapeHtml(cat)}
+        const boton =
+            document.createElement("button");
 
-                </button>
-            `;
 
-        }).join("");
+        boton.type = "button";
+
+        boton.className =
+            "pos-category-btn";
+
+
+        if (categoria === categoriaActiva) {
+
+            boton.classList.add("active");
+
+        }
+
+
+        boton.textContent =
+            categoria;
+
+
+        boton.addEventListener(
+            "click",
+            function () {
+
+                seleccionarCategoriaMenu(
+                    categoria
+                );
+
+            }
+        );
+
+
+        tabsHeader.appendChild(boton);
+
+    });
 
 
     /* =====================================================
-       EVENTOS DE CATEGORÍAS
+       PRODUCTOS
     ===================================================== */
 
-    tabsHeader
-        .querySelectorAll(".pos-category-btn")
-        .forEach(function (btn) {
+    grid.innerHTML = "";
 
-            btn.addEventListener(
-                "click",
-                function () {
-
-                    seleccionarCategoriaMenu(
-                        btn.dataset.category
-                    );
-
-                }
-            );
-
-        });
-
-
-    /* =====================================================
-       PRODUCTOS DE LA CATEGORÍA ACTIVA
-    ===================================================== */
 
     const productosCategoria =
-        productos.filter(function (p) {
+        productos.filter(function (producto) {
 
             return (
-                (p.category || "Sin categoría")
+                (producto.category || "Otros")
                 === categoriaActiva
             );
 
         });
 
 
-    /* =====================================================
-       BOTONES DE PRODUCTOS
-    ===================================================== */
+    if (productosCategoria.length === 0) {
 
-    grid.innerHTML =
-        productosCategoria.map(function (p) {
+        grid.innerHTML = `
+            <div class="pos-empty">
+                No hay productos en esta categoría.
+            </div>
+        `;
 
-            return `
-                <button
-                    type="button"
-                    class="pos-product-btn">
+        return;
 
-                    <span class="pos-product-name">
-                        ${cajaEscapeHtml(p.name || "Producto")}
-                    </span>
-
-                    <span class="pos-product-price">
-                        ${cajaFmtMoney(p.price)}
-                    </span>
-
-                </button>
-            `;
-
-        }).join("");
+    }
 
 
-    /* =====================================================
-       CLICK DIRECTO → CARRITO
-    ===================================================== */
+    productosCategoria.forEach(function (producto) {
 
-    grid
-        .querySelectorAll(".pos-product-btn")
-        .forEach(function (btn, index) {
-
-            const producto =
-                productosCategoria[index];
+        const boton =
+            document.createElement("button");
 
 
-            btn.addEventListener(
-                "click",
-                function () {
+        boton.type = "button";
 
-                    if (!producto) {
-                        return;
-                    }
+        boton.className =
+            "pos-product-btn";
 
 
-                    agregarAlCarrito(
-                        producto.name,
-                        Number(producto.price) || 0,
-                        1
-                    );
+        const nombre =
+            producto.name || "Producto";
 
 
-                    /* pequeño feedback visual */
+        const precio =
+            Number(producto.price) || 0;
 
-                    btn.classList.add("producto-agregado");
+
+        boton.innerHTML = `
+
+            <span class="pos-product-name">
+                ${cajaEscapeHtml(nombre)}
+            </span>
+
+            <span class="pos-product-price">
+                ${cajaFmtMoney(precio)}
+            </span>
+
+        `;
 
 
-                    setTimeout(function () {
+        boton.addEventListener(
+            "click",
+            function () {
 
-                        btn.classList.remove(
-                            "producto-agregado"
-                        );
+                agregarAlCarrito(
+                    nombre,
+                    precio,
+                    1
+                );
 
-                    }, 180);
+            }
+        );
 
-                }
-            );
 
-        });
+        grid.appendChild(boton);
+
+    });
 
 }
 
 
 /* =========================================================
-   SELECCIONAR CATEGORÍA
+   CAMBIAR CATEGORÍA
 ========================================================= */
 
-function seleccionarCategoriaMenu(cat) {
+function seleccionarCategoriaMenu(categoria) {
 
-    categoriaActiva = cat;
+    categoriaActiva =
+        categoria;
 
     renderMenuPagina();
 
@@ -1082,7 +1042,7 @@ function seleccionarCategoriaMenu(cat) {
 
 
 /* =========================================================
-   BOTÓN FLOTANTE DEL CARRITO
+   BOTÓN FLOTANTE
 ========================================================= */
 
 function actualizarBotonCarrito() {
@@ -1093,17 +1053,18 @@ function actualizarBotonCarrito() {
         );
 
 
-    if (!contador) {
-        return;
-    }
+    if (!contador) return;
 
 
-    const cantidadTotal =
-        carrito.reduce(function (total, item) {
+    let cantidadTotal = 0;
 
-            return total + item.cantidad;
 
-        }, 0);
+    carrito.forEach(function (item) {
+
+        cantidadTotal +=
+            Number(item.cantidad) || 0;
+
+    });
 
 
     contador.innerText =
@@ -1134,8 +1095,7 @@ function irAlCarrito() {
 
 
 /* =========================================================
-   FUNCIONES ANTIGUAS DE MENÚ
-   SE MANTIENEN PARA NO ROMPER COMPATIBILIDAD
+   COMPATIBILIDAD CON FUNCIONES ANTERIORES
 ========================================================= */
 
 function modificarCantidadMenu(btn, cambio) {
@@ -1144,18 +1104,14 @@ function modificarCantidadMenu(btn, cambio) {
         btn.closest(".qty-selector");
 
 
-    if (!container) {
-        return;
-    }
+    if (!container) return;
 
 
     const qtyVal =
         container.querySelector(".qty-val");
 
 
-    if (!qtyVal) {
-        return;
-    }
+    if (!qtyVal) return;
 
 
     let cantidad =
@@ -1166,7 +1122,9 @@ function modificarCantidadMenu(btn, cambio) {
 
 
     if (cantidad < 1) {
+
         cantidad = 1;
+
     }
 
 
@@ -1178,35 +1136,11 @@ function modificarCantidadMenu(btn, cambio) {
 
 function agregarDesdeMenu(btn, nombre, precio) {
 
-    const container =
-        btn.closest(".item-controls-inline");
-
-
-    if (!container) {
-        return;
-    }
-
-
-    const qtyVal =
-        container.querySelector(".qty-val");
-
-
-    const cantidad =
-        qtyVal
-            ? parseInt(qtyVal.innerText) || 1
-            : 1;
-
-
     agregarAlCarrito(
         nombre,
         precio,
-        cantidad
+        1
     );
-
-
-    if (qtyVal) {
-        qtyVal.innerText = "1";
-    }
 
 }
 
@@ -1231,7 +1165,8 @@ function agregarAlCarrito(
 
     if (itemExistente) {
 
-        itemExistente.cantidad += cantidad;
+        itemExistente.cantidad +=
+            cantidad;
 
     } else {
 
@@ -1261,23 +1196,16 @@ function agregarAlCarrito(
 
 function cambiarCantidad(index, cambio) {
 
-    if (!carrito[index]) {
-        return;
-    }
+    if (!carrito[index]) return;
 
 
     carrito[index].cantidad +=
         cambio;
 
 
-    if (
-        carrito[index].cantidad <= 0
-    ) {
+    if (carrito[index].cantidad <= 0) {
 
-        carrito.splice(
-            index,
-            1
-        );
+        carrito.splice(index, 1);
 
     }
 
@@ -1296,6 +1224,7 @@ function cambiarCantidad(index, cambio) {
 function vaciarCarrito() {
 
     carrito = [];
+
 
     actualizarCarritoUI();
 
@@ -1323,19 +1252,24 @@ function actualizarCarritoUI() {
 
 
     if (!container || !totalEl) {
+
         return;
+
     }
 
 
     if (carrito.length === 0) {
 
         container.innerHTML =
-            '<p class="empty-msg">El carrito está vacío.</p>';
+            '<p class="empty-msg">Tu carrito está vacío. ¡Agregá tus platos preferidos!</p>';
+
 
         totalEl.innerText =
             "$0";
 
+
         return;
+
     }
 
 
@@ -1344,74 +1278,69 @@ function actualizarCarritoUI() {
     let total = 0;
 
 
-    carrito.forEach(
-        function (item, index) {
+    carrito.forEach(function (item, index) {
 
-            const subtotal =
-                item.precio *
-                item.cantidad;
-
-
-            total += subtotal;
+        const subtotal =
+            item.precio *
+            item.cantidad;
 
 
-            html += `
-
-                <div class="cart-item-row">
-
-                    <div class="cart-item-info">
-
-                        <strong>
-                            ${cajaEscapeHtml(item.nombre)}
-                        </strong>
-
-                        <span>
-
-                            $${item.precio.toLocaleString("es-AR")}
-
-                            x ${item.cantidad}
-
-                            =
-
-                            $${subtotal.toLocaleString("es-AR")}
-
-                        </span>
-
-                    </div>
+        total +=
+            subtotal;
 
 
-                    <div class="cart-item-controls">
+        html += `
 
-                        <button
-                            class="btn-qty"
-                            onclick="cambiarCantidad(${index}, -1)">
+            <div class="cart-item-row">
 
-                            -
+                <div class="cart-item-info">
 
-                        </button>
+                    <strong>
+                        ${cajaEscapeHtml(item.nombre)}
+                    </strong>
 
+                    <span>
 
-                        <span>
-                            ${item.cantidad}
-                        </span>
+                        ${cajaFmtMoney(item.precio)}
 
+                        x ${item.cantidad}
 
-                        <button
-                            class="btn-qty"
-                            onclick="cambiarCantidad(${index}, 1)">
+                        =
 
-                            +
+                        ${cajaFmtMoney(subtotal)}
 
-                        </button>
-
-                    </div>
+                    </span>
 
                 </div>
 
-            `;
 
-        }
-    );
+                <div class="cart-item-controls">
+
+                    <button
+                        class="btn-qty"
+                        onclick="cambiarCantidad(${index}, -1)">
+                        -
+                    </button>
+
+
+                    <span>
+                        ${item.cantidad}
+                    </span>
+
+
+                    <button
+                        class="btn-qty"
+                        onclick="cambiarCantidad(${index}, 1)">
+                        +
+                    </button>
+
+                </div>
+
+            </div>
+
+        `;
+
+    });
 
 
     container.innerHTML =
@@ -1419,14 +1348,13 @@ function actualizarCarritoUI() {
 
 
     totalEl.innerText =
-        "$" +
-        total.toLocaleString("es-AR");
+        cajaFmtMoney(total);
 
 }
 
 
 /* =========================================================
-   ENTREGA
+   DIRECCIÓN
 ========================================================= */
 
 function toggleDireccion() {
@@ -1444,7 +1372,9 @@ function toggleDireccion() {
 
 
     if (!tipoEl || !direccion) {
+
         return;
+
     }
 
 
@@ -1457,7 +1387,7 @@ function toggleDireccion() {
 
 
 /* =========================================================
-   MENÚ DEL DÍA DESDE GOOGLE SHEETS
+   MENU DEL DIA DESDE GOOGLE SHEETS
 ========================================================= */
 
 const URL_MENU =
@@ -1503,15 +1433,18 @@ async function cargarMenuDesdeGoogle() {
             menuLoad();
 
 
+        const productos =
+            Array.isArray(data.products)
+                ? data.products
+                : [];
+
+
         const producto =
-            data.products.find(
-                function (p) {
+            productos.find(function (p) {
 
-                    return p.name ===
-                        "Menú del Día";
+                return p.name === "Menú del Día";
 
-                }
-            );
+            });
 
 
         if (producto) {
@@ -1555,8 +1488,7 @@ async function cargarMenuDesdeGoogle() {
    CONTROL ANTI-DOBLE IMPRESIÓN
 ========================================================= */
 
-let impresionEnCurso =
-    false;
+let impresionEnCurso = false;
 
 
 /* =========================================================
@@ -1564,7 +1496,6 @@ let impresionEnCurso =
 ========================================================= */
 
 function imprimirComanda() {
-
 
     if (impresionEnCurso) {
 
@@ -1597,7 +1528,7 @@ function imprimirComanda() {
 
 
     /* =====================================================
-       VENTA SALÓN
+       SALÓN
     ===================================================== */
 
     if (modoVenta === "salon") {
@@ -1733,7 +1664,9 @@ function imprimirComanda() {
 
 
             if (nombreEl) {
+
                 nombreEl.focus();
+
             }
 
 
@@ -1743,7 +1676,8 @@ function imprimirComanda() {
 
 
         if (
-            tipoEntrega === "Delivery" &&
+            tipoEntrega === "Delivery"
+            &&
             !direccion
         ) {
 
@@ -1753,7 +1687,9 @@ function imprimirComanda() {
 
 
             if (direccionEl) {
+
                 direccionEl.focus();
+
             }
 
 
@@ -1770,7 +1706,9 @@ function imprimirComanda() {
 
 
             if (horarioEl) {
+
                 horarioEl.focus();
+
             }
 
 
@@ -1823,40 +1761,38 @@ function imprimirComanda() {
         "";
 
 
-    carrito.forEach(
-        function (item) {
+    carrito.forEach(function (item) {
 
-            const subtotal =
-                item.precio *
-                item.cantidad;
-
-
-            total +=
-                subtotal;
+        const subtotal =
+            item.precio *
+            item.cantidad;
 
 
-            let nombreProd =
-                item.nombre
-                    .replace(/á/g, "a")
-                    .replace(/é/g, "e")
-                    .replace(/í/g, "i")
-                    .replace(/ó/g, "o")
-                    .replace(/ú/g, "u")
-                    .replace(/ñ/g, "n");
+        total +=
+            subtotal;
 
 
-            const precioTexto =
-                "$" +
-                subtotal.toLocaleString(
-                    "es-AR"
-                );
+        let nombreProd =
+            item.nombre
+                .replace(/á/g, "a")
+                .replace(/é/g, "e")
+                .replace(/í/g, "i")
+                .replace(/ó/g, "o")
+                .replace(/ú/g, "u")
+                .replace(/ñ/g, "n");
 
 
-            productosTexto +=
-                `${item.cantidad} x ${nombreProd}    ${precioTexto}\n`;
+        const precioTexto =
+            "$" +
+            subtotal.toLocaleString(
+                "es-AR"
+            );
 
-        }
-    );
+
+        productosTexto +=
+            `${item.cantidad} x ${nombreProd}    ${precioTexto}\n`;
+
+    });
 
 
     /* =====================================================
@@ -1881,7 +1817,7 @@ function imprimirComanda() {
 
 
     /* =====================================================
-       CONSTRUIR TICKET
+       TICKET
     ===================================================== */
 
     const tituloTicket =
@@ -1903,10 +1839,7 @@ ENTREGA: ${tipoEntrega.toUpperCase()}
 `;
 
 
-    if (
-        tipoEntrega ===
-        "Delivery"
-    ) {
+    if (tipoEntrega === "Delivery") {
 
         ticket +=
 `DIRECCION:
@@ -1990,17 +1923,12 @@ ${notas.toUpperCase()}
         Comanda MYCFOODS
     </title>
 
-
     <style>
 
         @page {
-
             size: 80mm auto;
-
             margin: 0;
-
         }
-
 
         html,
         body {
@@ -2014,7 +1942,6 @@ ${notas.toUpperCase()}
             background: #ffffff;
 
         }
-
 
         body {
 
@@ -2034,7 +1961,6 @@ ${notas.toUpperCase()}
 
         }
 
-
         .ticket-container {
 
             width: 100%;
@@ -2053,7 +1979,6 @@ ${notas.toUpperCase()}
 
         }
 
-
         @media print {
 
             html,
@@ -2067,7 +1992,6 @@ ${notas.toUpperCase()}
 
             }
 
-
             body {
 
                 padding: 2mm 3mm;
@@ -2075,7 +1999,6 @@ ${notas.toUpperCase()}
                 text-align: left;
 
             }
-
 
             .ticket-container {
 
@@ -2111,49 +2034,39 @@ ${notas.toUpperCase()}
 ventana.document.close();
 
 
-/* =====================================================
-   IMPRIMIR UNA SOLA VEZ
-===================================================== */
+setTimeout(function () {
 
-setTimeout(
-    function () {
+    try {
+
+        ventana.focus();
+
+        ventana.print();
+
+    } catch (error) {
+
+        console.error(
+            "Error de impresión:",
+            error
+        );
+
+    }
+
+
+    setTimeout(function () {
 
         try {
 
-            ventana.focus();
+            ventana.close();
 
-            ventana.print();
-
-        } catch (error) {
-
-            console.error(
-                "Error de impresión:",
-                error
-            );
-
-        }
+        } catch (e) {}
 
 
-        setTimeout(
-            function () {
+        impresionEnCurso =
+            false;
 
-                try {
+    }, 1200);
 
-                    ventana.close();
-
-                } catch (e) {}
-
-
-                impresionEnCurso =
-                    false;
-
-            },
-            1200
-        );
-
-    },
-    300
-);
+}, 300);
 ```
 
 }
