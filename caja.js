@@ -33,8 +33,347 @@ function setTab(id) {
 function renderActive() {
   if (activeTab === "resumen") renderResumen();
   else if (activeTab === "movimientos") renderMovimientos();
+  else if (activeTab === "menu") renderMenuAdmin();
   else if (activeTab === "mayor") renderMayor();
   else if (activeTab === "equilibrio") renderEquilibrio();
+  else if (activeTab === "reportes") renderReportes();
+}
+
+/* =========================================================
+   MENÚ — administración de productos y categorías
+   (se refleja al instante en index.html, sin tocar HTML)
+========================================================= */
+let menuEditingId = null;
+
+function renderMenuAdmin() {
+  const el = document.getElementById("panel-menu");
+  if (!el) return;
+
+  const data = menuLoad();
+  const products = data.products || [];
+  const categories = [];
+  products.forEach(function (p) {
+    if (categories.indexOf(p.category) === -1) categories.push(p.category);
+  });
+
+  const editing = menuEditingId ? products.find(function (p) { return p.id === menuEditingId; }) : null;
+
+  let html = '<div class="caja-section-title"><h2>Menú</h2></div>';
+
+  html += '<div class="caja-card">';
+  html += '<div style="max-height:320px; overflow-y:auto; margin-bottom:14px;">';
+
+  if (categories.length === 0) {
+    html += '<div class="empty-note">Todavía no hay productos cargados.</div>';
+  } else {
+    categories.forEach(function (cat) {
+      html += '<div style="margin-bottom:12px;">';
+      html += '<div style="font-size:0.75rem; color:var(--accent); font-weight:700; margin-bottom:4px;">' + escapeHtml(cat) + '</div>';
+      products.filter(function (p) { return p.category === cat; }).forEach(function (p) {
+        html += '<div class="mov-row" style="padding:7px 0;">' +
+          '<span style="flex:1; font-size:0.85rem; color:var(--text-white);">' + escapeHtml(p.name) + '</span>' +
+          '<span style="font-family:\'Courier New\',monospace; font-size:0.8rem; color:var(--text-gray);">' + cajaFmtMoney(p.price) + '</span>' +
+          '<button class="mov-del" onclick="editarProductoMenu(\'' + p.id + '\')"><i class="fa-solid fa-pen"></i></button>' +
+          '<button class="mov-del" onclick="borrarProductoMenu(\'' + p.id + '\')"><i class="fa-solid fa-trash"></i></button>' +
+          '</div>';
+      });
+      html += '</div>';
+    });
+  }
+
+  html += '</div>';
+
+  html += '<div style="border-top:1px solid var(--border-color); padding-top:12px;">';
+  html += '<div class="stat-label" style="margin-bottom:8px;">' + (editing ? "Editar producto" : "Agregar producto") + '</div>';
+
+  html += '<div class="caja-row">';
+  html += '<input class="caja-input" style="flex:2;" id="menu-form-name" placeholder="Nombre" value="' + (editing ? escapeHtml(editing.name) : "") + '">';
+  html += '<input class="caja-input" style="flex:1;" id="menu-form-price" type="number" placeholder="Precio" value="' + (editing ? editing.price : "") + '">';
+  html += '</div>';
+
+  html += '<div class="caja-row">';
+  html += '<select class="caja-select" id="menu-form-category" style="flex:1;">';
+  html += '<option value="">— categoría existente —</option>';
+  categories.forEach(function (c) {
+    html += '<option value="' + escapeHtml(c) + '"' + (editing && editing.category === c ? " selected" : "") + '>' + escapeHtml(c) + '</option>';
+  });
+  html += '</select>';
+  html += '<input class="caja-input" style="flex:1;" id="menu-form-newcategory" placeholder="o categoría nueva">';
+  html += '</div>';
+
+  html += '<input class="caja-input" id="menu-form-desc" placeholder="Descripción (opcional, sale en la página de pedidos)" value="' + (editing ? escapeHtml(editing.desc || "") : "") + '" style="margin-bottom:10px;">';
+
+  html += '<div class="caja-row">';
+  html += '<button class="caja-btn caja-btn-primary" style="flex:1;" onclick="guardarProductoMenu()">' + (editing ? "Guardar cambios" : "+ Agregar al menú") + '</button>';
+  if (editing) html += '<button class="caja-btn caja-btn-ghost" onclick="cancelarEdicionMenu()">Cancelar</button>';
+  html += '</div>';
+
+  html += '</div></div>';
+
+  el.innerHTML = html;
+}
+
+function editarProductoMenu(id) {
+  menuEditingId = id;
+  renderMenuAdmin();
+}
+
+function cancelarEdicionMenu() {
+  menuEditingId = null;
+  renderMenuAdmin();
+}
+
+function borrarProductoMenu(id) {
+  if (!confirm("¿Borrar este producto del menú?")) return;
+  const data = menuLoad();
+  data.products = data.products.filter(function (p) { return p.id !== id; });
+  menuSave(data);
+  if (menuEditingId === id) menuEditingId = null;
+  renderMenuAdmin();
+}
+
+function guardarProductoMenu() {
+  const name = document.getElementById("menu-form-name").value.trim();
+  const price = parseFloat(document.getElementById("menu-form-price").value);
+  const catSelect = document.getElementById("menu-form-category").value;
+  const catNew = document.getElementById("menu-form-newcategory").value.trim();
+  const desc = document.getElementById("menu-form-desc").value.trim();
+  const category = catNew || catSelect;
+
+  if (!name || !price || price <= 0 || !category) {
+    alert("Completá nombre, precio y categoría (elegí una existente o escribí una nueva).");
+    return;
+  }
+
+  const data = menuLoad();
+
+  if (menuEditingId) {
+    const p = data.products.find(function (x) { return x.id === menuEditingId; });
+    if (p) {
+      p.name = name; p.price = price; p.category = category; p.desc = desc;
+    }
+    menuEditingId = null;
+  } else {
+    data.products.push({ id: cajaUid(), name: name, price: price, category: category, desc: desc });
+  }
+
+  menuSave(data);
+  renderMenuAdmin();
+}
+
+function movRowHtml(m) {
+  const isIn = m.type === "ingreso";
+  return (
+    '<div class="mov-row">' +
+    '<div class="mov-icon ' + (isIn ? "in" : "out") + '">' + (isIn ? "&uarr;" : "&darr;") + "</div>" +
+    '<div style="flex:1; min-width:0;">' +
+    '<div class="mov-cat">' + escapeHtml(m.category) + "</div>" +
+    '<div class="mov-meta">' + cajaFmtDateLabel(m.date) + " &middot; " + escapeHtml(m.method) + " &middot; " +
+    (m.ledger === "principal" ? "Caja mayor" : "Caja chica") + (m.note ? " &middot; " + escapeHtml(m.note) : "") + "</div>" +
+    "</div>" +
+    '<div class="mov-amount ' + (isIn ? "in" : "out") + '">' + (isIn ? "+" : "\u2212") + cajaFmtMoney(m.amount) + "</div>" +
+    '<button class="mov-del" onclick="borrarMovimiento(\'' + m.id + '\')"><i class="fa-solid fa-trash"></i></button>' +
+    "</div>"
+  );
+}
+
+/* =========================================================
+   RESUMEN
+========================================================= */
+function renderResumen() {
+  const el = document.getElementById("panel-resumen");
+  if (!el) return;
+  const balances = cajaComputeBalances(state.transactions, state.openings);
+  const today = cajaTodayStr();
+  const thisMonth = cajaMonthKey(today);
+  const monthTx = state.transactions.filter(function (t) { return cajaMonthKey(t.date) === thisMonth; });
+  const monthIn = monthTx.filter(function (t) { return t.type === "ingreso"; }).reduce(function (a, t) { return a + t.amount; }, 0);
+  const monthOut = monthTx.filter(function (t) { return t.type === "egreso"; }).reduce(function (a, t) { return a + t.amount; }, 0);
+
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const tz = d.getTimezoneOffset() * 60000;
+    const key = new Date(d.getTime() - tz).toISOString().slice(0, 10);
+    const dayTx = state.transactions.filter(function (t) { return t.date === key; });
+    const net = dayTx.reduce(function (a, t) { return a + (t.type === "ingreso" ? t.amount : -t.amount); }, 0);
+    days.push({ label: cajaFmtDateLabel(key), net: net });
+  }
+  const maxAbs = Math.max(1, Math.max.apply(null, days.map(function (d) { return Math.abs(d.net); })));
+
+  const recent = state.transactions.slice().sort(function (a, b) { return a.date < b.date ? 1 : -1; }).slice(0, 6);
+
+  el.innerHTML =
+    '<div class="caja-section-title"><h2>Resumen general</h2></div>' +
+    '<div class="stat-grid">' +
+    '<div class="stat-card"><div class="stat-label">Saldo caja mayor</div><div class="stat-value">' + cajaFmtMoney(balances.principal) + "</div></div>" +
+    '<div class="stat-card"><div class="stat-label">Saldo caja chica</div><div class="stat-value">' + cajaFmtMoney(balances.chica) + "</div></div>" +
+    '<div class="stat-card"><div class="stat-label">Ingresos del mes</div><div class="stat-value up">' + cajaFmtMoney(monthIn) + "</div></div>" +
+    '<div class="stat-card"><div class="stat-label">Egresos del mes</div><div class="stat-value down">' + cajaFmtMoney(monthOut) + "</div></div>" +
+    '<div class="stat-card"><div class="stat-label">Resultado del mes</div><div class="stat-value ' + (monthIn - monthOut >= 0 ? "up" : "down") + '">' + cajaFmtMoney(monthIn - monthOut) + "</div></div>" +
+    "</div>" +
+    '<div class="caja-card">' +
+    '<div class="stat-label" style="margin-bottom:10px;">Flujo neto &mdash; últimos 7 días</div>' +
+    '<div style="display:flex; align-items:flex-end; gap:8px; height:90px;">' +
+    days.map(function (d) {
+      return '<div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;">' +
+        '<div style="width:100%; height:60px; display:flex; align-items:flex-end;">' +
+        '<div style="width:100%; height:' + Math.max(4, Math.abs(d.net) / maxAbs * 60) + 'px; background:' + (d.net >= 0 ? "#5fa372" : "#e2564a") + '; border-radius:2px;"></div>' +
+        "</div>" +
+        '<span style="font-size:0.65rem; color:var(--text-gray);">' + d.label + "</span>" +
+        "</div>";
+    }).join("") +
+    "</div></div>" +
+    '<div class="caja-section-title"><h2>Últimos movimientos</h2></div>' +
+    '<div class="caja-card">' +
+    (recent.length === 0 ? '<div class="empty-note">Todavía no hay movimientos.</div>' : recent.map(movRowHtml).join("")) +
+    "</div>";
+}
+
+/* =========================================================
+   MOVIMIENTOS
+========================================================= */
+function renderMovimientos() {
+  const el = document.getElementById("panel-movimientos");
+  if (!el) return;
+  const today = cajaTodayStr();
+  const opening = state.openings[today];
+  const balances = cajaComputeBalances(state.transactions, state.openings);
+  const todayTx = state.transactions.filter(function (t) { return t.date === today; });
+  const todayIn = todayTx.filter(function (t) { return t.type === "ingreso"; }).reduce(function (a, t) { return a + t.amount; }, 0);
+  const todayOut = todayTx.filter(function (t) { return t.type === "egreso"; }).reduce(function (a, t) { return a + t.amount; }, 0);
+
+  const cats = movFormType === "ingreso" ? CAJA_INCOME_CATS : CAJA_EXPENSE_CATS;
+  const sorted = state.transactions.slice().sort(function (a, b) { return a.date < b.date ? 1 : -1; });
+  const filtered = movFilterLedger === "todas" ? sorted : sorted.filter(function (t) { return t.ledger === movFilterLedger; });
+
+  const showAperturaForm = !opening || aperturaEditing;
+
+  let aperturaHtml;
+  if (showAperturaForm) {
+    aperturaHtml =
+      '<div class="stat-label" style="margin-bottom:10px;">Apertura de caja &mdash; hoy</div>' +
+      '<div class="caja-row">' +
+      '<div class="caja-field"><label>Saldo inicial caja mayor</label><input class="caja-input" id="apertura-principal" type="number" placeholder="0" value="' + (opening ? opening.principal : "") + '"></div>' +
+      '<div class="caja-field"><label>Saldo inicial caja chica</label><input class="caja-input" id="apertura-chica" type="number" placeholder="0" value="' + (opening ? opening.chica : "") + '"></div>' +
+      "</div>" +
+      '<button class="caja-btn caja-btn-primary caja-btn-block" onclick="guardarApertura()">Guardar apertura</button>';
+  } else {
+    aperturaHtml =
+      '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">' +
+      '<div class="stat-label">Apertura de hoy: <span style="color:var(--text-white); font-family:\'Courier New\',monospace;">' + cajaFmtMoney(opening.principal) + '</span> mayor &middot; <span style="color:var(--text-white); font-family:\'Courier New\',monospace;">' + cajaFmtMoney(opening.chica) + "</span> chica</div>" +
+      '<button class="caja-btn caja-btn-ghost" onclick="editarApertura()">Editar</button>' +
+      "</div>";
+  }
+
+  el.innerHTML =
+    '<div class="caja-card" id="apertura-card">' + aperturaHtml + "</div>" +
+
+    '<div class="caja-card">' +
+    '<div class="caja-row" style="margin-bottom:12px;">' +
+    '<button class="caja-btn" style="flex:1; border:1px solid ' + (movFormType === "ingreso" ? "#5fa372" : "var(--border-color)") + "; background:" + (movFormType === "ingreso" ? "rgba(95,163,114,0.12)" : "transparent") + "; color:" + (movFormType === "ingreso" ? "#5fa372" : "var(--text-gray)") + ';" onclick="setMovType(\'ingreso\')">+ Ingreso</button>' +
+    '<button class="caja-btn" style="flex:1; border:1px solid ' + (movFormType === "egreso" ? "#e2564a" : "var(--border-color)") + "; background:" + (movFormType === "egreso" ? "rgba(226,86,74,0.12)" : "transparent") + "; color:" + (movFormType === "egreso" ? "#e2564a" : "var(--text-gray)") + ';" onclick="setMovType(\'egreso\')">&minus; Egreso</button>' +
+    "</div>" +
+    '<div class="big-amount-box"><span>$</span><input type="number" id="mov-amount" placeholder="0"></div>' +
+    '<div class="caja-row">' +
+    '<div class="caja-field"><label>Fecha</label><input class="caja-input" type="date" id="mov-date" value="' + today + '"></div>' +
+    '<div class="caja-field"><label>Caja</label><select class="caja-select" id="mov-ledger"><option value="principal">Caja mayor</option><option value="chica">Caja chica</option></select></div>' +
+    "</div>" +
+    '<div class="stat-label" style="margin:10px 0 6px;">Categoría</div>' +
+    '<div class="caja-row" id="mov-cats">' +
+    cats.map(function (c, i) { return '<button type="button" class="chip ' + (i === 0 ? "active" : "") + '" data-cat="' + escapeHtml(c) + '" onclick="selectMovCat(this)">' + escapeHtml(c) + "</button>"; }).join("") +
+    "</div>" +
+    '<div class="stat-label" style="margin:10px 0 6px;">Método de pago</div>' +
+    '<div class="caja-row" id="mov-methods">' +
+    CAJA_METHODS.map(function (m, i) { return '<button type="button" class="chip ' + (i === 0 ? "active" : "") + '" data-method="' + escapeHtml(m) + '" onclick="selectMovMethod(this)">' + escapeHtml(m) + "</button>"; }).join("") +
+    "</div>" +
+    '<input class="caja-input" id="mov-note" placeholder="Nota (opcional)" style="margin:10px 0 12px;">' +
+    '<button class="caja-btn caja-btn-primary caja-btn-block" onclick="registrarMovimiento()">+ Registrar movimiento</button>' +
+    "</div>" +
+
+    '<div class="stat-grid">' +
+    '<div class="stat-card"><div class="stat-label">Hoy &mdash; ingresos</div><div class="stat-value up">' + cajaFmtMoney(todayIn) + "</div></div>" +
+    '<div class="stat-card"><div class="stat-label">Hoy &mdash; egresos</div><div class="stat-value down">' + cajaFmtMoney(todayOut) + "</div></div>" +
+    '<div class="stat-card"><div class="stat-label">Saldo caja mayor</div><div class="stat-value">' + cajaFmtMoney(balances.principal) + "</div></div>" +
+    '<div class="stat-card"><div class="stat-label">Saldo caja chica</div><div class="stat-value">' + cajaFmtMoney(balances.chica) + "</div></div>" +
+    "</div>" +
+
+    '<div class="caja-section-title"><h2>Historial</h2>' +
+    '<select class="caja-select" style="width:auto; padding:6px 10px; font-size:0.8rem;" onchange="setMovFilter(this.value)">' +
+    '<option value="todas"' + (movFilterLedger === "todas" ? " selected" : "") + ">Todas las cajas</option>" +
+    '<option value="principal"' + (movFilterLedger === "principal" ? " selected" : "") + ">Caja mayor</option>" +
+    '<option value="chica"' + (movFilterLedger === "chica" ? " selected" : "") + ">Caja chica</option>" +
+    "</select></div>" +
+    '<div class="caja-card">' +
+    (filtered.length === 0 ? '<div class="empty-note">No hay movimientos para este filtro.</div>' : filtered.map(movRowHtml).join("")) +
+    "</div>";
+}
+
+function setMovType(t) { movFormType = t; renderMovimientos(); }
+function selectMovCat(btn) {
+  const parent = btn.parentElement;
+  parent.querySelectorAll(".chip").forEach(function (b) { b.classList.remove("active"); });
+  btn.classList.add("active");
+}
+function selectMovMethod(btn) {
+  const parent = btn.parentElement;
+  parent.querySelectorAll(".chip").forEach(function (b) { b.classList.remove("active"); });
+  btn.classList.add("active");
+}
+function setMovFilter(v) { movFilterLedger = v; renderMovimientos(); }
+
+function editarApertura() { aperturaEditing = true; renderMovimientos(); }
+
+function guardarApertura() {
+  const p = parseFloat(document.getElementById("apertura-principal").value) || 0;
+  const c = parseFloat(document.getElementById("apertura-chica").value) || 0;
+  state.openings[cajaTodayStr()] = { principal: p, chica: c };
+  aperturaEditing = false;
+  cajaSave(state);
+  renderMovimientos();
+}
+
+function registrarMovimiento() {
+  const amountInput = document.getElementById("mov-amount");
+  const amount = parseFloat(amountInput.value);
+  if (!amount || amount <= 0) { alert("Ingresá un monto válido."); return; }
+  const date = document.getElementById("mov-date").value || cajaTodayStr();
+  const ledger = document.getElementById("mov-ledger").value;
+  const catBtn = document.querySelector("#mov-cats .chip.active");
+  const methodBtn = document.querySelector("#mov-methods .chip.active");
+  const category = catBtn ? catBtn.dataset.cat : (movFormType === "ingreso" ? CAJA_INCOME_CATS[0] : CAJA_EXPENSE_CATS[0]);
+  const method = methodBtn ? methodBtn.dataset.method : CAJA_METHODS[0];
+  const note = document.getElementById("mov-note").value.trim();
+  state.transactions.push({ id: cajaUid(), type: movFormType, ledger: ledger, date: date, category: category, method: method, amount: amount, note: note });
+  cajaSave(state);
+  renderMovimientos();
+}
+
+function borrarMovimiento(id) {
+  state.transactions = state.transactions.filter(function (t) { return t.id !== id; });
+  cajaSave(state);
+  renderActive();
+}
+
+/* =========================================================
+   LIBRO MAYOR
+========================================================= */
+function renderMayor() {
+  const el = document.getElementById("panel-mayor");
+  if (!el) return;
+  const monthsSet = {};
+  state.transactions.forEach(function (t) { monthsSet[cajaMonthKey(t.date)] = true; });
+  monthsSet[cajaMonthKey(cajaTodayStr())] = true;
+  const months = Object.keys(monthsSet).sort().reverse();
+  if (!mayorMonth || months.indexOf(mayorMonth) === -1) mayorMonth = months[0];
+
+  const monthTx = state.transactions.filter(function (t) { return cajaMonthKey(t.date) === mayorMonth; });
+  const grouped = {};
+  monthTx.forEach(function (t) {
+    if (!grouped[t.category]) grouped[t.category] = { category: t.category, type: t.type, total: 0, count: 0 };
+    grouped[t.category].total += t.amount;
+    grouped[t.category].count +=  else if (activeTab === "equilibrio") renderEquilibrio();
   else if (activeTab === "reportes") renderReportes();
 }
 
