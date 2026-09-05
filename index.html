@@ -619,4 +619,511 @@ async function cargarMenuDesdeGoogle() {
 
         if (producto) {
 
-                       
+            if (menu.detalle) {
+                producto.desc = menu.detalle;
+            }
+
+            if (menu.precio) {
+                producto.price = Number(menu.precio);
+            }
+
+            menuSave(data);
+            renderMenuPagina();
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Error cargando menú del día:",
+            error
+        );
+    }
+}
+
+
+/* =========================================================
+   CONTROL ANTI-DOBLE IMPRESIÓN
+========================================================= */
+
+let impresionEnCurso = false;
+
+
+/* =========================================================
+   IMPRIMIR COMANDA
+========================================================= */
+
+function imprimirComanda() {
+
+    /*
+       EVITA QUE DOS CLICS RÁPIDOS,
+       DOBLE EVENTO O DOBLE LLAMADA
+       GENEREN DOS TICKETS.
+    */
+
+    if (impresionEnCurso) {
+
+        console.warn(
+            "Impresión bloqueada: ya hay una impresión en curso."
+        );
+
+        return;
+    }
+
+
+    if (carrito.length === 0) {
+
+        alert("El carrito está vacío.");
+
+        return;
+    }
+
+
+    let nombre, tipoEntrega, direccion, horario, pago, notas;
+
+    if (modoVenta === "salon") {
+
+        /* =====================================================
+           MODO VENTA SALÓN — mínimos datos, autocompletado
+        ===================================================== */
+
+        const pagoSalonEl =
+            document.getElementById("salon-pago");
+
+        nombre = "Salón";
+        tipoEntrega = "Salón";
+        direccion = "";
+
+        const ahoraSalon = new Date();
+        horario = ahoraSalon.toLocaleTimeString(
+            "es-AR",
+            { hour: "2-digit", minute: "2-digit", hour12: false }
+        );
+
+        pago = pagoSalonEl ? pagoSalonEl.value : "Efectivo";
+        notas = "";
+
+    } else {
+
+        /* =====================================================
+           MODO PEDIDO — datos completos de entrega
+        ===================================================== */
+
+        const nombreEl =
+            document.getElementById("cliente-nombre");
+
+        const entregaEl =
+            document.getElementById("cliente-entrega");
+
+        const direccionEl =
+            document.getElementById("cliente-direccion");
+
+        const horarioEl =
+            document.getElementById("cliente-horario");
+
+        const pagoEl =
+            document.getElementById("cliente-pago");
+
+        const notasEl =
+            document.getElementById("cliente-notas");
+
+
+        nombre =
+            nombreEl
+                ? nombreEl.value.trim()
+                : "";
+
+
+        tipoEntrega =
+            entregaEl
+                ? entregaEl.value
+                : "";
+
+
+        direccion =
+            direccionEl
+                ? direccionEl.value.trim()
+                : "";
+
+
+        horario =
+            horarioEl
+                ? horarioEl.value.trim()
+                : "";
+
+
+        pago =
+            pagoEl
+                ? pagoEl.value
+                : "";
+
+
+        notas =
+            notasEl
+                ? notasEl.value.trim()
+                : "";
+
+
+        /* =====================================================
+           VALIDACIONES (solo aplican al modo Pedido)
+        ===================================================== */
+
+        if (!nombre) {
+
+            alert(
+                "Ingresá el nombre del cliente."
+            );
+
+            if (nombreEl) {
+                nombreEl.focus();
+            }
+
+            return;
+        }
+
+
+        if (
+            tipoEntrega === "Delivery"
+            &&
+            !direccion
+        ) {
+
+            alert(
+                "Ingresá la dirección."
+            );
+
+            if (direccionEl) {
+                direccionEl.focus();
+            }
+
+            return;
+        }
+
+
+        if (!horario) {
+
+            alert(
+                "Indicá el horario."
+            );
+
+            if (horarioEl) {
+                horarioEl.focus();
+            }
+
+            return;
+        }
+    }
+
+
+
+    /*
+       DESDE ACÁ BLOQUEAMOS LA FUNCIÓN.
+       Las validaciones ya pasaron correctamente.
+    */
+
+    impresionEnCurso = true;
+
+
+    /* =====================================================
+       FECHA Y HORA
+    ===================================================== */
+
+    const ahora =
+        new Date();
+
+
+    const horaPedido =
+        ahora.toLocaleTimeString(
+            "es-AR",
+            {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+                hour12: false
+            }
+        );
+
+
+    const fechaPedido =
+        ahora.toLocaleDateString(
+            "es-AR"
+        );
+
+
+    /* =====================================================
+       PRODUCTOS
+    ===================================================== */
+
+    let total = 0;
+
+    let productosTexto = "";
+
+
+    carrito.forEach(function(item) {
+
+        const subtotal =
+            item.precio *
+            item.cantidad;
+
+
+        total += subtotal;
+
+
+        /*
+           QUITAR ACENTOS PARA EVITAR
+           CARACTERES PROBLEMÁTICOS
+           EN LA IMPRESORA.
+        */
+
+        let nombreProd =
+            item.nombre
+                .replace(/á/g, "a")
+                .replace(/é/g, "e")
+                .replace(/í/g, "i")
+                .replace(/ó/g, "o")
+                .replace(/ú/g, "u")
+                .replace(/ñ/g, "n");
+
+
+        /*
+           PRODUCTO Y PRECIO EN LA MISMA LINEA.
+           Separamos el precio visualmente hacia
+           la derecha sin depender de un ancho fijo.
+        */
+
+        const precioTexto =
+            "$" +
+            subtotal.toLocaleString("es-AR");
+
+
+        productosTexto +=
+            `${item.cantidad} x ${nombreProd}    ${precioTexto}\n`;
+
+    });
+
+    /* =====================================================
+       REGISTRAR VENTA EN CAJA
+    ===================================================== */
+
+    cajaRegistrarVentaDesdePedido({
+        nombre: nombre,
+        tipoEntrega: tipoEntrega,
+        pago: pago,
+        total: total
+    });
+
+    /* =====================================================
+       CONSTRUIR TICKET
+    ===================================================== */
+
+    const tituloTicket = modoVenta === "salon" ? "VENTA SALON" : "COMANDA";
+
+    let ticket = `
+
+     MYCFOODS
+       ${tituloTicket}
+--------------------------------
+FECHA: ${fechaPedido}
+HORA:  ${horaPedido}
+--------------------------------
+CLIENTE: ${nombre.toUpperCase()}
+ENTREGA: ${tipoEntrega.toUpperCase()}
+`;
+
+
+    if (tipoEntrega === "Delivery") {
+
+        ticket +=
+`DIRECCION:
+${direccion.toUpperCase()}
+`;
+    }
+
+
+    ticket +=
+`HORARIO: ${horario}
+PAGO:    ${pago}
+--------------------------------
+PEDIDO:
+${productosTexto}--------------------------------
+TOTAL: $${total.toLocaleString("es-AR")}
+`;
+
+
+    if (notas) {
+
+        ticket +=
+`--------------------------------
+OBSERVACIONES:
+${notas.toUpperCase()}
+`;
+    }
+
+
+    ticket +=
+`--------------------------------
+     MYCFOODS
+
+
+`;
+
+
+    /* =====================================================
+       VENTANA DE IMPRESIÓN
+    ===================================================== */
+
+    const ventana =
+        window.open(
+            "",
+            "_blank",
+            "width=400,height=600"
+        );
+
+
+    if (!ventana) {
+
+        impresionEnCurso = false;
+
+        alert(
+            "El navegador bloqueó la ventana de impresión."
+        );
+
+        return;
+    }
+
+
+  ventana.document.open();
+
+ventana.document.write(`
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Comanda MYCFOODS</title>
+
+    <style>
+        @page {
+            size: 80mm auto;
+            margin: 0;
+        }
+
+        html,
+        body {
+            width: 80mm;
+            margin: 0;
+            padding: 0;
+            background: #ffffff;
+        }
+
+        body {
+            padding: 2mm 3mm;
+            font-family: Arial, sans-serif;
+            font-size: 15px;
+            font-weight: bold;
+            line-height: 1.25;
+            color: #000000;
+            text-align: left;
+        }
+
+        .ticket-container {
+            width: 100%;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            text-align: left;
+        }
+
+        @media print {
+            html,
+            body {
+                width: 80mm;
+                margin: 0;
+                padding: 0;
+            }
+
+            body {
+                padding: 2mm 3mm;
+                text-align: left;
+            }
+
+            .ticket-container {
+                width: 100%;
+                margin: 0;
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="ticket-container">${ticket}</div>
+</body>
+
+</html>`);
+
+ventana.document.close();
+
+    /*
+       IMPORTANTE:
+
+       La impresión se dispara UNA SOLA VEZ.
+    */
+
+    setTimeout(function() {
+
+        try {
+
+            ventana.focus();
+
+            ventana.print();
+
+        } catch (error) {
+
+            console.error(
+                "Error de impresión:",
+                error
+            );
+
+        }
+
+
+        setTimeout(function() {
+
+            try {
+                ventana.close();
+            } catch (e) {}
+
+            impresionEnCurso = false;
+
+        }, 1200);
+
+    }, 300);
+}
+
+
+/* =========================================================
+   INICIO
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        renderMenuPagina();
+
+        toggleDireccion();
+
+        cargarMenuDesdeGoogle();
+
+        actualizarCarritoUI();
+
+        actualizarBotonCarrito();
+
+    }
+);
+
+</script>
+</body>
+</html>
