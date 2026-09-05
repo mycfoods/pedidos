@@ -100,759 +100,12 @@
             <div class="menu-tabs-container">
                 <div class="tabs-header" id="tabs-header-dynamic"></div>
                 <div class="menu-accordion-grid" id="menu-accordion-dynamic"></div>
-
-
-                <!-- Radio Buttons para Filtros -->
-                <input type="radio" name="menu-filter" id="tab-wraps" checked>
-                <input type="radio" name="menu-filter" id="tab-menu-dia">
-                <input type="radio" name="menu-filter" id="tab-minutas">
-                <input type="radio" name="menu-filter" id="tab-adicionales">
-                <input type="radio" name="menu-filter" id="tab-ensaladas">
-                <input type="radio" name="menu-filter" id="tab-empanadas">
-                <input type="radio" name="menu-filter" id="tab-tartas">
-                <input type="radio" name="menu-filter" id="tab-sandwichs">
-
-                <!-- Botones de Categorías -->
-                <div class="tabs-header">
-                    <label for="tab-wraps" class="tab-btn">Wraps</label>
-                    <label for="tab-menu-dia" class="tab-btn">Menú del Día</label>
-                    <label for="tab-minutas" class="tab-btn">Minutas</label>
-                    <label for="tab-adicionales" class="tab-btn">Adicionales</label>
-                    <label for="tab-ensaladas" class="tab-btn">Ensaladas</label>
-                    <label for="tab-empanadas" class="tab-btn">Empanadas</label>
-                    <label for="tab-tartas" class="tab-btn">Tartas</label>
-                    <label for="tab-sandwichs" class="tab-btn">Sandwichs Ciabatta</label>
-                </div>
-
-                <!-- Lista de Productos Accordion -->
-                <div class="menu-accordion-grid">
-
-                    <!-- WRAPS -->
-                    <details class="accordion-item cat-wraps">
-                        <summary class="accordion-header">
-                            <span class="prod-name"><i class="fa-solid fa-chevron-right"></i> Wrap Ceasar</span>
-                            <span class="badge-click">Ver detalle</span>
-                        </summary>
-                        <div class="accordion-body">
-                            <p class="desc">Pollo, mix de lechuga, aderezo ceasar y parmesano.</p>
-                            <div class="item-action">
-                                <span class="price">$14.500</span>
-                                <div class="item-controls-inline">
-                                    <div class="qty-selector">
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, -1)">-</button>
-                                        <span class="qty-val">1</span>
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, 1)">+</button>
-                                    </div>
-                                    <button class="btn-add" onclick="agregarDesdeMenu(this, 'Wrap Ceasar', 14500)">+ Agregar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </details>
-
-                    <!-- MENÚ DEL DÍA -->
-                    <details class="accordion-item cat-menu-dia">
-                        <summary class="accordion-header">
-                            <span class="prod-name"><i class="fa-solid fa-chevron-right"></i> Menú del Día</span>
-                            <span class="badge-click">Ver detalle</span>
-                        </summary>
-                        <div class="accordion-body">
-                            <p class="desc" id="texto-menu-actual">Cargando menú...</p>
-                            <div class="item-action">
-                                <span class="price">$13.500</span>
-                                <div class="item-controls-inline">
-                                    <div class="qty-selector">
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, -1)">-</button>
-                                        <span class="qty-val">1</span>
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, 1)">+</button>
-                                    </div>
-                                    <button class="btn-add" onclick="agregarDesdeMenu(this, 'Menú del Día', 13500)">+ Agregar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </details>
-
-                    <!-- MINUTAS -->
-                    <details class="accordion-item cat-minutas">
-                        <summary class="accordion-header">
-                            <span class="prod-name"><i class="fa-solid fa-chevron-right"></i> Pechuga Grillé</span>
-                            <span class="badge-click">Ver detalle</span>
-                        </summary>
-                        <div class="accordion-body">
-                            <p class="desc">Minuta sin guarnición.</p>
-                            <div class="item-action">
-                                <span class="price">$10.000</span>
-                                <div class="item-controls-inline">
-                                    <div class="qty-selector">
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, -1)">-</button>
-                                        <span class="qty-val">1</span>
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, 1)">+</button>
-                                    </div>
-                                    <button class="btn-add" onclick="agregarDesdeMenu(this, 'Pechuga Grillé', 10000)">+ Agregar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </details>
-
-                    <details class="accordion-item cat-minutas">
-                        <summary class="accordion-header">
-                            <span class="prod-name"><i class="fa-solid fa-chevron-right"></i> Milanesa de Carne</span>
-                            <span class="badge-click">Ver detalle</span>
-                        </summary>
-                        <div class="accordion-body">
-                            <p class="desc">Minuta sin guarnición.</p>
-                            <div class="item-action">
-                                <span class="price">$12.000</span>
-                                <div class="item-controls-inline">
-                                    <div class="qty-selector">
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, -1)">-</button>
-                                        <span class="qty-val">1</span>
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, 1)">+</button>
-                                    </div>
-                                    <button class="btn-add" onclick="agregarDesdeMenu(this, 'Milanesa de Carne', 12000)">+ Agregar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </details>
-
-                    <details class="accordion-item cat-minutas">
-                        <summary class="accordion-header">
-                            <span class="prod-name"><i class="fa-solid fa-chevron-right"></i> Suprema de Pollo</span>
-                            <span class="badge-click">Ver detalle</span>
-                        </summary>
-                        <div class="accordion-body">
-                            <p class="desc">Minuta sin guarnición.</p>
-                            <div class="item-action">
-                                <span class="price">$9.500</span>
-                                <div class="item-controls-inline">
-                                    <div class="qty-selector">
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, -1)">-</button>
-                                        <span class="qty-val">1</span>
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, 1)">+</button>
-                                    </div>
-                                    <button class="btn-add" onclick="agregarDesdeMenu(this, 'Suprema de Pollo', 9500)">+ Agregar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </details>
-
-                    <details class="accordion-item cat-minutas">
-                        <summary class="accordion-header">
-                            <span class="prod-name"><i class="fa-solid fa-chevron-right"></i> Omelette de Queso</span>
-                            <span class="badge-click">Ver detalle</span>
-                        </summary>
-                        <div class="accordion-body">
-                            <p class="desc">Minuta sin guarnición.</p>
-                            <div class="item-action">
-                                <span class="price">$8.000</span>
-                                <div class="item-controls-inline">
-                                    <div class="qty-selector">
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, -1)">-</button>
-                                        <span class="qty-val">1</span>
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, 1)">+</button>
-                                    </div>
-                                    <button class="btn-add" onclick="agregarDesdeMenu(this, 'Omelette de Queso', 8000)">+ Agregar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </details>
-
-                    <details class="accordion-item cat-minutas">
-                        <summary class="accordion-header">
-                            <span class="prod-name"><i class="fa-solid fa-chevron-right"></i> Tortilla de Papa</span>
-                            <span class="badge-click">Ver detalle</span>
-                        </summary>
-                        <div class="accordion-body">
-                            <p class="desc">Minuta sin guarnición.</p>
-                            <div class="item-action">
-                                <span class="price">$9.500</span>
-                                <div class="item-controls-inline">
-                                    <div class="qty-selector">
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, -1)">-</button>
-                                        <span class="qty-val">1</span>
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, 1)">+</button>
-                                    </div>
-                                    <button class="btn-add" onclick="agregarDesdeMenu(this, 'Tortilla de Papa', 9500)">+ Agregar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </details>
-
-                    <!-- ADICIONALES -->
-                    <details class="accordion-item cat-adicionales">
-                        <summary class="accordion-header">
-                            <span class="prod-name"><i class="fa-solid fa-chevron-right"></i> Adicional Tomate</span>
-                            <span class="badge-click">Ver detalle</span>
-                        </summary>
-                        <div class="accordion-body">
-                            <p class="desc">Porción individual (75g).</p>
-                            <div class="item-action">
-                                <span class="price">$2.000</span>
-                                <div class="item-controls-inline">
-                                    <div class="qty-selector">
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, -1)">-</button>
-                                        <span class="qty-val">1</span>
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, 1)">+</button>
-                                    </div>
-                                    <button class="btn-add" onclick="agregarDesdeMenu(this, 'Adicional Tomate', 2000)">+ Agregar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </details>
-
-                    <details class="accordion-item cat-adicionales">
-                        <summary class="accordion-header">
-                            <span class="prod-name"><i class="fa-solid fa-chevron-right"></i> Adicional Zanahoria</span>
-                            <span class="badge-click">Ver detalle</span>
-                        </summary>
-                        <div class="accordion-body">
-                            <p class="desc">Porción individual (75g).</p>
-                            <div class="item-action">
-                                <span class="price">$2.000</span>
-                                <div class="item-controls-inline">
-                                    <div class="qty-selector">
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, -1)">-</button>
-                                        <span class="qty-val">1</span>
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, 1)">+</button>
-                                    </div>
-                                    <button class="btn-add" onclick="agregarDesdeMenu(this, 'Adicional Zanahoria', 2000)">+ Agregar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </details>
-
-                    <details class="accordion-item cat-adicionales">
-                        <summary class="accordion-header">
-                            <span class="prod-name"><i class="fa-solid fa-chevron-right"></i> Adicional Lechuga</span>
-                            <span class="badge-click">Ver detalle</span>
-                        </summary>
-                        <div class="accordion-body">
-                            <p class="desc">Porción individual (75g).</p>
-                            <div class="item-action">
-                                <span class="price">$2.000</span>
-                                <div class="item-controls-inline">
-                                    <div class="qty-selector">
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, -1)">-</button>
-                                        <span class="qty-val">1</span>
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, 1)">+</button>
-                                    </div>
-                                    <button class="btn-add" onclick="agregarDesdeMenu(this, 'Adicional Lechuga', 2000)">+ Agregar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </details>
-
-                    <details class="accordion-item cat-adicionales">
-                        <summary class="accordion-header">
-                            <span class="prod-name"><i class="fa-solid fa-chevron-right"></i> Adicional Cebolla</span>
-                            <span class="badge-click">Ver detalle</span>
-                        </summary>
-                        <div class="accordion-body">
-                            <p class="desc">Porción individual (75g).</p>
-                            <div class="item-action">
-                                <span class="price">$2.000</span>
-                                <div class="item-controls-inline">
-                                    <div class="qty-selector">
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, -1)">-</button>
-                                        <span class="qty-val">1</span>
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, 1)">+</button>
-                                    </div>
-                                    <button class="btn-add" onclick="agregarDesdeMenu(this, 'Adicional Cebolla', 2000)">+ Agregar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </details>
-
-                    <details class="accordion-item cat-adicionales">
-                        <summary class="accordion-header">
-                            <span class="prod-name"><i class="fa-solid fa-chevron-right"></i> Huevos Duros</span>
-                            <span class="badge-click">Ver detalle</span>
-                        </summary>
-                        <div class="accordion-body">
-                            <p class="desc">Porción individual (75g).</p>
-                            <div class="item-action">
-                                <span class="price">$2.000</span>
-                                <div class="item-controls-inline">
-                                    <div class="qty-selector">
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, -1)">-</button>
-                                        <span class="qty-val">1</span>
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, 1)">+</button>
-                                    </div>
-                                    <button class="btn-add" onclick="agregarDesdeMenu(this, 'Adicional Huevos Duros', 2000)">+ Agregar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </details>
-
-                    <details class="accordion-item cat-adicionales">
-                        <summary class="accordion-header">
-                            <span class="prod-name"><i class="fa-solid fa-chevron-right"></i> Puré de Papa</span>
-                            <span class="badge-click">Ver detalle</span>
-                        </summary>
-                        <div class="accordion-body">
-                            <p class="desc">Porción individual (75g).</p>
-                            <div class="item-action">
-                                <span class="price">$3.500</span>
-                                <div class="item-controls-inline">
-                                    <div class="qty-selector">
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, -1)">-</button>
-                                        <span class="qty-val">1</span>
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, 1)">+</button>
-                                    </div>
-                                    <button class="btn-add" onclick="agregarDesdeMenu(this, 'Puré de Papa', 3500)">+ Agregar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </details>
-
-                    <details class="accordion-item cat-adicionales">
-                        <summary class="accordion-header">
-                            <span class="prod-name"><i class="fa-solid fa-chevron-right"></i> Huevos Revueltos</span>
-                            <span class="badge-click">Ver detalle</span>
-                        </summary>
-                        <div class="accordion-body">
-                            <p class="desc">Solos (x4 unidades).</p>
-                            <div class="item-action">
-                                <span class="price">$3.000</span>
-                                <div class="item-controls-inline">
-                                    <div class="qty-selector">
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, -1)">-</button>
-                                        <span class="qty-val">1</span>
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, 1)">+</button>
-                                    </div>
-                                    <button class="btn-add" onclick="agregarDesdeMenu(this, 'Huevos Revueltos (x4)', 3000)">+ Agregar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </details>
-
-                    <details class="accordion-item cat-adicionales">
-                        <summary class="accordion-header">
-                            <span class="prod-name"><i class="fa-solid fa-chevron-right"></i> Papas Rústicas</span>
-                            <span class="badge-click">Ver detalle</span>
-                        </summary>
-                        <div class="accordion-body">
-                            <p class="desc">Al horno.</p>
-                            <div class="item-action">
-                                <span class="price">$3.500</span>
-                                <div class="item-controls-inline">
-                                    <div class="qty-selector">
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, -1)">-</button>
-                                        <span class="qty-val">1</span>
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, 1)">+</button>
-                                    </div>
-                                    <button class="btn-add" onclick="agregarDesdeMenu(this, 'Papas Rústicas al Horno', 3500)">+ Agregar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </details>
-
-                    <details class="accordion-item cat-adicionales">
-                        <summary class="accordion-header">
-                            <span class="prod-name"><i class="fa-solid fa-chevron-right"></i> Arroz Blanco</span>
-                            <span class="badge-click">Ver detalle</span>
-                        </summary>
-                        <div class="accordion-body">
-                            <p class="desc">Porción individual (75g).</p>
-                            <div class="item-action">
-                                <span class="price">$3.500</span>
-                                <div class="item-controls-inline">
-                                    <div class="qty-selector">
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, -1)">-</button>
-                                        <span class="qty-val">1</span>
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, 1)">+</button>
-                                    </div>
-                                    <button class="btn-add" onclick="agregarDesdeMenu(this, 'Arroz Blanco', 3500)">+ Agregar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </details>
-
-                    <details class="accordion-item cat-adicionales">
-                        <summary class="accordion-header">
-                            <span class="prod-name"><i class="fa-solid fa-chevron-right"></i> Puré de Kabutia</span>
-                            <span class="badge-click">Ver detalle</span>
-                        </summary>
-                        <div class="accordion-body">
-                            <p class="desc">Porción individual (75g).</p>
-                            <div class="item-action">
-                                <span class="price">$3.500</span>
-                                <div class="item-controls-inline">
-                                    <div class="qty-selector">
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, -1)">-</button>
-                                        <span class="qty-val">1</span>
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, 1)">+</button>
-                                    </div>
-                                    <button class="btn-add" onclick="agregarDesdeMenu(this, 'Puré de Kabutia', 3500)">+ Agregar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </details>
-
-                    <!-- ENSALADAS -->
-                    <details class="accordion-item cat-ensaladas">
-                        <summary class="accordion-header">
-                            <span class="prod-name"><i class="fa-solid fa-chevron-right"></i> Ensalada Completa</span>
-                            <span class="badge-click">Ver detalle</span>
-                        </summary>
-                        <div class="accordion-body">
-                            <p class="desc">Mix verdes, tomate, choclo, zanahoria y huevo duro.</p>
-                            <div class="item-action">
-                                <span class="price">$12.000</span>
-                                <div class="item-controls-inline">
-                                    <div class="qty-selector">
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, -1)">-</button>
-                                        <span class="qty-val">1</span>
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, 1)">+</button>
-                                    </div>
-                                    <button class="btn-add" onclick="agregarDesdeMenu(this, 'Ensalada Completa', 12000)">+ Agregar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </details>
-
-                    <details class="accordion-item cat-ensaladas">
-                        <summary class="accordion-header">
-                            <span class="prod-name"><i class="fa-solid fa-chevron-right"></i> Ensalada César</span>
-                            <span class="badge-click">Ver detalle</span>
-                        </summary>
-                        <div class="accordion-body">
-                            <p class="desc">Mix verdes, pollo, parmesano y crutons.</p>
-                            <div class="item-action">
-                                <span class="price">$13.500</span>
-                                <div class="item-controls-inline">
-                                    <div class="qty-selector">
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, -1)">-</button>
-                                        <span class="qty-val">1</span>
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, 1)">+</button>
-                                    </div>
-                                    <button class="btn-add" onclick="agregarDesdeMenu(this, 'Ensalada César', 13500)">+ Agregar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </details>
-
-                    <!-- EMPANADAS -->
-                    <details class="accordion-item cat-empanadas">
-                        <summary class="accordion-header">
-                            <span class="prod-name"><i class="fa-solid fa-chevron-right"></i> Empanada de Carne a Cuchillo</span>
-                            <span class="badge-click">Ver detalle</span>
-                        </summary>
-                        <div class="accordion-body">
-                            <p class="desc">Individual.</p>
-                            <div class="item-action">
-                                <span class="price">$3.500 c/u</span>
-                                <div class="item-controls-inline">
-                                    <div class="qty-selector">
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, -1)">-</button>
-                                        <span class="qty-val">1</span>
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, 1)">+</button>
-                                    </div>
-                                    <button class="btn-add" onclick="agregarDesdeMenu(this, 'Empanada Carne a Cuchillo', 3500)">+ Agregar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </details>
-
-                    <details class="accordion-item cat-empanadas">
-                        <summary class="accordion-header">
-                            <span class="prod-name"><i class="fa-solid fa-chevron-right"></i> Empanada de Jamón y Queso</span>
-                            <span class="badge-click">Ver detalle</span>
-                        </summary>
-                        <div class="accordion-body">
-                            <p class="desc">Individual.</p>
-                            <div class="item-action">
-                                <span class="price">$3.500 c/u</span>
-                                <div class="item-controls-inline">
-                                    <div class="qty-selector">
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, -1)">-</button>
-                                        <span class="qty-val">1</span>
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, 1)">+</button>
-                                    </div>
-                                    <button class="btn-add" onclick="agregarDesdeMenu(this, 'Empanada Jamón y Queso', 3500)">+ Agregar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </details>
-
-                    <details class="accordion-item cat-empanadas">
-                        <summary class="accordion-header">
-                            <span class="prod-name"><i class="fa-solid fa-chevron-right"></i> Empanada de Pollo</span>
-                            <span class="badge-click">Ver detalle</span>
-                        </summary>
-                        <div class="accordion-body">
-                            <p class="desc">Individual.</p>
-                            <div class="item-action">
-                                <span class="price">$3.500 c/u</span>
-                                <div class="item-controls-inline">
-                                    <div class="qty-selector">
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, -1)">-</button>
-                                        <span class="qty-val">1</span>
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, 1)">+</button>
-                                    </div>
-                                    <button class="btn-add" onclick="agregarDesdeMenu(this, 'Empanada Pollo', 3500)">+ Agregar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </details>
-
-                    <details class="accordion-item cat-empanadas">
-                        <summary class="accordion-header">
-                            <span class="prod-name"><i class="fa-solid fa-chevron-right"></i> Empanada de Espinaca y Salsa Blanca</span>
-                            <span class="badge-click">Ver detalle</span>
-                        </summary>
-                        <div class="accordion-body">
-                            <p class="desc">Individual.</p>
-                            <div class="item-action">
-                                <span class="price">$3.500 c/u</span>
-                                <div class="item-controls-inline">
-                                    <div class="qty-selector">
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, -1)">-</button>
-                                        <span class="qty-val">1</span>
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, 1)">+</button>
-                                    </div>
-                                    <button class="btn-add" onclick="agregarDesdeMenu(this, 'Empanada Espinaca y Salsa Blanca', 3500)">+ Agregar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </details>
-
-                    <!-- TARTAS -->
-                    <details class="accordion-item cat-tartas">
-                        <summary class="accordion-header">
-                            <span class="prod-name"><i class="fa-solid fa-chevron-right"></i> Tarta de Jamón y Queso</span>
-                            <span class="badge-click">Ver detalle</span>
-                        </summary>
-                        <div class="accordion-body">
-                            <p class="desc">Tarta individual (aprox 600g).</p>
-                            <div class="item-action">
-                                <span class="price">$12.000 c/u</span>
-                                <div class="item-controls-inline">
-                                    <div class="qty-selector">
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, -1)">-</button>
-                                        <span class="qty-val">1</span>
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, 1)">+</button>
-                                    </div>
-                                    <button class="btn-add" onclick="agregarDesdeMenu(this, 'Tarta Jamón y Queso', 12000)">+ Agregar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </details>
-
-                    <details class="accordion-item cat-tartas">
-                        <summary class="accordion-header">
-                            <span class="prod-name"><i class="fa-solid fa-chevron-right"></i> Tarta de Kabutia</span>
-                            <span class="badge-click">Ver detalle</span>
-                        </summary>
-                        <div class="accordion-body">
-                            <p class="desc">Tarta individual (aprox 600g).</p>
-                            <div class="item-action">
-                                <span class="price">$12.000 c/u</span>
-                                <div class="item-controls-inline">
-                                    <div class="qty-selector">
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, -1)">-</button>
-                                        <span class="qty-val">1</span>
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, 1)">+</button>
-                                    </div>
-                                    <button class="btn-add" onclick="agregarDesdeMenu(this, 'Tarta Kabutia', 12000)">+ Agregar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </details>
-
-                    <details class="accordion-item cat-tartas">
-                        <summary class="accordion-header">
-                            <span class="prod-name"><i class="fa-solid fa-chevron-right"></i> Tarta de Acelga</span>
-                            <span class="badge-click">Ver detalle</span>
-                        </summary>
-                        <div class="accordion-body">
-                            <p class="desc">Tarta individual (aprox 600g).</p>
-                            <div class="item-action">
-                                <span class="price">$12.000 c/u</span>
-                                <div class="item-controls-inline">
-                                    <div class="qty-selector">
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, -1)">-</button>
-                                        <span class="qty-val">1</span>
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, 1)">+</button>
-                                    </div>
-                                    <button class="btn-add" onclick="agregarDesdeMenu(this, 'Tarta Acelga', 12000)">+ Agregar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </details>
-
-                    <details class="accordion-item cat-tartas">
-                        <summary class="accordion-header">
-                            <span class="prod-name"><i class="fa-solid fa-chevron-right"></i> Tarta de Vegetales Mixta</span>
-                            <span class="badge-click">Ver detalle</span>
-                        </summary>
-                        <div class="accordion-body">
-                            <p class="desc">Tarta individual (aprox 600g).</p>
-                            <div class="item-action">
-                                <span class="price">$12.000 c/u</span>
-                                <div class="item-controls-inline">
-                                    <div class="qty-selector">
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, -1)">-</button>
-                                        <span class="qty-val">1</span>
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, 1)">+</button>
-                                    </div>
-                                    <button class="btn-add" onclick="agregarDesdeMenu(this, 'Tarta Vegetales Mixta', 12000)">+ Agregar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </details>
-
-                    <!-- SANDWICHS -->
-                    <details class="accordion-item cat-sandwichs">
-                        <summary class="accordion-header">
-                            <span class="prod-name"><i class="fa-solid fa-chevron-right"></i> Sándwich Completo</span>
-                            <span class="badge-click">Ver detalle</span>
-                        </summary>
-                        <div class="accordion-body">
-                            <p class="desc">Carne o pollo, lechuga, tomate, jamón y queso en pan ciabatta.</p>
-                            <div class="item-action">
-                                <span class="price">$17.000</span>
-                                <div class="item-controls-inline">
-                                    <div class="qty-selector">
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, -1)">-</button>
-                                        <span class="qty-val">1</span>
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, 1)">+</button>
-                                    </div>
-                                    <button class="btn-add" onclick="agregarDesdeMenu(this, 'Sándwich Completo', 17000)">+ Agregar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </details>
-
-                    <details class="accordion-item cat-sandwichs">
-                        <summary class="accordion-header">
-                            <span class="prod-name"><i class="fa-solid fa-chevron-right"></i> Sándwich Mila Carne/Pollo c/ J&Q</span>
-                            <span class="badge-click">Ver detalle</span>
-                        </summary>
-                        <div class="accordion-body">
-                            <p class="desc">Con jamón y queso en pan ciabatta.</p>
-                            <div class="item-action">
-                                <span class="price">$15.000</span>
-                                <div class="item-controls-inline">
-                                    <div class="qty-selector">
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, -1)">-</button>
-                                        <span class="qty-val">1</span>
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, 1)">+</button>
-                                    </div>
-                                    <button class="btn-add" onclick="agregarDesdeMenu(this, 'Sándwich Mila Carne/Pollo c/ J&Q', 15000)">+ Agregar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </details>
-
-                    <details class="accordion-item cat-sandwichs">
-                        <summary class="accordion-header">
-                            <span class="prod-name"><i class="fa-solid fa-chevron-right"></i> Sándwich Solo Carne o Pollo</span>
-                            <span class="badge-click">Ver detalle</span>
-                        </summary>
-                        <div class="accordion-body">
-                            <p class="desc">En pan ciabatta.</p>
-                            <div class="item-action">
-                                <span class="price">$13.500</span>
-                                <div class="item-controls-inline">
-                                    <div class="qty-selector">
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, -1)">-</button>
-                                        <span class="qty-val">1</span>
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, 1)">+</button>
-                                    </div>
-                                    <button class="btn-add" onclick="agregarDesdeMenu(this, 'Sándwich Solo Carne o Pollo', 13500)">+ Agregar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </details>
-
-                    <details class="accordion-item cat-sandwichs">
-                        <summary class="accordion-header">
-                            <span class="prod-name"><i class="fa-solid fa-chevron-right"></i> Sándwich De Pollo Especial</span>
-                            <span class="badge-click">Ver detalle</span>
-                        </summary>
-                        <div class="accordion-body">
-                            <p class="desc">Pollo grillado, pesto de tomate seco y muzzarella en pan ciabatta.</p>
-                            <div class="item-action">
-                                <span class="price">$15.000</span>
-                                <div class="item-controls-inline">
-                                    <div class="qty-selector">
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, -1)">-</button>
-                                        <span class="qty-val">1</span>
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, 1)">+</button>
-                                    </div>
-                                    <button class="btn-add" onclick="agregarDesdeMenu(this, 'Sándwich De Pollo Especial', 15000)">+ Agregar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </details>
-
-                    <details class="accordion-item cat-sandwichs">
-                        <summary class="accordion-header">
-                            <span class="prod-name"><i class="fa-solid fa-chevron-right"></i> Sándwich Jamón y Queso</span>
-                            <span class="badge-click">Ver detalle</span>
-                        </summary>
-                        <div class="accordion-body">
-                            <p class="desc">En pan ciabatta.</p>
-                            <div class="item-action">
-                                <span class="price">$12.000</span>
-                                <div class="item-controls-inline">
-                                    <div class="qty-selector">
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, -1)">-</button>
-                                        <span class="qty-val">1</span>
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, 1)">+</button>
-                                    </div>
-                                    <button class="btn-add" onclick="agregarDesdeMenu(this, 'Sándwich Jamón y Queso', 12000)">+ Agregar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </details>
-
-                    <details class="accordion-item cat-sandwichs">
-                        <summary class="accordion-header">
-                            <span class="prod-name"><i class="fa-solid fa-chevron-right"></i> Sándwich Jamón, Queso y Tomate</span>
-                            <span class="badge-click">Ver detalle</span>
-                        </summary>
-                        <div class="accordion-body">
-                            <p class="desc">En pan ciabatta.</p>
-                            <div class="item-action">
-                                <span class="price">$12.000</span>
-                                <div class="item-controls-inline">
-                                    <div class="qty-selector">
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, -1)">-</button>
-                                        <span class="qty-val">1</span>
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, 1)">+</button>
-                                    </div>
-                                    <button class="btn-add" onclick="agregarDesdeMenu(this, 'Sándwich Jamón, Queso y Tomate', 12000)">+ Agregar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </details>
-
-                    <details class="accordion-item cat-sandwichs">
-                        <summary class="accordion-header">
-                            <span class="prod-name"><i class="fa-solid fa-chevron-right"></i> Sándwich Queso y Tomate</span>
-                            <span class="badge-click">Ver detalle</span>
-                        </summary>
-                        <div class="accordion-body">
-                            <p class="desc">En pan ciabatta.</p>
-                            <div class="item-action">
-                                <span class="price">$12.000</span>
-                                <div class="item-controls-inline">
-                                    <div class="qty-selector">
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, -1)">-</button>
-                                        <span class="qty-val">1</span>
-                                        <button class="btn-qty-menu" onclick="modificarCantidadMenu(this, 1)">+</button>
-                                    </div>
-                                    <button class="btn-add" onclick="agregarDesdeMenu(this, 'Sándwich Queso y Tomate', 12000)">+ Agregar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </details>
-
-                </div>
             </div>
         </div>
-    </    <!-- SECCIÓN CARRITO CON FORMULARIO -->
+    </section>
+
+
+    <!-- SECCIÓN CARRITO CON FORMULARIO -->
     <section id="carrito" class="section bg-darker">
         <div class="container">
             <div class="section-title">
@@ -872,14 +125,12 @@
                         <i class="fa-solid fa-motorcycle"></i> Pedido (Delivery / Retiro)
                     </button>
                     <button type="button" class="venta-mode-btn" data-mode="salon" onclick="setModoVenta('salon')">
-                        <i class="fa-solid fa-utensils"></i> Venta Salon
+                        <i class="fa-solid fa-utensils"></i> Venta Salón
                     </button>
                 </div>
 
                 <!-- FORMULARIO DE DATOS DE ENVÍO -->
                 <div class="checkout-form" style="margin-top: 15px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
-                    
-                    <!-- CAMPOS DE PEDIDO -->
                     <div id="campos-pedido">
                         <h3 style="color: var(--accent); font-size: 1.1rem; margin-bottom: 15px;">
                             <i class="fa-solid fa-user-pen"></i> Datos para la Entrega
@@ -920,13 +171,12 @@
                         <div class="form-group" style="margin-bottom: 15px;">
                             <label for="cliente-notas" style="display: block; font-size: 0.85rem; margin-bottom: 5px;">Aclaraciones / Notas (Opcional)</label>
                             <input type="text" id="cliente-notas" placeholder="Ej: Sin aderezo / Timbre no funciona" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff;">
-                        </div>   
+                        </div>
                     </div>
 
-                    <!-- CAMPOS DE SALON (Sin tildes y bien cerrado) -->
                     <div id="campos-salon" style="display:none;">
                         <h3 style="color: var(--accent); font-size: 1.1rem; margin-bottom: 15px;">
-                            <i class="fa-solid fa-utensils"></i> Venta Salon
+                            <i class="fa-solid fa-utensils"></i> Venta rápida en salón
                         </h3>
                         <div class="form-group" style="margin-bottom: 12px;">
                             <label for="salon-pago" style="display: block; font-size: 0.85rem; margin-bottom: 5px;">Forma de Pago *</label>
@@ -937,9 +187,7 @@
                             </select>
                         </div>
                     </div>
-
-            
-                
+                </div>
 
 
                 <!-- Resumen y Envio -->
@@ -970,12 +218,96 @@
     <span id="floating-cart-count">0</span>
 </button>
 <script src="caja-core.js"></script>
-            
-    
 <!-- LÓGICA JAVASCRIPT -->
 <script>
 
 let carrito = [];
+let modoVenta = "pedido";
+let categoriaActiva = null;
+
+
+/* =========================================================
+   MODO DE VENTA (Pedido vs Venta rápida en salón)
+========================================================= */
+
+function setModoVenta(modo) {
+
+    modoVenta = modo;
+
+    document.querySelectorAll(".venta-mode-btn").forEach(function (b) {
+        b.classList.toggle("active", b.dataset.mode === modo);
+    });
+
+    const camposPedido = document.getElementById("campos-pedido");
+    const camposSalon = document.getElementById("campos-salon");
+
+    if (camposPedido) camposPedido.style.display = modo === "pedido" ? "block" : "none";
+    if (camposSalon) camposSalon.style.display = modo === "salon" ? "block" : "none";
+}
+
+
+/* =========================================================
+   RENDER DEL MENÚ (desde datos editables en caja.html)
+========================================================= */
+
+function renderMenuPagina() {
+
+    const data = menuLoad();
+    const productos = data.products || [];
+
+    const categorias = [];
+    productos.forEach(function (p) {
+        if (categorias.indexOf(p.category) === -1) categorias.push(p.category);
+    });
+
+    if (!categoriaActiva || categorias.indexOf(categoriaActiva) === -1) {
+        categoriaActiva = categorias[0] || null;
+    }
+
+    const tabsHeader = document.getElementById("tabs-header-dynamic");
+    const grid = document.getElementById("menu-accordion-dynamic");
+
+    if (!tabsHeader || !grid) return;
+
+    if (categorias.length === 0) {
+        tabsHeader.innerHTML = "";
+        grid.innerHTML = '<p style="color: var(--text-gray); text-align:center;">Todavía no hay productos cargados en el menú.</p>';
+        return;
+    }
+
+    tabsHeader.innerHTML = categorias.map(function (cat) {
+        const activo = cat === categoriaActiva ? " active-cat" : "";
+        return '<button type="button" class="tab-btn' + activo + '" onclick="seleccionarCategoriaMenu(\'' + cat.replace(/'/g, "\\'") + '\')">' + cajaEscapeHtml(cat) + '</button>';
+    }).join("");
+
+    grid.innerHTML = productos.filter(function (p) {
+        return p.category === categoriaActiva;
+    }).map(function (p) {
+        const nombreEscapado = p.name.replace(/'/g, "\\'");
+        return '<details class="accordion-item">' +
+            '<summary class="accordion-header">' +
+            '<span class="prod-name"><i class="fa-solid fa-chevron-right"></i> ' + cajaEscapeHtml(p.name) + '</span>' +
+            '<span class="badge-click">Ver detalle</span>' +
+            '</summary>' +
+            '<div class="accordion-body">' +
+            '<p class="desc">' + cajaEscapeHtml(p.desc || "") + '</p>' +
+            '<div class="item-action">' +
+            '<span class="price">' + cajaFmtMoney(p.price) + '</span>' +
+            '<div class="item-controls-inline">' +
+            '<div class="qty-selector">' +
+            '<button class="btn-qty-menu" onclick="modificarCantidadMenu(this, -1)">-</button>' +
+            '<span class="qty-val">1</span>' +
+            '<button class="btn-qty-menu" onclick="modificarCantidadMenu(this, 1)">+</button>' +
+            '</div>' +
+            '<button class="btn-add" onclick="agregarDesdeMenu(this, \'' + nombreEscapado + '\', ' + p.price + ')">+ Agregar</button>' +
+            '</div></div></div></details>';
+    }).join("");
+}
+
+function seleccionarCategoriaMenu(cat) {
+    categoriaActiva = cat;
+    renderMenuPagina();
+}
 
 
 /* =========================================================
@@ -1247,9 +579,6 @@ const URL_MENU =
 
 async function cargarMenuDesdeGoogle() {
 
-    const detalle =
-        document.getElementById("texto-menu-actual");
-
     try {
 
         const respuesta =
@@ -1275,510 +604,19 @@ async function cargarMenuDesdeGoogle() {
         const menu =
             datos.menu_dia;
 
-
-        if (detalle && menu.detalle) {
-
-            detalle.innerText =
-                menu.detalle;
-        }
-
-
-        const precio =
-            document.querySelector(
-                ".cat-menu-dia .price"
-            );
-
-
-        if (precio && menu.precio) {
-
-            precio.innerText =
-                "$" +
-                Number(menu.precio)
-                    .toLocaleString("es-AR");
-        }
-
-
-        const botonAgregar =
-            document.querySelector(
-                ".cat-menu-dia .btn-add"
-            );
-
-
-        if (botonAgregar && menu.precio) {
-
-            botonAgregar.onclick =
-                function() {
-
-                    agregarDesdeMenu(
-                        this,
-                        "Menú del Día",
-                        Number(menu.precio)
-                    );
-
-                };
-        }
-
-    } catch (error) {
-
-        console.error(
-            "Error cargando menú:",
-            error
-        );
-
-        if (detalle) {
-
-            detalle.innerText =
-                "No se pudo cargar el menú";
-        }
-    }
-}
-
-
-/* =========================================================
-   CONTROL ANTI-DOBLE IMPRESIÓN
-========================================================= */
-
-let impresionEnCurso = false;
-
-
-/* =========================================================
-   IMPRIMIR COMANDA
-========================================================= */
-
-function imprimirComanda() {
-
-    /*
-       EVITA QUE DOS CLICS RÁPIDOS,
-       DOBLE EVENTO O DOBLE LLAMADA
-       GENEREN DOS TICKETS.
-    */
-
-    if (impresionEnCurso) {
-
-        console.warn(
-            "Impresión bloqueada: ya hay una impresión en curso."
-        );
-
-        return;
-    }
-
-
-    if (carrito.length === 0) {
-
-        alert("El carrito está vacío.");
-
-        return;
-    }
-
-
-    const nombreEl =
-        document.getElementById("cliente-nombre");
-
-    const entregaEl =
-        document.getElementById("cliente-entrega");
-
-    const direccionEl =
-        document.getElementById("cliente-direccion");
-
-    const horarioEl =
-        document.getElementById("cliente-horario");
-
-    const pagoEl =
-        document.getElementById("cliente-pago");
-
-    const notasEl =
-        document.getElementById("cliente-notas");
-
-
-    const nombre =
-        nombreEl
-            ? nombreEl.value.trim()
-            : "";
-
-
-    const tipoEntrega =
-        entregaEl
-            ? entregaEl.value
-            : "";
-
-
-    const direccion =
-        direccionEl
-            ? direccionEl.value.trim()
-            : "";
-
-
-    const horario =
-        horarioEl
-            ? horarioEl.value.trim()
-            : "";
-
-
-    const pago =
-        pagoEl
-            ? pagoEl.value
-            : "";
-
-
-    const notas =
-        notasEl
-            ? notasEl.value.trim()
-            : "";
-
-
-    /* =====================================================
-       VALIDACIONES
-    ===================================================== */
-
-    if (!nombre) {
-
-        alert(
-            "Ingresá el nombre del cliente."
-        );
-
-        if (nombreEl) {
-            nombreEl.focus();
-        }
-
-        return;
-    }
-
-
-    if (
-        tipoEntrega === "Delivery"
-        &&
-        !direccion
-    ) {
-
-        alert(
-            "Ingresá la dirección."
-        );
-
-        if (direccionEl) {
-            direccionEl.focus();
-        }
-
-        return;
-    }
-
-
-    if (!horario) {
-
-        alert(
-            "Indicá el horario."
-        );
-
-        if (horarioEl) {
-            horarioEl.focus();
-        }
-
-        return;
-    }
-
-
-    /*
-       DESDE ACÁ BLOQUEAMOS LA FUNCIÓN.
-       Las validaciones ya pasaron correctamente.
-    */
-
-    impresionEnCurso = true;
-
-
-    /* =====================================================
-       FECHA Y HORA
-    ===================================================== */
-
-    const ahora =
-        new Date();
-
-
-    const horaPedido =
-        ahora.toLocaleTimeString(
-            "es-AR",
-            {
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit",
-                hour12: false
-            }
-        );
-
-
-    const fechaPedido =
-        ahora.toLocaleDateString(
-            "es-AR"
-        );
-
-
-    /* =====================================================
-       PRODUCTOS
-    ===================================================== */
-
-    let total = 0;
-
-    let productosTexto = "";
-
-
-    carrito.forEach(function(item) {
-
-        const subtotal =
-            item.precio *
-            item.cantidad;
-
-
-        total += subtotal;
-
-
         /*
-           QUITAR ACENTOS PARA EVITAR
-           CARACTERES PROBLEMÁTICOS
-           EN LA IMPRESORA.
+           Actualiza el producto "Menú del Día" en los
+           datos del menú (no el DOM directo), así queda
+           guardado y se re-renderiza igual que cualquier
+           otro producto.
         */
 
-        let nombreProd =
-            item.nombre
-                .replace(/á/g, "a")
-                .replace(/é/g, "e")
-                .replace(/í/g, "i")
-                .replace(/ó/g, "o")
-                .replace(/ú/g, "u")
-                .replace(/ñ/g, "n");
+        const data = menuLoad();
 
+        const producto = data.products.find(function (p) {
+            return p.name === "Menú del Día";
+        });
 
-        /*
-           PRODUCTO Y PRECIO EN LA MISMA LINEA.
-           Separamos el precio visualmente hacia
-           la derecha sin depender de un ancho fijo.
-        */
+        if (producto) {
 
-        const precioTexto =
-            "$" +
-            subtotal.toLocaleString("es-AR");
-
-
-        productosTexto +=
-            `${item.cantidad} x ${nombreProd}    ${precioTexto}\n`;
-
-    });
-
-    /* =====================================================
-       REGISTRAR VENTA EN CAJA
-    ===================================================== */
-
-    cajaRegistrarVentaDesdePedido({
-        nombre: nombre,
-        tipoEntrega: tipoEntrega,
-        pago: pago,
-        total: total
-    });
-
-    /* =====================================================
-       CONSTRUIR TICKET
-    ===================================================== */
-
-    let ticket = `
-
-     MYCFOODS
-       COMANDA
---------------------------------
-FECHA: ${fechaPedido}
-HORA:  ${horaPedido}
---------------------------------
-CLIENTE: ${nombre.toUpperCase()}
-ENTREGA: ${tipoEntrega.toUpperCase()}
-`;
-
-
-    if (tipoEntrega === "Delivery") {
-
-        ticket +=
-`DIRECCION:
-${direccion.toUpperCase()}
-`;
-    }
-
-
-    ticket +=
-`HORARIO: ${horario}
-PAGO:    ${pago}
---------------------------------
-PEDIDO:
-${productosTexto}--------------------------------
-TOTAL: $${total.toLocaleString("es-AR")}
-`;
-
-
-    if (notas) {
-
-        ticket +=
-`--------------------------------
-OBSERVACIONES:
-${notas.toUpperCase()}
-`;
-    }
-
-
-    ticket +=
-`--------------------------------
-     MYCFOODS
-
-
-`;
-
-
-    /* =====================================================
-       VENTANA DE IMPRESIÓN
-    ===================================================== */
-
-    const ventana =
-        window.open(
-            "",
-            "_blank",
-            "width=400,height=600"
-        );
-
-
-    if (!ventana) {
-
-        impresionEnCurso = false;
-
-        alert(
-            "El navegador bloqueó la ventana de impresión."
-        );
-
-        return;
-    }
-
-
-  ventana.document.open();
-
-ventana.document.write(`
-
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Comanda MYCFOODS</title>
-
-    <style>
-        @page {
-            size: 80mm auto;
-            margin: 0;
-        }
-
-        html,
-        body {
-            width: 80mm;
-            margin: 0;
-            padding: 0;
-            background: #ffffff;
-        }
-
-        body {
-            padding: 2mm 3mm;
-            font-family: Arial, sans-serif;
-            font-size: 15px;
-            font-weight: bold;
-            line-height: 1.25;
-            color: #000000;
-            text-align: left;
-        }
-
-        .ticket-container {
-            width: 100%;
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            text-align: left;
-        }
-
-        @media print {
-            html,
-            body {
-                width: 80mm;
-                margin: 0;
-                padding: 0;
-            }
-
-            body {
-                padding: 2mm 3mm;
-                text-align: left;
-            }
-
-            .ticket-container {
-                width: 100%;
-                margin: 0;
-                padding: 0;
-            }
-        }
-    </style>
-</head>
-
-<body>
-    <div class="ticket-container">${ticket}</div>
-</body>
-
-</html>`);
-
-ventana.document.close();
-
-    /*
-       IMPORTANTE:
-
-       La impresión se dispara UNA SOLA VEZ.
-    */
-
-    setTimeout(function() {
-
-        try {
-
-            ventana.focus();
-
-            ventana.print();
-
-        } catch (error) {
-
-            console.error(
-                "Error de impresión:",
-                error
-            );
-
-        }
-
-
-        setTimeout(function() {
-
-            try {
-                ventana.close();
-            } catch (e) {}
-
-            impresionEnCurso = false;
-
-        }, 1200);
-
-    }, 300);
-}
-
-
-/* =========================================================
-   INICIO
-========================================================= */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function() {
-
-        toggleDireccion();
-
-        cargarMenuDesdeGoogle();
-
-        actualizarCarritoUI();
-
-        actualizarBotonCarrito();
-
-    }
-);
-
-</script>
+                       
