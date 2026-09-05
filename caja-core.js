@@ -42,7 +42,7 @@ const CAJA_EXPENSE_CATS = [
 const CAJA_ENTREGA_TO_CATEGORY = {
   "Delivery (Tigre Centro)": "Ventas delivery",
   "Retiro por local (Luis Pereyra 440)": "Ventas take away",
-  "Salón": "Ventas salón"
+  "Salon": "Ventas salon"
 };
 
 /* =========================================================
