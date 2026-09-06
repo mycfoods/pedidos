@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MYCFOODS - Monitor Cocina KDS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        surface: '#0b1326',
+                        'surface-container-low': '#131b2e',
+                        'surface-bright': '#31394d',
+                        amber: { 500: '#f59e0b', 600: '#d97706' }
+                    },
+                    fontFamily: { sans: ['Montserrat', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#0b1326] text-white font-sans min-h-screen flex flex-col">
+    <!-- Navbar -->
+    <header class="bg-[#131b2e] border-b border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 z-50">
+        <div class="flex items-center gap-4">
+            <div class="bg-amber-500/15 border border-amber-500 rounded-lg p-2 flex items-center justify-center">
+                <svg class="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+            </div>
+            <div>
+                <h1 class="text-xl font-extrabold tracking-wide text-white">MYCFOODS</h1>
+                <p class="text-xs text-amber-500 font-semibold tracking-wider">MONITOR COCINA KDS</p>
+            </div>
+        </div>
+        <nav class="hidden md:flex items-center gap-6 text-sm font-semibold">
+            <a href="index.html" class="text-gray-300 hover:text-amber-500 transition">Pedidos</a>
+            <a href="salon.html" class="text-gray-300 hover:text-amber-500 transition">Salón</a>
+            <a href="cocina.html" class="text-amber-500 border-b-2 border-amber-500 pb-1">Cocina KDS</a>
+            <a href="caja.html" class="text-gray-300 hover:text-amber-500 transition">Caja</a>
+            <a href="delivery.html" class="text-gray-300 hover:text-amber-500 transition">Delivery</a>
+            <a href="stock.html" class="text-gray-300 hover:text-amber-500 transition">Stock</a>
+            <a href="config.html" class="text-gray-300 hover:text-amber-500 transition">Configuración</a>
+        </nav>
+        <span class="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">● 3 COMANDAS ACTIVAS</span>
+    </header>
+
+    <!-- Main -->
+    <main class="flex-1 p-6 max-w-[1600px] mx-auto w-full grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Comanda 1: Demorada -->
+        <div class="bg-[#131b2e] border-2 border-red-500 rounded-2xl p-5 flex flex-col justify-between">
+            <div>
+                <div class="flex justify-between items-center border-b border-white/10 pb-3 mb-3">
+                    <span class="font-extrabold text-white text-lg">TICKET #104</span>
+                    <span class="text-xs bg-red-500/20 text-red-400 font-bold px-2.5 py-1 rounded-full animate-pulse">⏱️ 16 min (ALERTA)</span>
+                </div>
+                <p class="text-xs font-semibold text-amber-400 mb-3">Mesa 4 • Mozo: Matías</p>
+                <ul class="text-sm space-y-2.5">
+                    <li class="font-bold text-white flex items-center justify-between">
+                        <span>2x Wrap Pollo Crispy</span>
+                        <span class="text-xs text-gray-400">Cocción</span>
+                    </li>
+                    <li class="text-xs text-amber-300 pl-3 bg-amber-500/10 py-1 rounded border-l-2 border-amber-500">⚠️ Sin aderezo picante</li>
+                    <li class="font-bold text-white flex items-center justify-between">
+                        <span>1x Milanesa Napolitana con fritas</span>
+                        <span class="text-xs text-gray-400">Al Horno</span>
+                    </li>
+                </ul>
+            </div>
+            <button class="w-full mt-6 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold py-3 rounded-xl transition shadow-lg">
+                ✓ Despachar Comanda
+            </button>
+        </div>
+
+        <!-- Comanda 2: En tiempo -->
+        <div class="bg-[#131b2e] border border-white/10 rounded-2xl p-5 flex flex-col justify-between">
+            <div>
+                <div class="flex justify-between items-center border-b border-white/10 pb-3 mb-3">
+                    <span class="font-extrabold text-white text-lg">TICKET #105</span>
+                    <span class="text-xs bg-amber-500/20 text-amber-400 font-bold px-2.5 py-1 rounded-full">⏱️ 6 min</span>
+                </div>
+                <p class="text-xs font-semibold text-blue-400 mb-3">🛵 Delivery #D-402 • Gonzalo M.</p>
+                <ul class="text-sm space-y-2.5">
+                    <li class="font-bold text-white flex items-center justify-between">
+                        <span>1x Ciabatta de Jamón Crudo</span>
+                        <span class="text-xs text-gray-400">Preparación</span>
+                    </li>
+                    <li class="font-bold text-white flex items-center justify-between">
+                        <span>1x Porción de Papas Rústicas</span>
+                        <span class="text-xs text-gray-400">Freidora</span>
+                    </li>
+                </ul>
+            </div>
+            <button class="w-full mt-6 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold py-3 rounded-xl transition shadow-lg">
+                ✓ Despachar Comanda
+            </button>
+        </div>
+
+        <!-- Comanda 3: Nueva -->
+        <div class="bg-[#131b2e] border border-white/10 rounded-2xl p-5 flex flex-col justify-between">
+            <div>
+                <div class="flex justify-between items-center border-b border-white/10 pb-3 mb-3">
+                    <span class="font-extrabold text-white text-lg">TICKET #106</span>
+                    <span class="text-xs bg-blue-500/20 text-blue-400 font-bold px-2.5 py-1 rounded-full">⏱️ Recién entrada</span>
+                </div>
+                <p class="text-xs font-semibold text-emerald-400 mb-3">Mesa 2 • Mostrador Retiro</p>
+                <ul class="text-sm space-y-2.5">
+                    <li class="font-bold text-white flex items-center justify-between">
+                        <span>1x Docena Empanadas Salteñas</span>
+                        <span class="text-xs text-gray-400">Horno</span>
+                    </li>
+                </ul>
+            </div>
+            <button class="w-full mt-6 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold py-3 rounded-xl transition shadow-lg">
+                ✓ Despachar Comanda
+            </button>
+        </div>
+    </main>
+</body>
+</html>
+```
