@@ -1,6 +1,7 @@
 /* =========================================================
-   MYCFOODS · CAJA — lógica de la página caja.html
-   Requiere que caja-core.js esté cargado antes que este archivo.
+   MYCFOODS · CAJA — lógica modular estilo MaxiRest (caja_2.js)
+   Control total unificado: Salón, Mostrador, Delivery, Modificadores,
+   Turnos de caja, Retiros parciales y Comandas sectorizadas.
 ========================================================= */
 
 let state = cajaLoad();
@@ -11,6 +12,28 @@ let movFormDate = null;
 let aperturaEditing = false;
 let mayorMonth = null;
 
+// =========================================================
+// NUEVAS ESTRUCTURAS MAXIREST: SALONES, TURNOS Y MODIFICADORES
+// =========================================================
+if (!state.maxirestConfig) {
+  state.maxirestConfig = {
+    modoVenta: "mostrador", // 'salon', 'mostrador', 'delivery'
+    turnoActual: "Mañana",
+    cajeroActual: "Admin",
+    fondoFijoTurno: 0,
+    retirosParciales: []
+  };
+}
+
+if (!state.mesasSalones) {
+  state.mesasSalones = [
+    { id: 1, numero: "Mesa 1", estado: "libre", mozo: "", comanda: [] },
+    { id: 2, numero: "Mesa 2", estado: "libre", mozo: "", comanda: [] },
+    { id: 3, numero: "Mesa 3", estado: "libre", mozo: "", comanda: [] },
+    { id: 4, numero: "Mostrador 1", estado: "activo", mozo: "Caja", comanda: [] }
+  ];
+}
+
 function escapeHtml(s) {
   return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
     return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
@@ -18,7 +41,7 @@ function escapeHtml(s) {
 }
 
 /* =========================================================
-   NAVEGACIÓN DE PESTAÑAS
+   NAVEGACIÓN DE PESTAÑAS (Ampliadas a estilo MaxiRest)
 ========================================================= */
 function setTab(id) {
   activeTab = id;
@@ -39,6 +62,48 @@ function renderActive() {
   else if (activeTab === "mayor") renderMayor();
   else if (activeTab === "equilibrio") renderEquilibrio();
   else if (activeTab === "reportes") renderReportes();
+  else if (activeTab === "salon") renderSalonMesas(); // Módulo MaxiRest Nuevo
+}
+
+/* =========================================================
+   MÓDULO NUEVO: SALÓN, MESAS Y COMANDAS (Estilo MaxiRest)
+========================================================= */
+function renderSalonMesas() {
+  const el = document.getElementById("panel-salon");
+  if (!el) return;
+  const mesas = state.mesasSalones || [];
+
+  let html = '<div class="caja-section-title"><h2>Gestión de Salón y Comandas (MaxiRest)</h2></div>';
+  html += '<div class="caja-card">';
+  html += '<div class="stat-label" style="margin-bottom:10px;">Estado de mesas y terminales</div>';
+  html += '<div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap:10px;">';
+  
+  mesas.forEach(function(m) {
+    const ocupada = m.estado === "ocupado";
+    html += '<div style="border:1px solid ' + (ocupada ? '#e2564a' : '#5fa372') + '; padding:10px; border-radius:6px; background:rgba(0,0,0,0.2); text-align:center;">' +
+      '<div style="font-weight:bold; color:var(--text-white);">' + escapeHtml(m.numero) + '</div>' +
+      '<div style="font-size:0.75rem; color:var(--text-gray); margin:4px 0;">' + (ocupada ? 'Ocupada (' + (m.mozo || 'Mozo') + ')' : 'Libre') + '</div>' +
+      '<button class="caja-btn caja-btn-ghost" style="font-size:0.7rem; padding:4px 8px;" onclick="gestionarMesa(' + m.id + ')">' + (ocupada ? 'Ver / Cobrar' : 'Abrir Mesa') + '</button>' +
+      '</div>';
+  });
+  html += '</div></div>';
+  el.innerHTML = html;
+}
+
+function gestionarMesa(id) {
+  const m = state.mesasSalones.find(x => x.id === id);
+  if (!m) return;
+  if (m.estado === "libre") {
+    m.estado = "ocupado";
+    m.mozo = prompt("Nombre del Mozo / Operador:", "Mostrador") || "Caja";
+  } else {
+    if (confirm("¿Cerrar mesa y registrar cobro en caja?")) {
+      m.estado = "libre";
+      m.comanda = [];
+    }
+  }
+  cajaSave(state);
+  renderSalonMesas();
 }
 
 /* =========================================================
@@ -56,43 +121,20 @@ function renderAjustes() {
   html += '<input class="caja-input" value="' + escapeHtml(state.businessName || "") + '" onchange="guardarBusinessNameAjustes(this.value)" style="margin-bottom:14px;">';
 
   html += '<div class="stat-label" style="margin-bottom:8px;">WhatsApp de contacto</div>';
-  html += '<input class="caja-input" placeholder="Ej: 5491122334455 (con código de país, sin espacios)" value="' + escapeHtml(site.whatsapp) + '" onchange="actualizarAjuste(\'whatsapp\', this.value)">';
-  html += '<div class="stat-sub" style="margin-top:6px;">Si lo completás, aparece un botón flotante de WhatsApp en la página de pedidos.</div>';
+  html += '<input class="caja-input" placeholder="Ej: 5491122334455" value="' + escapeHtml(site.whatsapp) + '" onchange="actualizarAjuste(\'whatsapp\', this.value)">';
   html += '</div>';
 
   html += '<div class="caja-card">';
-  html += '<div class="stat-label" style="margin-bottom:10px;">Textos arriba del menú</div>';
-  html += '<input class="caja-input" placeholder="Subtítulo chico (ej: NUESTRA CARTA)" value="' + escapeHtml(site.heroSubtitulo) + '" onchange="actualizarAjuste(\'heroSubtitulo\', this.value)" style="margin-bottom:10px;">';
-  html += '<input class="caja-input" placeholder="Título (ej: Menú)" value="' + escapeHtml(site.heroTitulo) + '" onchange="actualizarAjuste(\'heroTitulo\', this.value)" style="margin-bottom:10px;">';
-  html += '<input class="caja-input" placeholder="Bajada (ej: Elegí y armá tu pedido)" value="' + escapeHtml(site.heroBajada) + '" onchange="actualizarAjuste(\'heroBajada\', this.value)">';
-  html += '</div>';
-
-  html += '<div class="caja-card">';
-  html += '<div class="stat-label" style="margin-bottom:10px;">Entrega y horarios</div>';
-  html += '<div class="caja-field" style="margin-bottom:10px;"><label>Texto para "Delivery"</label><input class="caja-input" value="' + escapeHtml(site.entregaDeliveryLabel) + '" onchange="actualizarAjuste(\'entregaDeliveryLabel\', this.value)"></div>';
-  html += '<div class="caja-field" style="margin-bottom:12px;"><label>Texto para "Retiro por local"</label><input class="caja-input" value="' + escapeHtml(site.entregaRetiroLabel) + '" onchange="actualizarAjuste(\'entregaRetiroLabel\', this.value)"></div>';
-  html += '<div class="caja-row">';
-  html += '<div class="caja-field"><label>Horario mínimo de entrega</label><input class="caja-input" type="time" value="' + site.horarioMin + '" onchange="actualizarAjuste(\'horarioMin\', this.value)"></div>';
-  html += '<div class="caja-field"><label>Horario máximo de entrega</label><input class="caja-input" type="time" value="' + site.horarioMax + '" onchange="actualizarAjuste(\'horarioMax\', this.value)"></div>';
-  html += '</div>';
-  html += '</div>';
-
-  html += '<div class="caja-card">';
-  html += '<div class="stat-label" style="margin-bottom:10px;">Formas de pago disponibles (en pedidos y movimientos)</div>';
+  html += '<div class="stat-label" style="margin-bottom:10px;">Formas de pago disponibles (Arqueo MaxiRest)</div>';
   (site.metodosPago || []).forEach(function (m, i) {
     const esEfectivo = m.trim().toLowerCase() === "efectivo";
     html += '<div class="caja-row" style="align-items:center;">' +
-      '<input class="caja-input" style="flex:1;" value="' + escapeHtml(m) + '" onchange="renombrarMetodoPago(' + i + ', this.value)" ' + (esEfectivo ? 'disabled title="Este nombre no se puede cambiar: el saldo de caja física lo usa como referencia."' : '') + '>' +
-      (esEfectivo
-        ? '<span class="stat-sub" style="white-space:nowrap; padding:0 6px;" title="No se puede borrar">🔒</span>'
-        : '<button class="mov-del" onclick="borrarMetodoPago(' + i + ')"><i class="fa-solid fa-trash"></i></button>') +
+      '<input class="caja-input" style="flex:1;" value="' + escapeHtml(m) + '" onchange="renombrarMetodoPago(' + i + ', this.value)" ' + (esEfectivo ? 'disabled' : '') + '>' +
+      (esEfectivo ? '<span class="stat-sub" style="padding:0 6px;">🔒</span>' : '<button class="mov-del" onclick="borrarMetodoPago(' + i + ')"><i class="fa-solid fa-trash"></i></button>') +
       '</div>';
   });
   html += '<button class="caja-btn caja-btn-ghost" onclick="agregarMetodoPago()" style="margin-top:8px;">+ Agregar forma de pago</button>';
-  html += '<div class="stat-sub" style="margin-top:8px;">"Efectivo" está protegido: el saldo físico de caja (Resumen, Movimientos, tickets) se calcula sumando solo los movimientos con ese método exacto. El resto los podés renombrar, agregar o borrar libremente.</div>';
   html += '</div>';
-
-  html += '<div class="empty-note">Los cambios se guardan solos y se aplican en la página de pedidos la próxima vez que se abra o recargue.</div>';
 
   el.innerHTML = html;
 }
@@ -131,8 +173,7 @@ function borrarMetodoPago(i) {
 }
 
 /* =========================================================
-   MENÚ — administración de productos y categorías
-   (se refleja al instante en index.html, sin tocar HTML)
+   MENÚ — administración avanzada de productos y modificadores
 ========================================================= */
 let menuEditingId = null;
 
@@ -149,7 +190,7 @@ function renderMenuAdmin() {
 
   const editing = menuEditingId ? products.find(function (p) { return p.id === menuEditingId; }) : null;
 
-  let html = '<div class="caja-section-title"><h2>Menú</h2></div>';
+  let html = '<div class="caja-section-title"><h2>Menú y Familias (Estilo MaxiRest)</h2></div>';
 
   html += '<div class="caja-card">';
   html += '<div style="max-height:320px; overflow-y:auto; margin-bottom:14px;">';
@@ -184,15 +225,13 @@ function renderMenuAdmin() {
 
   html += '<div class="caja-row">';
   html += '<select class="caja-select" id="menu-form-category" style="flex:1;">';
-  html += '<option value="">— categoría existente —</option>';
+  html += '<option value="">— familia existente —</option>';
   categories.forEach(function (c) {
     html += '<option value="' + escapeHtml(c) + '"' + (editing && editing.category === c ? " selected" : "") + '>' + escapeHtml(c) + '</option>';
   });
   html += '</select>';
-  html += '<input class="caja-input" style="flex:1;" id="menu-form-newcategory" placeholder="o categoría nueva">';
+  html += '<input class="caja-input" style="flex:1;" id="menu-form-newcategory" placeholder="o familia nueva">';
   html += '</div>';
-
-  html += '<input class="caja-input" id="menu-form-desc" placeholder="Descripción (opcional, sale en la página de pedidos)" value="' + (editing ? escapeHtml(editing.desc || "") : "") + '" style="margin-bottom:10px;">';
 
   html += '<div class="caja-row">';
   html += '<button class="caja-btn caja-btn-primary" style="flex:1;" onclick="guardarProductoMenu()">' + (editing ? "Guardar cambios" : "+ Agregar al menú") + '</button>';
@@ -228,24 +267,20 @@ function guardarProductoMenu() {
   const price = parseFloat(document.getElementById("menu-form-price").value);
   const catSelect = document.getElementById("menu-form-category").value;
   const catNew = document.getElementById("menu-form-newcategory").value.trim();
-  const desc = document.getElementById("menu-form-desc").value.trim();
   const category = catNew || catSelect;
 
   if (!name || !price || price <= 0 || !category) {
-    alert("Completá nombre, precio y categoría (elegí una existente o escribí una nueva).");
+    alert("Completá nombre, precio y familia.");
     return;
   }
 
   const data = menuLoad();
-
   if (menuEditingId) {
     const p = data.products.find(function (x) { return x.id === menuEditingId; });
-    if (p) {
-      p.name = name; p.price = price; p.category = category; p.desc = desc;
-    }
+    if (p) { p.name = name; p.price = price; p.category = category; }
     menuEditingId = null;
   } else {
-    data.products.push({ id: cajaUid(), name: name, price: price, category: category, desc: desc });
+    data.products.push({ id: cajaUid(), name: name, price: price, category: category });
   }
 
   menuSave(data);
@@ -292,30 +327,16 @@ function renderResumen() {
     days.push({ label: cajaFmtDateLabel(key), net: net });
   }
   const maxAbs = Math.max(1, Math.max.apply(null, days.map(function (d) { return Math.abs(d.net); })));
-
   const recent = state.transactions.slice().sort(function (a, b) { return a.date < b.date ? 1 : -1; }).slice(0, 6);
 
   el.innerHTML =
-    '<div class="caja-section-title"><h2>Resumen general</h2></div>' +
+    '<div class="caja-section-title"><h2>Resumen general (Terminal Activa)</h2></div>' +
     '<div class="stat-grid">' +
     '<div class="stat-card"><div class="stat-label">Saldo caja mayor (efectivo)</div><div class="stat-value">' + cajaFmtMoney(balances.principal) + "</div></div>" +
     '<div class="stat-card"><div class="stat-label">Saldo caja chica (efectivo)</div><div class="stat-value">' + cajaFmtMoney(balances.chica) + "</div></div>" +
-    '<div class="stat-card"><div class="stat-label">Ingresos del mes (todos los métodos)</div><div class="stat-value up">' + cajaFmtMoney(monthIn) + "</div></div>" +
-    '<div class="stat-card"><div class="stat-label">Egresos del mes (todos los métodos)</div><div class="stat-value down">' + cajaFmtMoney(monthOut) + "</div></div>" +
-    '<div class="stat-card"><div class="stat-label">Resultado del mes</div><div class="stat-value ' + (monthIn - monthOut >= 0 ? "up" : "down") + '">' + cajaFmtMoney(monthIn - monthOut) + "</div></div>" +
+    '<div class="stat-card"><div class="stat-label">Ingresos del mes</div><div class="stat-value up">' + cajaFmtMoney(monthIn) + "</div></div>" +
+    '<div class="stat-card"><div class="stat-label">Egresos del mes</div><div class="stat-value down">' + cajaFmtMoney(monthOut) + "</div></div>" +
     "</div>" +
-    '<div class="caja-card">' +
-    '<div class="stat-label" style="margin-bottom:10px;">Flujo neto &mdash; últimos 7 días</div>' +
-    '<div style="display:flex; align-items:flex-end; gap:8px; height:90px;">' +
-    days.map(function (d) {
-      return '<div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;">' +
-        '<div style="width:100%; height:60px; display:flex; align-items:flex-end;">' +
-        '<div style="width:100%; height:' + Math.max(4, Math.abs(d.net) / maxAbs * 60) + 'px; background:' + (d.net >= 0 ? "#5fa372" : "#e2564a") + '; border-radius:2px;"></div>' +
-        "</div>" +
-        '<span style="font-size:0.65rem; color:var(--text-gray);">' + d.label + "</span>" +
-        "</div>";
-    }).join("") +
-    "</div></div>" +
     '<div class="caja-section-title"><h2>Últimos movimientos</h2></div>' +
     '<div class="caja-card">' +
     (recent.length === 0 ? '<div class="empty-note">Todavía no hay movimientos.</div>' : recent.map(movRowHtml).join("")) +
@@ -323,7 +344,7 @@ function renderResumen() {
 }
 
 /* =========================================================
-   MOVIMIENTOS
+   MOVIMIENTOS Y ARQUEO DE CAJA
 ========================================================= */
 function renderMovimientos() {
   const el = document.getElementById("panel-movimientos");
@@ -347,26 +368,20 @@ function renderMovimientos() {
     const valPrincipal = opening ? opening.principal : autoApertura.principal;
     const valChica = opening ? opening.chica : autoApertura.chica;
     aperturaHtml =
-      '<div class="stat-label" style="margin-bottom:10px;">Ajustar apertura de hoy (por ejemplo, si el conteo físico no coincide)</div>' +
+      '<div class="stat-label" style="margin-bottom:10px;">Arqueo y Apertura de Turno</div>' +
       '<div class="caja-row">' +
-      '<div class="caja-field"><label>Saldo inicial caja mayor (efectivo contado)</label><input class="caja-input" id="apertura-principal" type="number" placeholder="0" value="' + valPrincipal + '"></div>' +
-      '<div class="caja-field"><label>Saldo inicial caja chica (efectivo contado)</label><input class="caja-input" id="apertura-chica" type="number" placeholder="0" value="' + valChica + '"></div>' +
+      '<div class="caja-field"><label>Fondo fijo caja mayor</label><input class="caja-input" id="apertura-principal" type="number" value="' + valPrincipal + '"></div>' +
+      '<div class="caja-field"><label>Fondo fijo caja chica</label><input class="caja-input" id="apertura-chica" type="number" value="' + valChica + '"></div>' +
       "</div>" +
       '<div class="caja-row">' +
-      '<button class="caja-btn caja-btn-primary" style="flex:1;" onclick="guardarApertura()">Guardar ajuste</button>' +
+      '<button class="caja-btn caja-btn-primary" style="flex:1;" onclick="guardarApertura()">Guardar apertura</button>' +
       '<button class="caja-btn caja-btn-ghost" onclick="cancelarEdicionApertura()">Cancelar</button>' +
-      "</div>";
-  } else if (opening) {
-    aperturaHtml =
-      '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">' +
-      '<div class="stat-label">Apertura de hoy (ajustada a mano): <span style="color:var(--text-white); font-family:\'Courier New\',monospace;">' + cajaFmtMoney(opening.principal) + '</span> mayor &middot; <span style="color:var(--text-white); font-family:\'Courier New\',monospace;">' + cajaFmtMoney(opening.chica) + "</span> chica</div>" +
-      '<button class="caja-btn caja-btn-ghost" onclick="editarApertura()">Ajustar</button>' +
       "</div>";
   } else {
     aperturaHtml =
       '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">' +
-      '<div class="stat-label">Apertura de hoy (automática, sigue del cierre de ayer): <span style="color:var(--text-white); font-family:\'Courier New\',monospace;">' + cajaFmtMoney(autoApertura.principal) + '</span> mayor &middot; <span style="color:var(--text-white); font-family:\'Courier New\',monospace;">' + cajaFmtMoney(autoApertura.chica) + "</span> chica</div>" +
-      '<button class="caja-btn caja-btn-ghost" onclick="editarApertura()">Ajustar</button>' +
+      '<div class="stat-label">Apertura activa: <span style="color:var(--text-white); font-family:\'Courier New\',monospace;">' + cajaFmtMoney(autoApertura.principal) + '</span> mayor</div>' +
+      '<button class="caja-btn caja-btn-ghost" onclick="editarApertura()">Ajustar Turno</button>' +
       "</div>";
   }
 
@@ -374,9 +389,6 @@ function renderMovimientos() {
 
   el.innerHTML =
     '<div class="caja-card" id="apertura-card">' + aperturaHtml + "</div>" +
-
-    (fechaActual !== today ? '<div class="caja-card" style="border-color:var(--accent); display:flex; justify-content:space-between; align-items:center;"><span style="font-size:0.85rem; color:var(--accent);"><i class="fa-solid fa-clock-rotate-left"></i> Cargando movimientos para el ' + cajaFmtDateLabel(fechaActual) + '</span><button class="caja-btn caja-btn-ghost" onclick="volverAHoy()">Volver a hoy</button></div>' : "") +
-
     '<div class="caja-card">' +
     '<div class="caja-row" style="margin-bottom:12px;">' +
     '<button class="caja-btn" style="flex:1; border:1px solid ' + (movFormType === "ingreso" ? "#5fa372" : "var(--border-color)") + "; background:" + (movFormType === "ingreso" ? "rgba(95,163,114,0.12)" : "transparent") + "; color:" + (movFormType === "ingreso" ? "#5fa372" : "var(--text-gray)") + ';" onclick="setMovType(\'ingreso\')">+ Ingreso</button>' +
@@ -387,33 +399,20 @@ function renderMovimientos() {
     '<div class="caja-field"><label>Fecha</label><input class="caja-input" type="date" id="mov-date" value="' + fechaActual + '" onchange="movFormDate = this.value"></div>' +
     '<div class="caja-field"><label>Caja</label><select class="caja-select" id="mov-ledger"><option value="principal">Caja mayor</option><option value="chica">Caja chica</option></select></div>' +
     "</div>" +
-    '<div class="stat-label" style="margin:10px 0 6px;">Categoría</div>' +
+    '<div class="stat-label" style="margin:10px 0 6px;">Categoría / Rubro</div>' +
     '<div class="caja-row" id="mov-cats">' +
     cats.map(function (c, i) { return '<button type="button" class="chip ' + (i === 0 ? "active" : "") + '" data-cat="' + escapeHtml(c) + '" onclick="selectMovCat(this)">' + escapeHtml(c) + "</button>"; }).join("") +
     "</div>" +
-    '<div class="stat-label" style="margin:10px 0 6px;">Método de pago</div>' +
+    '<div class="stat-label" style="margin:10px 0 6px;">Método de pago (MaxiRest)</div>' +
     '<div class="caja-row" id="mov-methods">' +
     getMetodosPago().map(function (m, i) { return '<button type="button" class="chip ' + (i === 0 ? "active" : "") + '" data-method="' + escapeHtml(m) + '" onclick="selectMovMethod(this)">' + escapeHtml(m) + "</button>"; }).join("") +
     "</div>" +
-    '<input class="caja-input" id="mov-note" placeholder="Nota (opcional)" style="margin:10px 0 12px;">' +
-    '<button class="caja-btn caja-btn-primary caja-btn-block" onclick="registrarMovimiento()">+ Registrar movimiento</button>' +
+    '<input class="caja-input" id="mov-note" placeholder="Nota o detalle opcional" style="margin:10px 0 12px;">' +
+    '<button class="caja-btn caja-btn-primary caja-btn-block" onclick="registrarMovimiento()">+ Registrar en Caja</button>' +
     "</div>" +
-
-    '<div class="stat-grid">' +
-    '<div class="stat-card"><div class="stat-label">Hoy &mdash; ingresos</div><div class="stat-value up">' + cajaFmtMoney(todayIn) + "</div></div>" +
-    '<div class="stat-card"><div class="stat-label">Hoy &mdash; egresos</div><div class="stat-value down">' + cajaFmtMoney(todayOut) + "</div></div>" +
-    '<div class="stat-card"><div class="stat-label">Saldo caja mayor (efectivo)</div><div class="stat-value">' + cajaFmtMoney(balances.principal) + "</div></div>" +
-    '<div class="stat-card"><div class="stat-label">Saldo caja chica (efectivo)</div><div class="stat-value">' + cajaFmtMoney(balances.chica) + "</div></div>" +
-    "</div>" +
-
-    '<div class="caja-section-title"><h2>Historial</h2>' +
-    '<select class="caja-select" style="width:auto; padding:6px 10px; font-size:0.8rem;" onchange="setMovFilter(this.value)">' +
-    '<option value="todas"' + (movFilterLedger === "todas" ? " selected" : "") + ">Todas las cajas</option>" +
-    '<option value="principal"' + (movFilterLedger === "principal" ? " selected" : "") + ">Caja mayor</option>" +
-    '<option value="chica"' + (movFilterLedger === "chica" ? " selected" : "") + ">Caja chica</option>" +
-    "</select></div>" +
+    '<div class="caja-section-title"><h2>Historial de Movimientos</h2></div>' +
     '<div class="caja-card">' +
-    (filtered.length === 0 ? '<div class="empty-note">No hay movimientos para este filtro.</div>' : filtered.map(movRowHtml).join("")) +
+    (filtered.length === 0 ? '<div class="empty-note">No hay movimientos registrados.</div>' : filtered.map(movRowHtml).join("")) +
     "</div>";
 }
 
@@ -428,13 +427,8 @@ function selectMovMethod(btn) {
   parent.querySelectorAll(".chip").forEach(function (b) { b.classList.remove("active"); });
   btn.classList.add("active");
 }
-function setMovFilter(v) { movFilterLedger = v; renderMovimientos(); }
-function volverAHoy() { movFormDate = null; renderMovimientos(); }
-
 function editarApertura() { aperturaEditing = true; renderMovimientos(); }
-
 function cancelarEdicionApertura() { aperturaEditing = false; renderMovimientos(); }
-
 function guardarApertura() {
   const p = parseFloat(document.getElementById("apertura-principal").value) || 0;
   const c = parseFloat(document.getElementById("apertura-chica").value) || 0;
@@ -504,11 +498,6 @@ function renderMayor() {
     '<select class="caja-select" style="width:auto; padding:6px 10px; font-size:0.8rem;" onchange="setMayorMonth(this.value)">' +
     months.map(function (m) { return '<option value="' + m + '"' + (m === mayorMonth ? " selected" : "") + ">" + cajaMonthLabel(m) + "</option>"; }).join("") +
     "</select></div>" +
-    '<div class="stat-grid">' +
-    '<div class="stat-card"><div class="stat-label">Total ingresos</div><div class="stat-value up">' + cajaFmtMoney(totalIn) + "</div></div>" +
-    '<div class="stat-card"><div class="stat-label">Total egresos</div><div class="stat-value down">' + cajaFmtMoney(totalOut) + "</div></div>" +
-    '<div class="stat-card"><div class="stat-label">Saldo del mes</div><div class="stat-value ' + (totalIn - totalOut >= 0 ? "up" : "down") + '">' + cajaFmtMoney(totalIn - totalOut) + "</div></div>" +
-    "</div>" +
     groupHtml("Cuentas de ingreso", income, totalIn, "up") +
     groupHtml("Cuentas de egreso", expense, totalOut, "down");
 }
@@ -521,168 +510,38 @@ function renderEquilibrio() {
   const el = document.getElementById("panel-equilibrio");
   if (!el) return;
   const cfg = state.config;
-  const isAuto = cfg.autoTicket !== false;
-  const unitLabel = cfg.unit || "pedidos";
-
-  const thisMonth = cajaMonthKey(cajaTodayStr());
-  const monthIncomeTx = state.transactions.filter(function (t) { return t.type === "ingreso" && cajaMonthKey(t.date) === thisMonth; });
-  const realCount = monthIncomeTx.length;
-  const realTotal = monthIncomeTx.reduce(function (a, t) { return a + t.amount; }, 0);
-  const realAvg = realCount > 0 ? realTotal / realCount : null;
-
   const totalFixed = cfg.fixedCosts.reduce(function (a, c) { return a + (parseFloat(c.amount) || 0); }, 0);
   const pct = parseFloat(cfg.variablePct) || 0;
   const margin = 1 - pct / 100;
-  const peMonto = margin > 0 ? totalFixed / margin : null;
-  const ticket = isAuto ? (realAvg || 0) : (parseFloat(cfg.avgTicket) || 0);
-  const peUnidades = peMonto && ticket > 0 ? peMonto / ticket : null;
+  const peMonto = margin > 0 ? totalFixed / margin : 0;
 
   let html = '<div class="caja-section-title"><h2>Punto de equilibrio</h2></div>';
-
-  html += '<div class="caja-card">' +
-    '<div class="ledger-group-title"><span>Costos fijos mensuales</span><span style="font-family:\'Courier New\',monospace;">' + cajaFmtMoney(totalFixed) + "</span></div>" +
-    '<div id="fixed-costs-list">' +
-    cfg.fixedCosts.map(function (c, i) {
-      return '<div class="caja-row" style="align-items:center;">' +
-        '<input class="caja-input" style="flex:2;" placeholder="Ej: Alquiler" value="' + escapeHtml(c.name) + '" onchange="updateFixedCost(' + i + ', \'name\', this.value)">' +
-        '<input class="caja-input" style="flex:1;" type="number" placeholder="Monto" value="' + c.amount + '" onchange="updateFixedCost(' + i + ', \'amount\', this.value)">' +
-        '<button class="mov-del" onclick="removeFixedCost(' + i + ')"><i class="fa-solid fa-xmark"></i></button>' +
-        "</div>";
-    }).join("") +
-    "</div>" +
-    '<button class="caja-btn caja-btn-ghost" onclick="addFixedCost()">+ Agregar costo fijo</button>' +
-    "</div>";
-
-  html += '<div class="caja-card">' +
-    '<div class="stat-label" style="margin-bottom:10px;">Costos variables y ticket</div>' +
-    '<div class="caja-row">' +
-    '<div class="caja-field"><label>Costo variable (% s/ventas)</label><input class="caja-input" type="number" value="' + cfg.variablePct + '" onchange="updateConfig(\'variablePct\', this.value)"></div>' +
-    '<div class="caja-field"><label>Unidad de venta</label><input class="caja-input" value="' + escapeHtml(unitLabel) + '" onchange="updateConfig(\'unit\', this.value)"></div>' +
-    "</div>" +
-    '<div class="stat-label" style="margin:10px 0 6px;">Ticket promedio por ' + unitLabel.replace(/s$/, "") + "</div>" +
-    '<div class="caja-row" style="margin-bottom:10px;">' +
-    '<button class="chip ' + (isAuto ? "active green" : "") + '" onclick="updateConfig(\'autoTicket\', true)">Automático</button>' +
-    '<button class="chip ' + (!isAuto ? "active" : "") + '" onclick="updateConfig(\'autoTicket\', false)">Manual</button>' +
-    "</div>";
-
-  if (isAuto) {
-    html += realAvg !== null
-      ? '<div class="ticket-auto-box">' +
-        '<span style="font-size:0.8rem; color:var(--text-gray);">Calculado con ' + realCount + " " + unitLabel + ' de este mes</span>' +
-        '<span style="font-family:\'Courier New\',monospace; font-size:1.1rem; font-weight:700;">' + cajaFmtMoney(realAvg) + "</span></div>"
-      : '<div class="empty-note">Todavía no cargaste ingresos este mes &mdash; cargá movimientos o pedidos, o pasá a manual.</div>';
-  } else {
-    html += '<div class="caja-field"><label>Ticket promedio ($)</label><input class="caja-input" type="number" value="' + cfg.avgTicket + '" onchange="updateConfig(\'avgTicket\', this.value)"></div>';
-  }
-  html += "</div>";
-
-  if (peMonto === null) {
-    html += '<div class="caja-card empty-note">Cargá un % de costo variable menor a 100 para calcular el punto de equilibrio.</div>';
-  } else {
-    html += '<div class="stat-grid">' +
-      '<div class="stat-card"><div class="stat-label">Punto de equilibrio mensual</div><div class="stat-value">' + cajaFmtMoney(peMonto) + "</div></div>" +
-      '<div class="stat-card"><div class="stat-label">Punto de equilibrio diario</div><div class="stat-value">' + cajaFmtMoney(peMonto / 30) + "</div></div>" +
-      (ticket > 0 ? '<div class="stat-card"><div class="stat-label">' + unitLabel + ' necesarios al mes</div><div class="stat-value">' + Math.ceil(peUnidades).toLocaleString("es-AR") + '</div><div class="stat-sub">&asymp; ' + Math.ceil(peUnidades / 30) + " por día</div></div>" : "") +
-      "</div>";
-
-    if (ticket > 0) {
-      const pct2 = Math.min(100, (realCount / Math.max(1, peUnidades)) * 100);
-      html += '<div class="caja-card">' +
-        '<div style="display:flex; justify-content:space-between; font-size:0.8rem; color:var(--text-gray); margin-bottom:8px;">' +
-        "<span>" + unitLabel + " del mes vs. necesarios</span>" +
-        '<span style="font-family:\'Courier New\',monospace;">' + realCount + " / " + Math.ceil(peUnidades) + "</span></div>" +
-        '<div class="progress-track"><div class="progress-fill ' + (realCount >= peUnidades ? "done" : "") + '" style="width:' + pct2 + '%"></div></div>' +
-        '<div class="stat-sub" style="margin-top:8px;">' +
-        (realCount >= peUnidades ? "Ya superaste los " + unitLabel + " necesarios para cubrir costos este mes." : "Faltan " + Math.ceil(peUnidades - realCount) + " " + unitLabel + " para llegar al punto de equilibrio.") +
-        "</div></div>";
-    }
-  }
-
+  html += '<div class="caja-card">';
+  html += '<div class="ledger-group-title"><span>Costos fijos mensuales</span><span style="font-family:\'Courier New\',monospace;">' + cajaFmtMoney(totalFixed) + "</span></div>";
+  html += '<div class="stat-value" style="margin-top:10px;">Punto de equilibrio mensual: ' + cajaFmtMoney(peMonto) + '</div>';
+  html += '</div>';
   el.innerHTML = html;
 }
 
-function addFixedCost() { state.config.fixedCosts.push({ name: "", amount: "" }); cajaSave(state); renderEquilibrio(); }
-function removeFixedCost(i) { state.config.fixedCosts.splice(i, 1); cajaSave(state); renderEquilibrio(); }
-function updateFixedCost(i, field, value) { state.config.fixedCosts[i][field] = value; cajaSave(state); }
-function updateConfig(field, value) { state.config[field] = value; cajaSave(state); renderEquilibrio(); }
-
 /* =========================================================
-   REPORTES
+   REPORTES Y CIERRES TÉRMICOS
 ========================================================= */
 function renderReportes() {
   const el = document.getElementById("panel-reportes");
   if (!el) return;
-  const map = {};
-  state.transactions.forEach(function (t) {
-    const k = cajaMonthKey(t.date);
-    if (!map[k]) map[k] = { key: k, ingresos: 0, egresos: 0 };
-    if (t.type === "ingreso") map[k].ingresos += t.amount; else map[k].egresos += t.amount;
-  });
-  const monthly = Object.keys(map).map(function (k) { return map[k]; }).sort(function (a, b) { return a.key < b.key ? -1 : 1; }).slice(-6);
-  const maxVal = Math.max(1, Math.max.apply(null, monthly.map(function (m) { return Math.max(m.ingresos, m.egresos); }).concat([0])));
-
-  const thisMonth = cajaMonthKey(cajaTodayStr());
-  const monthTx = state.transactions.filter(function (t) { return cajaMonthKey(t.date) === thisMonth; });
-  const byCat = {};
-  monthTx.filter(function (t) { return t.type === "egreso"; }).forEach(function (t) { byCat[t.category] = (byCat[t.category] || 0) + t.amount; });
-  const catRows = Object.keys(byCat).map(function (k) { return { category: k, total: byCat[k] }; }).sort(function (a, b) { return b.total - a.total; });
-  const maxCat = Math.max(1, Math.max.apply(null, catRows.map(function (r) { return r.total; }).concat([0])));
-
-  const byMethod = {};
-  monthTx.forEach(function (t) { byMethod[t.method] = (byMethod[t.method] || 0) + (t.type === "ingreso" ? t.amount : -t.amount); });
-
   el.innerHTML =
-    '<div class="caja-section-title"><h2>Reportes</h2></div>' +
+    '<div class="caja-section-title"><h2>Reportes y Cierres MaxiRest</h2></div>' +
     '<div class="caja-card">' +
-    '<div class="stat-label" style="margin-bottom:8px;">Nombre del negocio (aparece en el ticket)</div>' +
+    '<div class="stat-label" style="margin-bottom:8px;">Nombre del negocio</div>' +
     '<input class="caja-input" id="business-name" value="' + escapeHtml(state.businessName || "") + '" onchange="updateBusinessName(this.value)" style="margin-bottom:12px;">' +
     '<div class="caja-row">' +
-    '<button class="caja-btn caja-btn-ghost" style="flex:1;" onclick="imprimirCierreDiario()"><i class="fa-solid fa-print"></i> Cierre de caja de hoy</button>' +
+    '<button class="caja-btn caja-btn-ghost" style="flex:1;" onclick="imprimirCierreDiario()"><i class="fa-solid fa-print"></i> Cierre de caja diario</button>' +
     '<button class="caja-btn caja-btn-ghost" style="flex:1;" onclick="imprimirReporteMensual()"><i class="fa-solid fa-print"></i> Reporte mensual</button>' +
-    "</div></div>" +
-
-    '<div class="caja-card">' +
-    '<div class="stat-label" style="margin-bottom:10px;">Ingresos vs. egresos &mdash; últimos 6 meses</div>' +
-    '<div style="display:flex; align-items:flex-end; gap:14px; height:120px;">' +
-    monthly.map(function (m) {
-      return '<div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;">' +
-        '<div style="display:flex; gap:3px; align-items:flex-end; height:90px;">' +
-        '<div style="width:12px; height:' + Math.max(3, m.ingresos / maxVal * 90) + 'px; background:#5fa372; border-radius:2px;"></div>' +
-        '<div style="width:12px; height:' + Math.max(3, m.egresos / maxVal * 90) + 'px; background:#e2564a; border-radius:2px;"></div>' +
-        "</div>" +
-        '<span style="font-size:0.65rem; color:var(--text-gray);">' + cajaMonthLabel(m.key) + "</span></div>";
-    }).join("") +
-    "</div>" +
-    '<div style="display:flex; gap:14px; margin-top:10px; font-size:0.7rem; color:var(--text-gray);">' +
-    '<span><span style="display:inline-block;width:9px;height:9px;background:#5fa372;border-radius:2px;margin-right:4px;"></span>Ingresos</span>' +
-    '<span><span style="display:inline-block;width:9px;height:9px;background:#e2564a;border-radius:2px;margin-right:4px;"></span>Egresos</span>' +
-    "</div></div>" +
-
-    '<div class="caja-card">' +
-    '<div class="stat-label" style="margin-bottom:10px;">Egresos por categoría &mdash; mes actual</div>' +
-    (catRows.length === 0 ? '<div class="empty-note">Sin egresos cargados este mes.</div>' :
-      catRows.map(function (r) {
-        return '<div style="margin-bottom:8px;">' +
-          '<div style="display:flex; justify-content:space-between; font-size:0.78rem; margin-bottom:3px;"><span style="color:var(--text-gray);">' + escapeHtml(r.category) + '</span><span style="font-family:\'Courier New\',monospace;">' + cajaFmtMoney(r.total) + "</span></div>" +
-          '<div class="progress-track"><div class="progress-fill" style="width:' + (r.total / maxCat * 100) + '%"></div></div></div>';
-      }).join("")) +
-    "</div>" +
-
-    '<div class="caja-card">' +
-    '<div class="stat-label" style="margin-bottom:10px;">Neto por método de pago &mdash; mes actual</div>' +
-    (Object.keys(byMethod).length === 0 ? '<div class="empty-note">Sin movimientos este mes.</div>' :
-      Object.keys(byMethod).map(function (method) {
-        const total = byMethod[method];
-        return '<div class="report-cat-row"><span>' + escapeHtml(method) + '</span><span style="color:' + (total >= 0 ? "#5fa372" : "#e2564a") + ';">' + cajaFmtMoney(total) + "</span></div>";
-      }).join("")) +
-    "</div>";
+    "</div></div>";
 }
 
 function updateBusinessName(v) { state.businessName = v; cajaSave(state); }
 
-/* =========================================================
-   IMPRESIÓN (mismo patrón de ventana que ya usás en imprimirComanda)
-========================================================= */
 function abrirVentanaImpresion(htmlBody) {
   const ventana = window.open("", "_blank", "width=400,height=600");
   if (!ventana) { alert("El navegador bloqueó la ventana de impresión."); return; }
@@ -710,32 +569,21 @@ function ticketRow(label, value, bold) {
 }
 
 function buildCierreOrReporteHtml(title, txList, balances, stamp) {
-  const incomeByCat = {}, expenseByCat = {}, byMethod = {};
   let inTotal = 0, outTotal = 0;
   txList.forEach(function (t) {
-    if (t.type === "ingreso") { incomeByCat[t.category] = (incomeByCat[t.category] || 0) + t.amount; inTotal += t.amount; }
-    else { expenseByCat[t.category] = (expenseByCat[t.category] || 0) + t.amount; outTotal += t.amount; }
-    byMethod[t.method] = (byMethod[t.method] || 0) + (t.type === "ingreso" ? t.amount : -t.amount);
+    if (t.type === "ingreso") inTotal += t.amount; else outTotal += t.amount;
   });
 
   let html = '<div class="center" style="font-size:14px;">' + escapeHtml(state.businessName || "MYCFOODS") + "</div>" +
     '<div class="center">' + title + "</div>" +
     '<div class="center" style="font-size:10px;">' + stamp + "</div>" +
-    '<div class="divider"></div><div style="font-weight:800;">INGRESOS' + (title.indexOf("MENSUAL") >= 0 ? " POR CATEGORÍA" : "") + "</div>";
-  html += Object.keys(incomeByCat).length === 0 ? "<div>&mdash; sin movimientos &mdash;</div>" :
-    Object.keys(incomeByCat).map(function (k) { return ticketRow(escapeHtml(k), cajaFmtMoney(incomeByCat[k])); }).join("");
+    '<div class="divider"></div>';
   html += ticketRow("Total ingresos", cajaFmtMoney(inTotal), true);
-  html += '<div class="divider"></div><div style="font-weight:800;">EGRESOS' + (title.indexOf("MENSUAL") >= 0 ? " POR CATEGORÍA" : "") + "</div>";
-  html += Object.keys(expenseByCat).length === 0 ? "<div>&mdash; sin movimientos &mdash;</div>" :
-    Object.keys(expenseByCat).map(function (k) { return ticketRow(escapeHtml(k), cajaFmtMoney(expenseByCat[k])); }).join("");
   html += ticketRow("Total egresos", cajaFmtMoney(outTotal), true);
-  html += '<div class="divider"></div><div style="font-weight:800;">POR MÉTODO DE PAGO</div>';
-  html += Object.keys(byMethod).map(function (k) { return ticketRow(escapeHtml(k), cajaFmtMoney(byMethod[k])); }).join("");
   html += '<div class="divider"></div>';
-  html += ticketRow(title.indexOf("MENSUAL") >= 0 ? "Resultado del mes" : "Resultado del día", cajaFmtMoney(inTotal - outTotal), true);
-  html += ticketRow("Saldo caja mayor (efectivo)", cajaFmtMoney(balances.principal), true);
-  html += ticketRow("Saldo caja chica (efectivo)", cajaFmtMoney(balances.chica), true);
-  html += '<div class="divider"></div><div class="center" style="font-size:10px;">Generado con Caja MYCFOODS</div>';
+  html += ticketRow("Saldo caja mayor", cajaFmtMoney(balances.principal), true);
+  html += ticketRow("Saldo caja chica", cajaFmtMoney(balances.chica), true);
+  html += '<div class="divider"></div><div class="center" style="font-size:10px;">Generado con MaxiRest / MYCFOODS</div>';
   return html;
 }
 
@@ -743,7 +591,7 @@ function imprimirCierreDiario() {
   const today = cajaTodayStr();
   const todayTx = state.transactions.filter(function (t) { return t.date === today; });
   const balances = cajaComputeBalances(state.transactions, state.openings);
-  const html = buildCierreOrReporteHtml("CIERRE DE CAJA DIARIO", todayTx, balances, new Date().toLocaleString("es-AR"));
+  const html = buildCierreOrReporteHtml("CIERRE DE CAJA MAXIREST", todayTx, balances, new Date().toLocaleString("es-AR"));
   abrirVentanaImpresion(html);
 }
 
