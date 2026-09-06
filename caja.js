@@ -7,6 +7,7 @@ let state = cajaLoad();
 let activeTab = "resumen";
 let movFilterLedger = "todas";
 let movFormType = "ingreso";
+let movFormDate = null;
 let aperturaEditing = false;
 let mayorMonth = null;
 
@@ -34,9 +35,94 @@ function renderActive() {
   if (activeTab === "resumen") renderResumen();
   else if (activeTab === "movimientos") renderMovimientos();
   else if (activeTab === "menu") renderMenuAdmin();
+  else if (activeTab === "ajustes") renderAjustes();
   else if (activeTab === "mayor") renderMayor();
   else if (activeTab === "equilibrio") renderEquilibrio();
   else if (activeTab === "reportes") renderReportes();
+}
+
+/* =========================================================
+   AJUSTES DEL SITIO
+========================================================= */
+function renderAjustes() {
+  const el = document.getElementById("panel-ajustes");
+  if (!el) return;
+  const site = siteLoad();
+
+  let html = '<div class="caja-section-title"><h2>Ajustes del sitio</h2></div>';
+
+  html += '<div class="caja-card">';
+  html += '<div class="stat-label" style="margin-bottom:8px;">Nombre del negocio (sale en tickets y reportes)</div>';
+  html += '<input class="caja-input" value="' + escapeHtml(state.businessName || "") + '" onchange="guardarBusinessNameAjustes(this.value)" style="margin-bottom:14px;">';
+
+  html += '<div class="stat-label" style="margin-bottom:8px;">WhatsApp de contacto</div>';
+  html += '<input class="caja-input" placeholder="Ej: 5491122334455 (con código de país, sin espacios)" value="' + escapeHtml(site.whatsapp) + '" onchange="actualizarAjuste(\'whatsapp\', this.value)">';
+  html += '<div class="stat-sub" style="margin-top:6px;">Si lo completás, aparece un botón flotante de WhatsApp en la página de pedidos.</div>';
+  html += '</div>';
+
+  html += '<div class="caja-card">';
+  html += '<div class="stat-label" style="margin-bottom:10px;">Textos arriba del menú</div>';
+  html += '<input class="caja-input" placeholder="Subtítulo chico (ej: NUESTRA CARTA)" value="' + escapeHtml(site.heroSubtitulo) + '" onchange="actualizarAjuste(\'heroSubtitulo\', this.value)" style="margin-bottom:10px;">';
+  html += '<input class="caja-input" placeholder="Título (ej: Menú)" value="' + escapeHtml(site.heroTitulo) + '" onchange="actualizarAjuste(\'heroTitulo\', this.value)" style="margin-bottom:10px;">';
+  html += '<input class="caja-input" placeholder="Bajada (ej: Elegí y armá tu pedido)" value="' + escapeHtml(site.heroBajada) + '" onchange="actualizarAjuste(\'heroBajada\', this.value)">';
+  html += '</div>';
+
+  html += '<div class="caja-card">';
+  html += '<div class="stat-label" style="margin-bottom:10px;">Entrega y horarios</div>';
+  html += '<div class="caja-field" style="margin-bottom:10px;"><label>Texto para "Delivery"</label><input class="caja-input" value="' + escapeHtml(site.entregaDeliveryLabel) + '" onchange="actualizarAjuste(\'entregaDeliveryLabel\', this.value)"></div>';
+  html += '<div class="caja-field" style="margin-bottom:12px;"><label>Texto para "Retiro por local"</label><input class="caja-input" value="' + escapeHtml(site.entregaRetiroLabel) + '" onchange="actualizarAjuste(\'entregaRetiroLabel\', this.value)"></div>';
+  html += '<div class="caja-row">';
+  html += '<div class="caja-field"><label>Horario mínimo de entrega</label><input class="caja-input" type="time" value="' + site.horarioMin + '" onchange="actualizarAjuste(\'horarioMin\', this.value)"></div>';
+  html += '<div class="caja-field"><label>Horario máximo de entrega</label><input class="caja-input" type="time" value="' + site.horarioMax + '" onchange="actualizarAjuste(\'horarioMax\', this.value)"></div>';
+  html += '</div>';
+  html += '</div>';
+
+  html += '<div class="caja-card">';
+  html += '<div class="stat-label" style="margin-bottom:10px;">Formas de pago disponibles (en pedidos y movimientos)</div>';
+  (site.metodosPago || []).forEach(function (m, i) {
+    html += '<div class="caja-row" style="align-items:center;">' +
+      '<input class="caja-input" style="flex:1;" value="' + escapeHtml(m) + '" onchange="renombrarMetodoPago(' + i + ', this.value)">' +
+      '<button class="mov-del" onclick="borrarMetodoPago(' + i + ')"><i class="fa-solid fa-trash"></i></button>' +
+      '</div>';
+  });
+  html += '<button class="caja-btn caja-btn-ghost" onclick="agregarMetodoPago()" style="margin-top:8px;">+ Agregar forma de pago</button>';
+  html += '</div>';
+
+  html += '<div class="empty-note">Los cambios se guardan solos y se aplican en la página de pedidos la próxima vez que se abra o recargue.</div>';
+
+  el.innerHTML = html;
+}
+
+function actualizarAjuste(campo, valor) {
+  const site = siteLoad();
+  site[campo] = valor;
+  siteSave(site);
+}
+
+function guardarBusinessNameAjustes(v) {
+  state.businessName = v;
+  cajaSave(state);
+}
+
+function agregarMetodoPago() {
+  const site = siteLoad();
+  site.metodosPago.push("Nuevo método");
+  siteSave(site);
+  renderAjustes();
+}
+
+function renombrarMetodoPago(i, v) {
+  const site = siteLoad();
+  site.metodosPago[i] = v;
+  siteSave(site);
+}
+
+function borrarMetodoPago(i) {
+  if (!confirm("¿Borrar esta forma de pago?")) return;
+  const site = siteLoad();
+  site.metodosPago.splice(i, 1);
+  siteSave(site);
+  renderAjustes();
 }
 
 /* =========================================================
@@ -267,8 +353,12 @@ function renderMovimientos() {
       "</div>";
   }
 
+  const fechaActual = movFormDate || today;
+
   el.innerHTML =
     '<div class="caja-card" id="apertura-card">' + aperturaHtml + "</div>" +
+
+    (fechaActual !== today ? '<div class="caja-card" style="border-color:var(--accent); display:flex; justify-content:space-between; align-items:center;"><span style="font-size:0.85rem; color:var(--accent);"><i class="fa-solid fa-clock-rotate-left"></i> Cargando movimientos para el ' + cajaFmtDateLabel(fechaActual) + '</span><button class="caja-btn caja-btn-ghost" onclick="volverAHoy()">Volver a hoy</button></div>' : "") +
 
     '<div class="caja-card">' +
     '<div class="caja-row" style="margin-bottom:12px;">' +
@@ -277,7 +367,7 @@ function renderMovimientos() {
     "</div>" +
     '<div class="big-amount-box"><span>$</span><input type="number" id="mov-amount" placeholder="0"></div>' +
     '<div class="caja-row">' +
-    '<div class="caja-field"><label>Fecha</label><input class="caja-input" type="date" id="mov-date" value="' + today + '"></div>' +
+    '<div class="caja-field"><label>Fecha</label><input class="caja-input" type="date" id="mov-date" value="' + fechaActual + '" onchange="movFormDate = this.value"></div>' +
     '<div class="caja-field"><label>Caja</label><select class="caja-select" id="mov-ledger"><option value="principal">Caja mayor</option><option value="chica">Caja chica</option></select></div>' +
     "</div>" +
     '<div class="stat-label" style="margin:10px 0 6px;">Categoría</div>' +
@@ -286,7 +376,7 @@ function renderMovimientos() {
     "</div>" +
     '<div class="stat-label" style="margin:10px 0 6px;">Método de pago</div>' +
     '<div class="caja-row" id="mov-methods">' +
-    CAJA_METHODS.map(function (m, i) { return '<button type="button" class="chip ' + (i === 0 ? "active" : "") + '" data-method="' + escapeHtml(m) + '" onclick="selectMovMethod(this)">' + escapeHtml(m) + "</button>"; }).join("") +
+    getMetodosPago().map(function (m, i) { return '<button type="button" class="chip ' + (i === 0 ? "active" : "") + '" data-method="' + escapeHtml(m) + '" onclick="selectMovMethod(this)">' + escapeHtml(m) + "</button>"; }).join("") +
     "</div>" +
     '<input class="caja-input" id="mov-note" placeholder="Nota (opcional)" style="margin:10px 0 12px;">' +
     '<button class="caja-btn caja-btn-primary caja-btn-block" onclick="registrarMovimiento()">+ Registrar movimiento</button>' +
@@ -322,6 +412,7 @@ function selectMovMethod(btn) {
   btn.classList.add("active");
 }
 function setMovFilter(v) { movFilterLedger = v; renderMovimientos(); }
+function volverAHoy() { movFormDate = null; renderMovimientos(); }
 
 function editarApertura() { aperturaEditing = true; renderMovimientos(); }
 
@@ -343,7 +434,7 @@ function registrarMovimiento() {
   const catBtn = document.querySelector("#mov-cats .chip.active");
   const methodBtn = document.querySelector("#mov-methods .chip.active");
   const category = catBtn ? catBtn.dataset.cat : (movFormType === "ingreso" ? CAJA_INCOME_CATS[0] : CAJA_EXPENSE_CATS[0]);
-  const method = methodBtn ? methodBtn.dataset.method : CAJA_METHODS[0];
+  const method = methodBtn ? methodBtn.dataset.method : getMetodosPago()[0];
   const note = document.getElementById("mov-note").value.trim();
   state.transactions.push({ id: cajaUid(), type: movFormType, ledger: ledger, date: date, category: category, method: method, amount: amount, note: note });
   cajaSave(state);
