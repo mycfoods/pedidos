@@ -30,13 +30,13 @@
     </div>
 
     <div class="caja-tabs">
-        <button class="caja-tab-btn active" data-tab="resumen"><i class="fa-solid fa-wallet"></i> Resumen</button>
-        <button class="caja-tab-btn" data-tab="movimientos"><i class="fa-solid fa-coins"></i> Movimientos</button>
-        <button class="caja-tab-btn" data-tab="menu"><i class="fa-solid fa-utensils"></i> Menú</button>
-        <button class="caja-tab-btn" data-tab="mayor"><i class="fa-solid fa-sitemap"></i> Libro mayor</button>
-        <button class="caja-tab-btn" data-tab="equilibrio"><i class="fa-solid fa-calculator"></i> Punto equilibrio</button>
-        <button class="caja-tab-btn" data-tab="reportes"><i class="fa-solid fa-chart-column"></i> Reportes</button>
-        <button class="caja-tab-btn" data-tab="ajustes"><i class="fa-solid fa-gear"></i> Ajustes</button>
+        <button class="caja-tab-btn active" data-tab="resumen"><i class="fa-solid fa-wallet"></i><span>Resumen</span></button>
+        <button class="caja-tab-btn" data-tab="movimientos"><i class="fa-solid fa-coins"></i><span>Movimientos</span></button>
+        <button class="caja-tab-btn" data-tab="menu"><i class="fa-solid fa-utensils"></i><span>Menú</span></button>
+        <button class="caja-tab-btn" data-tab="mayor"><i class="fa-solid fa-sitemap"></i><span>Libro mayor</span></button>
+        <button class="caja-tab-btn" data-tab="equilibrio"><i class="fa-solid fa-calculator"></i><span>Punto equilibrio</span></button>
+        <button class="caja-tab-btn" data-tab="reportes"><i class="fa-solid fa-chart-column"></i><span>Reportes</span></button>
+        <button class="caja-tab-btn" data-tab="ajustes"><i class="fa-solid fa-gear"></i><span>Ajustes</span></button>
     </div>
 
     <div class="caja-panel active" id="panel-resumen"></div>
@@ -50,7 +50,12 @@
 
 <div id="caja-print-area"></div>
 
+<!-- MODAL DE DETALLE DE MOVIMIENTO -->
+<div class="mc-modal-overlay" id="mov-detail-modal" onclick="if(event.target===this) cerrarDetalleMovimiento()">
+    <div class="mc-modal-box" id="mov-detail-content"></div>
+</div>
+
 <script src="caja-core.js"></script>
-<script src="caja_2.js"></script>
+<script src="caja.js"></script>
 </body>
 </html>
