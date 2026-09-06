@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MYCFOODS - Punto de Equilibrio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        surface: '#0b1326',
+                        'surface-container-low': '#131b2e',
+                        'surface-bright': '#31394d',
+                        amber: { 500: '#f59e0b', 600: '#d97706' }
+                    },
+                    fontFamily: { sans: ['Montserrat', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#0b1326] text-white font-sans min-h-screen flex flex-col">
+    <!-- Navbar -->
+    <header class="bg-[#131b2e] border-b border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 z-50">
+        <div class="flex items-center gap-4">
+            <div class="bg-amber-500/15 border border-amber-500 rounded-lg p-2 flex items-center justify-center">
+                <svg class="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"></path></svg>
+            </div>
+            <div>
+                <h1 class="text-xl font-extrabold tracking-wide text-white">MYCFOODS</h1>
+                <p class="text-xs text-amber-500 font-semibold tracking-wider">PUNTO DE EQUILIBRIO</p>
+            </div>
+        </div>
+        <nav class="hidden md:flex items-center gap-6 text-sm font-semibold">
+            <a href="index.html" class="text-gray-300 hover:text-amber-500 transition">Pedidos</a>
+            <a href="salon.html" class="text-gray-300 hover:text-amber-500 transition">Salón</a>
+            <a href="cocina.html" class="text-gray-300 hover:text-amber-500 transition">Cocina</a>
+            <a href="caja.html" class="text-gray-300 hover:text-amber-500 transition">Caja</a>
+            <a href="delivery.html" class="text-gray-300 hover:text-amber-500 transition">Delivery</a>
+            <a href="stock.html" class="text-gray-300 hover:text-amber-500 transition">Stock</a>
+            <a href="equilibrio.html" class="text-amber-500 border-b-2 border-amber-500 pb-1">P. Equilibrio</a>
+            <a href="ranking.html" class="text-gray-300 hover:text-amber-500 transition">Ranking</a>
+            <a href="config.html" class="text-gray-300 hover:text-amber-500 transition">Configuración</a>
+        </nav>
+        <span class="text-xs text-emerald-400 font-bold bg-emerald-500/10 px-3 py-1.5 rounded-lg border border-emerald-500/20">Objetivo Mensual: 78%</span>
+    </header>
+
+    <!-- Main -->
+    <main class="flex-1 p-6 max-w-[1600px] mx-auto w-full space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-[#131b2e] border border-white/10 rounded-2xl p-6">
+                <span class="text-xs text-gray-400 font-bold uppercase">Costos Fijos Mensuales</span>
+                <h3 class="text-3xl font-extrabold text-white mt-2">$ 3.200.000</h3>
+                <p class="text-xs text-gray-400 mt-1">Alquiler, sueldos base, servicios e impuestos</p>
+            </div>
+            <div class="bg-[#131b2e] border border-white/10 rounded-2xl p-6">
+                <span class="text-xs text-gray-400 font-bold uppercase">Facturación Mínima de Equilibrio</span>
+                <h3 class="text-3xl font-extrabold text-amber-400 mt-2">$ 5.818.000</h3>
+                <p class="text-xs text-amber-400/80 mt-1">Requiere vender 843 platos promedio/mes</p>
+            </div>
+            <div class="bg-[#131b2e] border border-emerald-500/40 rounded-2xl p-6">
+                <span class="text-xs text-emerald-400 font-bold uppercase">Facturado este Mes</span>
+                <h3 class="text-3xl font-extrabold text-emerald-400 mt-2">$ 4.540.000</h3>
+                <p class="text-xs text-emerald-400 mt-1">Faltan $ 1.278.000 para cubrir el 100% de costos</p>
+            </div>
+        </div>
+
+        <div class="bg-[#131b2e] border border-white/10 rounded-2xl p-6">
+            <h3 class="text-lg font-bold text-white mb-4">Progreso del Mes hacia la Rentabilidad</h3>
+            <div class="w-full bg-[#0b1326] h-6 rounded-full overflow-hidden p-1 border border-white/10">
+                <div class="bg-gradient-to-r from-amber-500 to-emerald-500 h-full rounded-full flex items-center justify-end pr-3 text-[11px] font-extrabold text-slate-950" style="width: 78%;">
+                    78% Alcanzado
+                </div>
+            </div>
+            <div class="flex justify-between text-xs text-gray-400 mt-2">
+                <span>$ 0 (Inicio de Mes)</span>
+                <span class="font-bold text-amber-400">Punto de Equilibrio: $ 5.818.000</span>
+                <span>Objetivo Ganancia: $ 8.000.000</span>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
+```
