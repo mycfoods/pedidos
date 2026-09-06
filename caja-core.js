@@ -25,7 +25,7 @@ function siteDefaults() {
     entregaRetiroLabel: "Retiro por local (Luis Pereyra 440)",
     horarioMin: "09:00",
     horarioMax: "20:00",
-    metodosPago: ["Efectivo", "Transferencia", "Tarjeta de Débito / Crédito", "QR / Mercado Pago"],
+    metodosPago: ["Efectivo", "Tarjeta", "Billetera Virtual (Mercado Pago/QR)", "Transferencia"],
     whatsapp: ""
   };
 }
@@ -62,7 +62,7 @@ function getMetodosPago() {
   return (site.metodosPago && site.metodosPago.length) ? site.metodosPago : CAJA_METHODS;
 }
 
-const CAJA_INCOME_CATS = ["Ventas delivery", "Ventas take away", "Ventas salón", "Eventos", "Otros ingresos"];
+const CAJA_INCOME_CATS = ["Ventas delivery", "Ventas take away", "Ventas salón", "Aportes", "Eventos", "Otros ingresos"];
 const CAJA_EXPENSE_CATS = [
   "Mercadería e insumos", "Sueldos y cargas sociales", "Alquiler",
   "Servicios (luz/agua/gas)", "Mantenimiento", "Marketing", "Impuestos", "Otros gastos",
@@ -247,6 +247,14 @@ function cajaComputeBalances(transactions, openings) {
     if (m.ledger === "principal") principal += v; else chica += v;
   });
   return { principal: principal, chica: chica, baseDate: baseDate };
+}
+
+// Calcula cuál sería la apertura de HOY si no se ajustó manualmente:
+// el saldo físico acumulado con todo lo cargado hasta el día anterior.
+function cajaAutoApertura(transactions, openings) {
+  const today = cajaTodayStr();
+  const priorTx = transactions.filter(function (t) { return t.date < today; });
+  return cajaComputeBalances(priorTx, openings);
 }
 
 function cajaAddTransaction(tx) {
