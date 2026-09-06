@@ -80,12 +80,16 @@ function renderAjustes() {
   html += '<div class="caja-card">';
   html += '<div class="stat-label" style="margin-bottom:10px;">Formas de pago disponibles (en pedidos y movimientos)</div>';
   (site.metodosPago || []).forEach(function (m, i) {
+    const esEfectivo = m.trim().toLowerCase() === "efectivo";
     html += '<div class="caja-row" style="align-items:center;">' +
-      '<input class="caja-input" style="flex:1;" value="' + escapeHtml(m) + '" onchange="renombrarMetodoPago(' + i + ', this.value)">' +
-      '<button class="mov-del" onclick="borrarMetodoPago(' + i + ')"><i class="fa-solid fa-trash"></i></button>' +
+      '<input class="caja-input" style="flex:1;" value="' + escapeHtml(m) + '" onchange="renombrarMetodoPago(' + i + ', this.value)" ' + (esEfectivo ? 'disabled title="Este nombre no se puede cambiar: el saldo de caja física lo usa como referencia."' : '') + '>' +
+      (esEfectivo
+        ? '<span class="stat-sub" style="white-space:nowrap; padding:0 6px;" title="No se puede borrar">🔒</span>'
+        : '<button class="mov-del" onclick="borrarMetodoPago(' + i + ')"><i class="fa-solid fa-trash"></i></button>') +
       '</div>';
   });
   html += '<button class="caja-btn caja-btn-ghost" onclick="agregarMetodoPago()" style="margin-top:8px;">+ Agregar forma de pago</button>';
+  html += '<div class="stat-sub" style="margin-top:8px;">"Efectivo" está protegido: el saldo físico de caja (Resumen, Movimientos, tickets) se calcula sumando solo los movimientos con ese método exacto. El resto los podés renombrar, agregar o borrar libremente.</div>';
   html += '</div>';
 
   html += '<div class="empty-note">Los cambios se guardan solos y se aplican en la página de pedidos la próxima vez que se abra o recargue.</div>';
@@ -118,8 +122,9 @@ function renombrarMetodoPago(i, v) {
 }
 
 function borrarMetodoPago(i) {
-  if (!confirm("¿Borrar esta forma de pago?")) return;
   const site = siteLoad();
+  if ((site.metodosPago[i] || "").trim().toLowerCase() === "efectivo") return;
+  if (!confirm("¿Borrar esta forma de pago?")) return;
   site.metodosPago.splice(i, 1);
   siteSave(site);
   renderAjustes();
@@ -334,22 +339,34 @@ function renderMovimientos() {
   const sorted = state.transactions.slice().sort(function (a, b) { return a.date < b.date ? 1 : -1; });
   const filtered = movFilterLedger === "todas" ? sorted : sorted.filter(function (t) { return t.ledger === movFilterLedger; });
 
-  const showAperturaForm = !opening || aperturaEditing;
+  const showAperturaForm = aperturaEditing;
+  const autoApertura = cajaAutoApertura(state.transactions, state.openings);
 
   let aperturaHtml;
   if (showAperturaForm) {
+    const valPrincipal = opening ? opening.principal : autoApertura.principal;
+    const valChica = opening ? opening.chica : autoApertura.chica;
     aperturaHtml =
-      '<div class="stat-label" style="margin-bottom:10px;">Apertura de caja &mdash; hoy</div>' +
+      '<div class="stat-label" style="margin-bottom:10px;">Ajustar apertura de hoy (por ejemplo, si el conteo físico no coincide)</div>' +
       '<div class="caja-row">' +
-      '<div class="caja-field"><label>Saldo inicial caja mayor (efectivo contado)</label><input class="caja-input" id="apertura-principal" type="number" placeholder="0" value="' + (opening ? opening.principal : "") + '"></div>' +
-      '<div class="caja-field"><label>Saldo inicial caja chica (efectivo contado)</label><input class="caja-input" id="apertura-chica" type="number" placeholder="0" value="' + (opening ? opening.chica : "") + '"></div>' +
+      '<div class="caja-field"><label>Saldo inicial caja mayor (efectivo contado)</label><input class="caja-input" id="apertura-principal" type="number" placeholder="0" value="' + valPrincipal + '"></div>' +
+      '<div class="caja-field"><label>Saldo inicial caja chica (efectivo contado)</label><input class="caja-input" id="apertura-chica" type="number" placeholder="0" value="' + valChica + '"></div>' +
       "</div>" +
-      '<button class="caja-btn caja-btn-primary caja-btn-block" onclick="guardarApertura()">Guardar apertura</button>';
+      '<div class="caja-row">' +
+      '<button class="caja-btn caja-btn-primary" style="flex:1;" onclick="guardarApertura()">Guardar ajuste</button>' +
+      '<button class="caja-btn caja-btn-ghost" onclick="cancelarEdicionApertura()">Cancelar</button>' +
+      "</div>";
+  } else if (opening) {
+    aperturaHtml =
+      '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">' +
+      '<div class="stat-label">Apertura de hoy (ajustada a mano): <span style="color:var(--text-white); font-family:\'Courier New\',monospace;">' + cajaFmtMoney(opening.principal) + '</span> mayor &middot; <span style="color:var(--text-white); font-family:\'Courier New\',monospace;">' + cajaFmtMoney(opening.chica) + "</span> chica</div>" +
+      '<button class="caja-btn caja-btn-ghost" onclick="editarApertura()">Ajustar</button>' +
+      "</div>";
   } else {
     aperturaHtml =
       '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">' +
-      '<div class="stat-label">Apertura de hoy: <span style="color:var(--text-white); font-family:\'Courier New\',monospace;">' + cajaFmtMoney(opening.principal) + '</span> mayor &middot; <span style="color:var(--text-white); font-family:\'Courier New\',monospace;">' + cajaFmtMoney(opening.chica) + "</span> chica</div>" +
-      '<button class="caja-btn caja-btn-ghost" onclick="editarApertura()">Editar</button>' +
+      '<div class="stat-label">Apertura de hoy (automática, sigue del cierre de ayer): <span style="color:var(--text-white); font-family:\'Courier New\',monospace;">' + cajaFmtMoney(autoApertura.principal) + '</span> mayor &middot; <span style="color:var(--text-white); font-family:\'Courier New\',monospace;">' + cajaFmtMoney(autoApertura.chica) + "</span> chica</div>" +
+      '<button class="caja-btn caja-btn-ghost" onclick="editarApertura()">Ajustar</button>' +
       "</div>";
   }
 
@@ -415,6 +432,8 @@ function setMovFilter(v) { movFilterLedger = v; renderMovimientos(); }
 function volverAHoy() { movFormDate = null; renderMovimientos(); }
 
 function editarApertura() { aperturaEditing = true; renderMovimientos(); }
+
+function cancelarEdicionApertura() { aperturaEditing = false; renderMovimientos(); }
 
 function guardarApertura() {
   const p = parseFloat(document.getElementById("apertura-principal").value) || 0;
