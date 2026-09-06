@@ -1,0 +1,142 @@
+# Archivo: delivery.html (Monitor de Delivery y Take Away con Repartidores)
+
+Copia este código y guárdalo en tu repositorio de GitHub como `delivery.html`.
+
+```html
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MYCFOODS - Delivery & Take Away</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        surface: '#0b1326',
+                        'surface-container-low': '#131b2e',
+                        'surface-bright': '#31394d',
+                        amber: { 500: '#f59e0b', 600: '#d97706' }
+                    },
+                    fontFamily: { sans: ['Montserrat', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#0b1326] text-white font-sans min-h-screen flex flex-col">
+    <!-- Navbar -->
+    <header class="bg-[#131b2e] border-b border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 z-50">
+        <div class="flex items-center gap-4">
+            <div class="bg-amber-500/15 border border-amber-500 rounded-lg p-2 flex items-center justify-center">
+                <svg class="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+            </div>
+            <div>
+                <h1 class="text-xl font-extrabold tracking-wide text-white">MYCFOODS</h1>
+                <p class="text-xs text-amber-500 font-semibold tracking-wider">DELIVERY & REPARTIDORES</p>
+            </div>
+        </div>
+        <nav class="hidden md:flex items-center gap-6 text-sm font-semibold">
+            <a href="index.html" class="text-gray-300 hover:text-amber-500 transition">Pedidos</a>
+            <a href="salon.html" class="text-gray-300 hover:text-amber-500 transition">Salón</a>
+            <a href="cocina.html" class="text-gray-300 hover:text-amber-500 transition">Cocina</a>
+            <a href="caja.html" class="text-gray-300 hover:text-amber-500 transition">Caja</a>
+            <a href="delivery.html" class="text-amber-500 border-b-2 border-amber-500 pb-1">Delivery</a>
+            <a href="stock.html" class="text-gray-300 hover:text-amber-500 transition">Stock</a>
+            <a href="equilibrio.html" class="text-gray-300 hover:text-amber-500 transition">P. Equilibrio</a>
+            <a href="ranking.html" class="text-gray-300 hover:text-amber-500 transition">Ranking</a>
+            <a href="config.html" class="text-gray-300 hover:text-amber-500 transition">Configuración</a>
+        </nav>
+        <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-amber-400 bg-amber-500/10 px-3 py-1.5 rounded-lg border border-amber-500/20">3 Repartidores Activos</span>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-6 max-w-[1600px] mx-auto w-full space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Columna 1: En Cocina / Preparación -->
+            <div class="bg-[#131b2e] border border-white/10 rounded-2xl p-5 flex flex-col">
+                <div class="flex justify-between items-center pb-3 border-b border-white/10 mb-4">
+                    <h3 class="font-bold text-base flex items-center gap-2 text-amber-400">
+                        <span>⏳</span> En Preparación
+                    </h3>
+                    <span class="bg-amber-500/20 text-amber-400 text-xs px-2 py-0.5 rounded font-bold">1 pedido</span>
+                </div>
+                <div class="space-y-3">
+                    <div class="bg-[#0b1326] p-4 rounded-xl border border-white/5 space-y-2">
+                        <div class="flex justify-between items-start">
+                            <span class="text-xs font-bold text-amber-500">ORDEN #D-402</span>
+                            <span class="text-[11px] text-gray-400">Hace 12 min</span>
+                        </div>
+                        <h4 class="font-bold text-sm text-white">Gonzalo Martínez</h4>
+                        <p class="text-xs text-gray-400">📍 Av. Cazón 1120 (Tigre Centro)</p>
+                        <p class="text-xs text-gray-300 font-medium">1x Wrap Pollo Crispy + Papas</p>
+                        <div class="pt-2 border-t border-white/5 flex justify-between items-center">
+                            <span class="text-sm font-extrabold text-amber-400">$ 7.800</span>
+                            <span class="text-xs text-emerald-400 font-semibold">Pagado (MercadoPago)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna 2: En Reparto -->
+            <div class="bg-[#131b2e] border border-white/10 rounded-2xl p-5 flex flex-col">
+                <div class="flex justify-between items-center pb-3 border-b border-white/10 mb-4">
+                    <h3 class="font-bold text-base flex items-center gap-2 text-blue-400">
+                        <span>🛵</span> En Camino (Reparto)
+                    </h3>
+                    <span class="bg-blue-500/20 text-blue-400 text-xs px-2 py-0.5 rounded font-bold">1 pedido</span>
+                </div>
+                <div class="space-y-3">
+                    <div class="bg-[#0b1326] p-4 rounded-xl border border-blue-500/30 space-y-2">
+                        <div class="flex justify-between items-start">
+                            <span class="text-xs font-bold text-blue-400">ORDEN #D-398</span>
+                            <span class="text-[11px] bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded font-bold">Repartidor: Franco</span>
+                        </div>
+                        <h4 class="font-bold text-sm text-white">Carla Rossi</h4>
+                        <p class="text-xs text-gray-400">📍 Lavalle 450 (Paseo Victorica)</p>
+                        <p class="text-xs text-gray-300 font-medium">2x Milanesas con Fritas</p>
+                        <div class="pt-2 border-t border-white/5 flex justify-between items-center">
+                            <span class="text-sm font-extrabold text-amber-400">$ 16.400</span>
+                            <span class="text-xs text-amber-400 font-semibold">Cobrar Efectivo</span>
+                        </div>
+                        <button class="w-full mt-2 bg-blue-600 hover:bg-blue-500 text-white font-bold py-1.5 rounded-lg text-xs transition">
+                            Marcar como Entregado
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna 3: Retiro por Local -->
+            <div class="bg-[#131b2e] border border-white/10 rounded-2xl p-5 flex flex-col">
+                <div class="flex justify-between items-center pb-3 border-b border-white/10 mb-4">
+                    <h3 class="font-bold text-base flex items-center gap-2 text-emerald-400">
+                        <span>🛍️</span> Retiro Mostrador (Luis Pereyra 440)
+                    </h3>
+                    <span class="bg-emerald-500/20 text-emerald-400 text-xs px-2 py-0.5 rounded font-bold">Listo</span>
+                </div>
+                <div class="space-y-3">
+                    <div class="bg-[#0b1326] p-4 rounded-xl border border-emerald-500/30 space-y-2">
+                        <div class="flex justify-between items-start">
+                            <span class="text-xs font-bold text-emerald-400">ORDEN #T-102</span>
+                            <span class="text-[11px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded font-bold">EMPAQUETADO</span>
+                        </div>
+                        <h4 class="font-bold text-sm text-white">Marcelo Gómez</h4>
+                        <p class="text-xs text-gray-400">📞 +54 9 11 5555-1234</p>
+                        <p class="text-xs text-gray-300 font-medium">1x Ciabatta Jamón Crudo + Bebida</p>
+                        <button class="w-full mt-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 rounded-lg text-xs transition">
+                            Entregar al Cliente
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
+```
