@@ -10,16 +10,70 @@ const CAJA_STORAGE_KEY = "mycfoods_caja_v1";
 
 const CAJA_METHODS = ["Efectivo", "Transferencia", "Tarjeta de Débito / Crédito", "QR / Mercado Pago", "Otro"];
 
+/* =========================================================
+   AJUSTES DEL SITIO — editables desde caja.html > Ajustes,
+   se aplican solos en index.html sin tocar código.
+========================================================= */
+const SITE_STORAGE_KEY = "mycfoods_site_v1";
+
+function siteDefaults() {
+  return {
+    heroSubtitulo: "NUESTRA CARTA",
+    heroTitulo: "Menú",
+    heroBajada: "Elegí y armá tu pedido",
+    entregaDeliveryLabel: "Delivery (Tigre Centro)",
+    entregaRetiroLabel: "Retiro por local (Luis Pereyra 440)",
+    horarioMin: "09:00",
+    horarioMax: "20:00",
+    metodosPago: ["Efectivo", "Transferencia", "Tarjeta de Débito / Crédito", "QR / Mercado Pago"],
+    whatsapp: ""
+  };
+}
+
+function siteLoad() {
+  try {
+    const raw = localStorage.getItem(SITE_STORAGE_KEY);
+    const defaults = siteDefaults();
+    if (!raw) return defaults;
+    const parsed = JSON.parse(raw);
+    const merged = Object.assign(defaults, parsed);
+    if (!Array.isArray(merged.metodosPago) || merged.metodosPago.length === 0) {
+      merged.metodosPago = defaults.metodosPago;
+    }
+    return merged;
+  } catch (e) {
+    console.error("Error leyendo ajustes del sitio:", e);
+    return siteDefaults();
+  }
+}
+
+function siteSave(data) {
+  try {
+    localStorage.setItem(SITE_STORAGE_KEY, JSON.stringify(data));
+    return true;
+  } catch (e) {
+    console.error("Error guardando ajustes del sitio:", e);
+    return false;
+  }
+}
+
+function getMetodosPago() {
+  const site = siteLoad();
+  return (site.metodosPago && site.metodosPago.length) ? site.metodosPago : CAJA_METHODS;
+}
+
 const CAJA_INCOME_CATS = ["Ventas delivery", "Ventas take away", "Ventas salón", "Eventos", "Otros ingresos"];
 const CAJA_EXPENSE_CATS = [
   "Mercadería e insumos", "Sueldos y cargas sociales", "Alquiler",
   "Servicios (luz/agua/gas)", "Mantenimiento", "Marketing", "Impuestos", "Otros gastos",
 ];
 
-// Mapeo del campo "Tipo de Entrega" de la página de pedidos a categoría de caja.
+// Mapeo del campo "Tipo de Entrega" (código interno, value del <select>) a categoría de caja.
+// Usa el código fijo, no el texto visible — así podés renombrar el cartel en Ajustes
+// sin romper la categorización de ventas.
 const CAJA_ENTREGA_TO_CATEGORY = {
-  "Delivery (Tigre Centro)": "Ventas delivery",
-  "Retiro por local (Luis Pereyra 440)": "Ventas take away",
+  "Delivery": "Ventas delivery",
+  "Take Away": "Ventas take away",
   "Salón": "Ventas salón",
 };
 
