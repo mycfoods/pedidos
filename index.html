@@ -1,1268 +1,164 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MYCFOODS COMANDAS</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- FontAwesome para Íconos -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
-
-    <!-- Ajustes puntuales: aire arriba del menú + botonera de categorías compacta -->
-    <style>
-        #menu.section {
-            padding-top: 150px;
-        }
-
-        .tabs-header {
-            gap: 6px;
-            margin-bottom: 26px;
-        }
-
-        .tab-btn {
-            padding: 7px 14px;
-            font-size: 0.78rem;
-            border-radius: 16px;
-        }
-
-        .accordion-header {
-            padding: 14px 16px;
-        }
-
-        .prod-name {
-            font-size: 0.92rem;
-        }
-
-        .accordion-body {
-            padding: 12px 16px 16px 16px;
-        }
-
-        .badge-click {
-            font-size: 0.68rem;
-            padding: 3px 8px;
-        }
-
-        .tab-btn.active-cat {
-            background: var(--accent);
-            color: var(--bg-main);
-            border-color: var(--accent);
-        }
-
-        .venta-mode-btn {
-            flex: 1;
-            padding: 10px 14px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-gray);
-            font-weight: 700;
-            font-size: 0.85rem;
-            cursor: pointer;
-            font-family: var(--font-main);
-            transition: var(--transition);
-        }
-
-        .venta-mode-btn.active {
-            background: var(--accent);
-            color: var(--bg-main);
-            border-color: var(--accent);
-        }
-
-        /* Layout dividido: menú a la izquierda, carrito a la derecha */
-        .pos-layout {
-            display: flex;
-            gap: 26px;
-            align-items: flex-start;
-        }
-
-        .pos-menu-col {
-            flex: 1.3;
-            min-width: 0;
-        }
-
-        .pos-cart-col {
-            flex: 1;
-            min-width: 0;
-            position: sticky;
-            top: 20px;
-        }
-
-        .pos-cart-col .cart-box {
-            margin: 0;
-        }
-
-        @media (max-width: 900px) {
-            .pos-layout {
-                flex-direction: column;
-            }
-            .pos-cart-col {
-                position: static;
-                width: 100%;
+    <title>MYCFOODS - Pedidos y Mostrador</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        surface: '#0b1326',
+                        'surface-container-low': '#131b2e',
+                        'surface-bright': '#31394d',
+                        amber: { 500: '#f59e0b', 600: '#d97706' }
+                    },
+                    fontFamily: { sans: ['Montserrat', 'sans-serif'] }
+                }
             }
         }
-
-        /* Menú simplificado: filas planas, mismo lenguaje visual que caja.html */
-        .menu-list-dynamic {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .menu-item-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 12px 14px;
-            transition: var(--transition);
-        }
-
-        .menu-item-row:hover {
-            border-color: var(--accent);
-        }
-
-        .menu-item-name {
-            flex: 1;
-            min-width: 0;
-            font-size: 0.88rem;
-            font-weight: 600;
-            color: var(--text-white);
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .menu-item-price {
-            font-family: 'Courier New', monospace;
-            font-size: 0.85rem;
-            color: var(--accent);
-            white-space: nowrap;
-        }
-
-        .menu-item-btn-add {
-            background: var(--accent);
-            color: var(--bg-main);
-            border: none;
-            border-radius: 6px;
-            width: 32px;
-            height: 32px;
-            font-size: 1rem;
-            font-weight: 800;
-            cursor: pointer;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .menu-item-btn-add:hover {
-            background: var(--accent-hover);
-        }
-    </style>
+    </script>
 </head>
- <body>
+<body class="bg-[#0b1326] text-white font-sans min-h-screen flex flex-col">
+    <!-- Navbar / Encabezado -->
+    <header class="bg-[#131b2e] border-b border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 z-50">
+        <div class="flex items-center gap-4">
+            <div class="bg-amber-500/15 border border-amber-500 rounded-lg p-2 flex items-center justify-center">
+                <svg class="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+            </div>
+            <div>
+                <h1 class="text-xl font-extrabold tracking-wide text-white">MYCFOODS</h1>
+                <p class="text-xs text-amber-500 font-semibold tracking-wider">SISTEMA GASTRONÓMICO</p>
+            </div>
+        </div>
+        <nav class="hidden xl:flex items-center gap-5 text-sm font-semibold">
+            <a href="index.html" class="text-amber-500 border-b-2 border-amber-500 pb-1">Pedidos</a>
+            <a href="salon.html" class="text-gray-300 hover:text-amber-500 transition">Salón</a>
+            <a href="cocina.html" class="text-gray-300 hover:text-amber-500 transition">Cocina KDS</a>
+            <a href="caja.html" class="text-gray-300 hover:text-amber-500 transition">Caja & Arqueo</a>
+            <a href="delivery.html" class="text-gray-300 hover:text-amber-500 transition">Delivery</a>
+            <a href="stock.html" class="text-gray-300 hover:text-amber-500 transition">Stock</a>
+            <a href="equilibrio.html" class="text-gray-300 hover:text-amber-500 transition">P. Equilibrio</a>
+            <a href="ranking.html" class="text-gray-300 hover:text-amber-500 transition">Ranking</a>
+            <a href="config.html" class="text-gray-300 hover:text-amber-500 transition">Configuración</a>
+        </nav>
+        <div class="flex items-center gap-3">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold border border-emerald-500/30">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> CAJA ABIERTA
+            </span>
+        </div>
+    </header>
 
-
-<nav class="navbar">
-    <div class="container logo-container">
-        <a href="#menu" class="logo">
-            <i class="fa-solid fa-utensils"></i> MYC<span>FOODS</span>
-        </a>
-
-    <div class="nav-links">
-    <a href="#menu">Menú</a>
-    <a href="#carrito">Carrito</a>
-    <a href="caja.html">Caja</a>
-</div>
-    </div>
-</nav>
-
-  <!-- SECCIÓN MENÚ (renderizado dinámico desde datos, editable en caja.html) -->
-    <section id="menu" class="section">
-        <div class="container">
-            <div class="section-title">
-                <span class="sub-title" id="site-hero-sub">NUESTRA CARTA</span>
-                <h2 id="site-hero-title">Menú</h2>
-                <p id="site-hero-text">Elegí y armá tu pedido</p>
+    <!-- Contenedor Principal -->
+    <main class="flex-1 p-6 grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-[1600px] mx-auto w-full">
+        <!-- Catálogo y Modos (2 Columnas) -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Modalidad de Entrega -->
+            <div class="flex flex-wrap gap-3">
+                <button class="bg-amber-500 text-slate-950 font-bold px-4 py-2.5 rounded-xl shadow-lg flex items-center gap-2">📍 Retiro por Local (Luis Pereyra 440)</button>
+                <button class="bg-[#131b2e] hover:bg-[#31394d] text-white font-semibold px-4 py-2.5 rounded-xl border border-white/10 transition">🛵 Delivery (Tigre Centro)</button>
+                <button class="bg-[#131b2e] hover:bg-[#31394d] text-white font-semibold px-4 py-2.5 rounded-xl border border-white/10 transition">🍽️ Venta Rápida Salón</button>
             </div>
 
-            <div class="pos-layout">
-                <!-- COLUMNA MENÚ -->
-                <div class="pos-menu-col">
-                    <div class="tabs-header" id="tabs-header-dynamic"></div>
-                    <div class="menu-list-dynamic" id="menu-accordion-dynamic"></div>
+            <!-- Grilla Platos -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-[#131b2e] border border-white/10 rounded-2xl p-5 flex flex-col justify-between hover:border-amber-500/50 transition">
+                    <div>
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-bold text-lg text-white">Wrap Pollo Crispy Tigre</h3>
+                            <span class="bg-amber-500/20 text-amber-400 text-xs px-2 py-1 rounded font-bold">Popular</span>
+                        </div>
+                        <p class="text-xs text-gray-400 mb-4">Pechuga rebozada crocante, lechuga capuchina, tomate fresco, queso dambo y salsa especial.</p>
+                    </div>
+                    <div class="flex items-center justify-between pt-3 border-t border-white/10">
+                        <span class="text-xl font-extrabold text-amber-400">$ 6.900</span>
+                        <button class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2 rounded-xl transition">+ Agregar</button>
+                    </div>
                 </div>
 
-                <!-- COLUMNA CARRITO -->
-                <div class="pos-cart-col" id="carrito">
-                    <div class="cart-box">
-                        <h3 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 14px;">
-                            <i class="fa-solid fa-cart-shopping" style="color: var(--accent);"></i> Tu pedido
-                        </h3>
-
-                        <!-- Lista de Ítems -->
-                        <div id="cart-items" class="cart-items-list">
-                            <p class="empty-msg">Tu carrito está vacío. ¡Agregá tus platos preferidos!</p>
+                <div class="bg-[#131b2e] border border-white/10 rounded-2xl p-5 flex flex-col justify-between hover:border-amber-500/50 transition">
+                    <div>
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-bold text-lg text-white">Milanesa con Guarnición</h3>
+                            <span class="bg-blue-500/20 text-blue-400 text-xs px-2 py-1 rounded font-bold">Menú del Día</span>
                         </div>
+                        <p class="text-xs text-gray-400 mb-4">Bife de nalga tierno rebozado a mano con panko y hierbas, acompañado de papas fritas crocantes.</p>
+                    </div>
+                    <div class="flex items-center justify-between pt-3 border-t border-white/10">
+                        <span class="text-xl font-extrabold text-amber-400">$ 8.200</span>
+                        <button class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2 rounded-xl transition">+ Agregar</button>
+                    </div>
+                </div>
 
-                        <!-- SELECTOR DE MODO DE VENTA -->
-                        <div class="venta-mode-toggle" style="display:flex; gap:8px; margin-top:20px;">
-                            <button type="button" class="venta-mode-btn active" data-mode="pedido" onclick="setModoVenta('pedido')">
-                                <i class="fa-solid fa-motorcycle"></i> Pedido
-                            </button>
-                            <button type="button" class="venta-mode-btn" data-mode="salon" onclick="setModoVenta('salon')">
-                                <i class="fa-solid fa-utensils"></i> Salón
-                            </button>
+                <div class="bg-[#131b2e] border border-white/10 rounded-2xl p-5 flex flex-col justify-between hover:border-amber-500/50 transition">
+                    <div>
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-bold text-lg text-white">Ciabatta de Jamón Crudo y Rúcula</h3>
+                            <span class="bg-emerald-500/20 text-emerald-400 text-xs px-2 py-1 rounded font-bold">Gourmet</span>
                         </div>
+                        <p class="text-xs text-gray-400 mb-4">Jamón crudo estacionado, rúcula fresca, hebras de parmesano, tomates secos y emulsión de oliva.</p>
+                    </div>
+                    <div class="flex items-center justify-between pt-3 border-t border-white/10">
+                        <span class="text-xl font-extrabold text-amber-400">$ 7.800</span>
+                        <button class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2 rounded-xl transition">+ Agregar</button>
+                    </div>
+                </div>
 
-                        <!-- FORMULARIO DE DATOS DE ENVÍO -->
-                        <div class="checkout-form" style="margin-top: 15px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
-                            <div id="campos-pedido">
-                                <h3 style="color: var(--accent); font-size: 1.1rem; margin-bottom: 15px;">
-                                    <i class="fa-solid fa-user-pen"></i> Datos para la Entrega
-                                </h3>
-
-                                <div class="form-group" style="margin-bottom: 12px;">
-                                    <label for="cliente-nombre" style="display: block; font-size: 0.85rem; margin-bottom: 5px;">Nombre y Apellido *</label>
-                                    <input type="text" id="cliente-nombre" placeholder="Ej: Maria Perez" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff;">
-                                </div>
-
-                                <div class="form-group" style="margin-bottom: 12px;">
-                                    <label for="cliente-entrega" style="display: block; font-size: 0.85rem; margin-bottom: 5px;">Tipo de Entrega *</label>
-                                    <select id="cliente-entrega" onchange="toggleDireccion()" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff;">
-                                        <option value="Delivery">Delivery (Tigre Centro)</option>
-                                        <option value="Take Away">Retiro por local (Luis Pereyra 440)</option>
-                                    </select>
-                                </div>
-
-                                <div class="form-group" id="group-direccion" style="margin-bottom: 12px;">
-                                    <label for="cliente-direccion" style="display: block; font-size: 0.85rem; margin-bottom: 5px;">Dirección de Entrega *</label>
-                                    <input type="text" id="cliente-direccion" placeholder="Ej: Av. Cánovas 123, Apto 2B" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff;">
-                                </div>
-
-                                <div class="form-group" style="margin-bottom: 12px;">
-                                    <label for="cliente-horario" style="display: block; font-size: 0.85rem; margin-bottom: 5px;">Horario deseado de Entrega / Retiro *</label>
-                                    <input type="time" id="cliente-horario" min="09:00" max="20:00" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff;">
-                                </div>
-
-                                <div class="form-group" style="margin-bottom: 12px;">
-                                    <label for="cliente-pago" style="display: block; font-size: 0.85rem; margin-bottom: 5px;">Forma de Pago *</label>
-                                    <select id="cliente-pago" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff;">
-                                        <option value="Efectivo">Efectivo</option>
-                                        <option value="Transferencia">Transferencia</option>
-                                        <option value="Tarjeta">Tarjeta de Débito / Crédito</option>
-                                    </select>
-                                </div>
-
-                                <div class="form-group" style="margin-bottom: 15px;">
-                                    <label for="cliente-notas" style="display: block; font-size: 0.85rem; margin-bottom: 5px;">Aclaraciones / Notas (Opcional)</label>
-                                    <input type="text" id="cliente-notas" placeholder="Ej: Sin aderezo / Timbre no funciona" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff;">
-                                </div>
-                            </div>
-
-                            <div id="campos-salon" style="display:none;">
-                                <h3 style="color: var(--accent); font-size: 1.1rem; margin-bottom: 15px;">
-                                    <i class="fa-solid fa-utensils"></i> Venta rápida en salón
-                                </h3>
-                                <div class="form-group" style="margin-bottom: 12px;">
-                                    <label for="salon-pago" style="display: block; font-size: 0.85rem; margin-bottom: 5px;">Forma de Pago *</label>
-                                    <select id="salon-pago" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff;">
-                                        <option value="Efectivo">Efectivo</option>
-                                        <option value="Transferencia">Transferencia</option>
-                                        <option value="Tarjeta">Tarjeta de Débito / Crédito</option>
-                                    </select>
-                                </div>
-                            </div>
+                <div class="bg-[#131b2e] border border-white/10 rounded-2xl p-5 flex flex-col justify-between hover:border-amber-500/50 transition">
+                    <div>
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-bold text-lg text-white">Empanadas Salteñas (Docena)</h3>
+                            <span class="bg-amber-500/20 text-amber-400 text-xs px-2 py-1 rounded font-bold">Horno a leña</span>
                         </div>
-
-                        <!-- Resumen y Envio -->
-                        <div class="cart-summary">
-                            <div class="total-row">
-                                <span>Total:</span>
-                                <span id="cart-total">$0</span>
-                            </div>
-
-                            <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
-                                <button class="btn-clear-cart" onclick="vaciarCarrito()">
-                                    Vaciar Carrito
-                                </button>
-
-                                <button class="btn-send-whatsapp" onclick="imprimirComanda()" style="flex: 1;">
-                                    <i class="fa-solid fa-print"></i> Imprimir
-                                </button>
-                            </div>
-                        </div>
+                        <p class="text-xs text-gray-400 mb-4">Carne cortada a cuchillo, papa, cebolla de verdeo y huevo. Masa casera horneada al punto justo.</p>
+                    </div>
+                    <div class="flex items-center justify-between pt-3 border-t border-white/10">
+                        <span class="text-xl font-extrabold text-amber-400">$ 14.500</span>
+                        <button class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2 rounded-xl transition">+ Agregar</button>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
 
-  
-<!-- BOTÓN FLOTANTE DEL CARRITO -->
-<!-- BOTÓN FLOTANTE DE WHATSAPP (solo si hay número cargado en Ajustes) -->
-<a id="whatsapp-float-btn" href="#" target="_blank" rel="noopener" style="display:none; position:fixed; bottom:95px; right:25px; background-color:#25d366; color:#fff; width:56px; height:56px; border-radius:50%; align-items:center; justify-content:center; font-size:28px; box-shadow:0 4px 15px rgba(0,0,0,0.5); z-index:998; text-decoration:none;">
-    <i class="fa-brands fa-whatsapp"></i>
-</a>
-
-<button id="floating-cart-btn" onclick="irAlCarrito()" aria-label="Ver carrito">
-    <i class="fa-solid fa-cart-shopping"></i>
-    <span id="floating-cart-count">0</span>
-</button>
-<script src="caja-core.js"></script>
-<!-- LÓGICA JAVASCRIPT -->
-<script>
-
-let carrito = [];
-let modoVenta = "pedido";
-let categoriaActiva = null;
-
-
-/* =========================================================
-   MODO DE VENTA (Pedido vs Venta rápida en salón)
-========================================================= */
-
-function setModoVenta(modo) {
-
-    modoVenta = modo;
-
-    document.querySelectorAll(".venta-mode-btn").forEach(function (b) {
-        b.classList.toggle("active", b.dataset.mode === modo);
-    });
-
-    const camposPedido = document.getElementById("campos-pedido");
-    const camposSalon = document.getElementById("campos-salon");
-
-    if (camposPedido) camposPedido.style.display = modo === "pedido" ? "block" : "none";
-    if (camposSalon) camposSalon.style.display = modo === "salon" ? "block" : "none";
-}
-
-
-/* =========================================================
-   APLICAR AJUSTES DEL SITIO (editables desde caja.html > Ajustes)
-========================================================= */
-function aplicarConfiguracionSitio() {
-
-    const site = siteLoad();
-
-    const heroSub = document.getElementById("site-hero-sub");
-    const heroTitle = document.getElementById("site-hero-title");
-    const heroText = document.getElementById("site-hero-text");
-
-    if (heroSub) heroSub.textContent = site.heroSubtitulo;
-    if (heroTitle) heroTitle.textContent = site.heroTitulo;
-    if (heroText) heroText.textContent = site.heroBajada;
-
-    const entregaDeliveryOpt = document.querySelector('#cliente-entrega option[value="Delivery"]');
-    const entregaRetiroOpt = document.querySelector('#cliente-entrega option[value="Take Away"]');
-
-    if (entregaDeliveryOpt) entregaDeliveryOpt.textContent = site.entregaDeliveryLabel;
-    if (entregaRetiroOpt) entregaRetiroOpt.textContent = site.entregaRetiroLabel;
-
-    const horarioInput = document.getElementById("cliente-horario");
-    if (horarioInput) {
-        horarioInput.min = site.horarioMin;
-        horarioInput.max = site.horarioMax;
-    }
-
-    const metodos = getMetodosPago();
-    const opcionesPago = metodos.map(function (m) {
-        return '<option value="' + cajaEscapeHtml(m) + '">' + cajaEscapeHtml(m) + '</option>';
-    }).join("");
-
-    const clientePagoSelect = document.getElementById("cliente-pago");
-    const salonPagoSelect = document.getElementById("salon-pago");
-
-    if (clientePagoSelect) clientePagoSelect.innerHTML = opcionesPago;
-    if (salonPagoSelect) salonPagoSelect.innerHTML = opcionesPago;
-
-    const whatsappBtn = document.getElementById("whatsapp-float-btn");
-    if (whatsappBtn) {
-        if (site.whatsapp) {
-            whatsappBtn.href = "https://wa.me/" + site.whatsapp.replace(/[^0-9]/g, "");
-            whatsappBtn.style.display = "flex";
-        } else {
-            whatsappBtn.style.display = "none";
-        }
-    }
-}
-
-
-/* =========================================================
-   RENDER DEL MENÚ (desde datos editables en caja.html)
-========================================================= */
-
-function renderMenuPagina() {
-
-    const data = menuLoad();
-    const productos = data.products || [];
-
-    const categorias = [];
-    productos.forEach(function (p) {
-        if (categorias.indexOf(p.category) === -1) categorias.push(p.category);
-    });
-
-    if (!categoriaActiva || categorias.indexOf(categoriaActiva) === -1) {
-        categoriaActiva = categorias[0] || null;
-    }
-
-    const tabsHeader = document.getElementById("tabs-header-dynamic");
-    const grid = document.getElementById("menu-accordion-dynamic");
-
-    if (!tabsHeader || !grid) return;
-
-    if (categorias.length === 0) {
-        tabsHeader.innerHTML = "";
-        grid.innerHTML = '<p style="color: var(--text-gray); text-align:center;">Todavía no hay productos cargados en el menú.</p>';
-        return;
-    }
-
-    tabsHeader.innerHTML = categorias.map(function (cat) {
-        const activo = cat === categoriaActiva ? " active-cat" : "";
-        return '<button type="button" class="tab-btn' + activo + '" onclick="seleccionarCategoriaMenu(\'' + cat.replace(/'/g, "\\'") + '\')">' + cajaEscapeHtml(cat) + '</button>';
-    }).join("");
-
-    grid.innerHTML = productos.filter(function (p) {
-        return p.category === categoriaActiva;
-    }).map(function (p) {
-        const nombreEscapado = p.name.replace(/'/g, "\\'");
-        return '<div class="menu-item-row">' +
-            '<span class="menu-item-name">' + cajaEscapeHtml(p.name) + '</span>' +
-            '<span class="menu-item-price">' + cajaFmtMoney(p.price) + '</span>' +
-            '<button class="menu-item-btn-add" onclick="agregarAlCarrito(\'' + nombreEscapado + '\', ' + p.price + ', 1)" aria-label="Agregar">+</button>' +
-            '</div>';
-    }).join("");
-}
-
-function seleccionarCategoriaMenu(cat) {
-    categoriaActiva = cat;
-    renderMenuPagina();
-}
-
-
-/* =========================================================
-   CARRITO
-========================================================= */
-
-function actualizarBotonCarrito() {
-
-    const contador = document.getElementById("floating-cart-count");
-
-    if (!contador) return;
-
-    contador.innerText = carrito.length;
-}
-
-
-/* =========================================================
-   IR AL CARRITO (botón flotante)
-========================================================= */
-
-function irAlCarrito() {
-
-    const destino = document.getElementById("carrito");
-
-    if (destino) {
-        destino.scrollIntoView({ behavior: "smooth" });
-    }
-}
-
-
-/* =========================================================
-   CANTIDAD DE PRODUCTOS
-========================================================= */
-
-function modificarCantidadMenu(btn, cambio) {
-
-    const container = btn.closest(".qty-selector");
-
-    if (!container) return;
-
-    const qtyVal = container.querySelector(".qty-val");
-
-    if (!qtyVal) return;
-
-    let cantidad = parseInt(qtyVal.innerText) || 1;
-
-    cantidad += cambio;
-
-    if (cantidad < 1) {
-        cantidad = 1;
-    }
-
-    qtyVal.innerText = cantidad;
-}
-
-
-/* =========================================================
-   AGREGAR PRODUCTO DESDE EL MENÚ
-========================================================= */
-
-function agregarDesdeMenu(btn, nombre, precio) {
-
-    const container = btn.closest(".item-controls-inline");
-
-    if (!container) return;
-
-    const qtyVal = container.querySelector(".qty-val");
-
-    const cantidad = qtyVal
-        ? parseInt(qtyVal.innerText) || 1
-        : 1;
-
-    agregarAlCarrito(nombre, precio, cantidad);
-
-    if (qtyVal) {
-        qtyVal.innerText = "1";
-    }
-}
-
-
-/* =========================================================
-   AGREGAR AL CARRITO
-========================================================= */
-
-function agregarAlCarrito(nombre, precio, cantidad = 1) {
-
-    const itemExistente =
-        carrito.find(item => item.nombre === nombre);
-
-    if (itemExistente) {
-
-        itemExistente.cantidad += cantidad;
-
-    } else {
-
-        carrito.push({
-
-            nombre: nombre,
-
-            precio: Number(precio),
-
-            cantidad: cantidad
-
-        });
-    }
-
-    actualizarCarritoUI();
-
-    actualizarBotonCarrito();
-}
-
-
-/* =========================================================
-   CAMBIAR CANTIDAD DESDE EL CARRITO
-========================================================= */
-
-function cambiarCantidad(index, cambio) {
-
-    if (!carrito[index]) return;
-
-    carrito[index].cantidad += cambio;
-
-    if (carrito[index].cantidad <= 0) {
-
-        carrito.splice(index, 1);
-    }
-
-    actualizarCarritoUI();
-
-    actualizarBotonCarrito();
-}
-
-
-/* =========================================================
-   VACIAR CARRITO
-========================================================= */
-
-function vaciarCarrito() {
-
-    carrito = [];
-
-    actualizarCarritoUI();
-
-    actualizarBotonCarrito();
-}
-
-
-/* =========================================================
-   ACTUALIZAR CARRITO
-========================================================= */
-
-function actualizarCarritoUI() {
-
-    const container =
-        document.getElementById("cart-items");
-
-    const totalEl =
-        document.getElementById("cart-total");
-
-    if (!container || !totalEl) return;
-
-    if (carrito.length === 0) {
-
-        container.innerHTML =
-            '<p class="empty-msg">El carrito está vacío.</p>';
-
-        totalEl.innerText = "$0";
-
-        return;
-    }
-
-    let html = "";
-
-    let total = 0;
-
-    carrito.forEach(function(item, index) {
-
-        const subtotal =
-            item.precio * item.cantidad;
-
-        total += subtotal;
-
-        html += `
-
-            <div class="cart-item-row">
-
-                <div class="cart-item-info">
-
-                    <strong>
-                        ${item.nombre}
-                    </strong>
-
-                    <span>
-
-                        $${item.precio.toLocaleString("es-AR")}
-
-                        x ${item.cantidad}
-
-                        =
-
-                        $${subtotal.toLocaleString("es-AR")}
-
-                    </span>
-
+        <!-- Carrito / Comanda -->
+        <div class="bg-[#131b2e] border border-white/10 rounded-2xl p-5 flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
+                    <h2 class="font-bold text-lg text-white flex items-center gap-2">🛒 Pedido en Vivo</h2>
+                    <span class="bg-amber-500/20 text-amber-400 text-xs px-2.5 py-1 rounded-full font-bold">2 items</span>
                 </div>
-
-                <div class="cart-item-controls">
-
-                    <button
-                        class="btn-qty"
-                        onclick="cambiarCantidad(${index}, -1)"
-                    >
-                        -
-                    </button>
-
-                    <span>
-                        ${item.cantidad}
-                    </span>
-
-                    <button
-                        class="btn-qty"
-                        onclick="cambiarCantidad(${index}, 1)"
-                    >
-                        +
-                    </button>
-
+                <div class="space-y-3 mb-6">
+                    <div class="bg-[#0b1326] p-3 rounded-xl border border-white/5 flex justify-between items-center">
+                        <div>
+                            <h4 class="font-bold text-sm">Wrap Pollo Crispy Tigre</h4>
+                            <span class="text-xs text-gray-400">$ 6.900 x 1</span>
+                        </div>
+                        <span class="font-extrabold text-amber-400">$ 6.900</span>
+                    </div>
+                    <div class="bg-[#0b1326] p-3 rounded-xl border border-white/5 flex justify-between items-center">
+                        <div>
+                            <h4 class="font-bold text-sm">Milanesa con Guarnición</h4>
+                            <span class="text-xs text-gray-400">$ 8.200 x 1</span>
+                        </div>
+                        <span class="font-extrabold text-amber-400">$ 8.200</span>
+                    </div>
                 </div>
-
             </div>
-
-        `;
-    });
-
-    container.innerHTML = html;
-
-    totalEl.innerText =
-        "$" + total.toLocaleString("es-AR");
-}
-
-
-/* =========================================================
-   ENTREGA
-========================================================= */
-
-function toggleDireccion() {
-
-    const tipoEl =
-        document.getElementById("cliente-entrega");
-
-    const direccion =
-        document.getElementById("group-direccion");
-
-    if (!tipoEl || !direccion) return;
-
-    direccion.style.display =
-        tipoEl.value === "Take Away"
-            ? "none"
-            : "block";
-}
-
-
-/* =========================================================
-   MENÚ DEL DÍA DESDE GOOGLE SHEETS
-========================================================= */
-
-const URL_MENU =
-"https://script.google.com/macros/s/AKfycby9nZR0UMXbHR71rsV4k6y5iZi_IuptX5CJHQqyQEvfs0D7_4__kD-tnKToRggo1B5W/exec";
-
-
-async function cargarMenuDesdeGoogle() {
-
-    try {
-
-        const respuesta =
-            await fetch(URL_MENU);
-
-        if (!respuesta.ok) {
-
-            throw new Error(
-                "Error HTTP: " + respuesta.status
-            );
-        }
-
-        const datos =
-            await respuesta.json();
-
-        if (!datos.menu_dia) {
-
-            throw new Error(
-                "No existe menu_dia en la respuesta"
-            );
-        }
-
-        const menu =
-            datos.menu_dia;
-
-        /*
-           Actualiza el producto "Menú del Día" en los
-           datos del menú (no el DOM directo), así queda
-           guardado y se re-renderiza igual que cualquier
-           otro producto.
-        */
-
-        const data = menuLoad();
-
-        const producto = data.products.find(function (p) {
-            return p.name === "Menú del Día";
-        });
-
-        if (producto) {
-
-            if (menu.detalle) {
-                producto.desc = menu.detalle;
-            }
-
-            if (menu.precio) {
-                producto.price = Number(menu.precio);
-            }
-
-            menuSave(data);
-            renderMenuPagina();
-        }
-
-    } catch (error) {
-
-        console.error(
-            "Error cargando menú del día:",
-            error
-        );
-    }
-}
-
-
-/* =========================================================
-   CONTROL ANTI-DOBLE IMPRESIÓN
-========================================================= */
-
-let impresionEnCurso = false;
-
-
-/* =========================================================
-   IMPRIMIR COMANDA
-========================================================= */
-
-function imprimirComanda() {
-
-    /*
-       EVITA QUE DOS CLICS RÁPIDOS,
-       DOBLE EVENTO O DOBLE LLAMADA
-       GENEREN DOS TICKETS.
-    */
-
-    if (impresionEnCurso) {
-
-        console.warn(
-            "Impresión bloqueada: ya hay una impresión en curso."
-        );
-
-        return;
-    }
-
-
-    if (carrito.length === 0) {
-
-        alert("El carrito está vacío.");
-
-        return;
-    }
-
-
-    let nombre, tipoEntrega, direccion, horario, pago, notas;
-
-    if (modoVenta === "salon") {
-
-        /* =====================================================
-           MODO VENTA SALÓN — mínimos datos, autocompletado
-        ===================================================== */
-
-        const pagoSalonEl =
-            document.getElementById("salon-pago");
-
-        nombre = "Salón";
-        tipoEntrega = "Salón";
-        direccion = "";
-
-        const ahoraSalon = new Date();
-        horario = ahoraSalon.toLocaleTimeString(
-            "es-AR",
-            { hour: "2-digit", minute: "2-digit", hour12: false }
-        );
-
-        pago = pagoSalonEl ? pagoSalonEl.value : "Efectivo";
-        notas = "";
-
-    } else {
-
-        /* =====================================================
-           MODO PEDIDO — datos completos de entrega
-        ===================================================== */
-
-        const nombreEl =
-            document.getElementById("cliente-nombre");
-
-        const entregaEl =
-            document.getElementById("cliente-entrega");
-
-        const direccionEl =
-            document.getElementById("cliente-direccion");
-
-        const horarioEl =
-            document.getElementById("cliente-horario");
-
-        const pagoEl =
-            document.getElementById("cliente-pago");
-
-        const notasEl =
-            document.getElementById("cliente-notas");
-
-
-        nombre =
-            nombreEl
-                ? nombreEl.value.trim()
-                : "";
-
-
-        tipoEntrega =
-            entregaEl
-                ? entregaEl.value
-                : "";
-
-
-        direccion =
-            direccionEl
-                ? direccionEl.value.trim()
-                : "";
-
-
-        horario =
-            horarioEl
-                ? horarioEl.value.trim()
-                : "";
-
-
-        pago =
-            pagoEl
-                ? pagoEl.value
-                : "";
-
-
-        notas =
-            notasEl
-                ? notasEl.value.trim()
-                : "";
-
-
-        /* =====================================================
-           VALIDACIONES (solo aplican al modo Pedido)
-        ===================================================== */
-
-        if (!nombre) {
-
-            alert(
-                "Ingresá el nombre del cliente."
-            );
-
-            if (nombreEl) {
-                nombreEl.focus();
-            }
-
-            return;
-        }
-
-
-        if (
-            tipoEntrega === "Delivery"
-            &&
-            !direccion
-        ) {
-
-            alert(
-                "Ingresá la dirección."
-            );
-
-            if (direccionEl) {
-                direccionEl.focus();
-            }
-
-            return;
-        }
-
-
-        if (!horario) {
-
-            alert(
-                "Indicá el horario."
-            );
-
-            if (horarioEl) {
-                horarioEl.focus();
-            }
-
-            return;
-        }
-    }
-
-
-
-    /*
-       DESDE ACÁ BLOQUEAMOS LA FUNCIÓN.
-       Las validaciones ya pasaron correctamente.
-    */
-
-    impresionEnCurso = true;
-
-
-    /* =====================================================
-       FECHA Y HORA
-    ===================================================== */
-
-    const ahora =
-        new Date();
-
-
-    const horaPedido =
-        ahora.toLocaleTimeString(
-            "es-AR",
-            {
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit",
-                hour12: false
-            }
-        );
-
-
-    const fechaPedido =
-        ahora.toLocaleDateString(
-            "es-AR"
-        );
-
-
-    /* =====================================================
-       PRODUCTOS
-    ===================================================== */
-
-    let total = 0;
-
-    let productosTexto = "";
-
-
-    carrito.forEach(function(item) {
-
-        const subtotal =
-            item.precio *
-            item.cantidad;
-
-
-        total += subtotal;
-
-
-        /*
-           QUITAR ACENTOS PARA EVITAR
-           CARACTERES PROBLEMÁTICOS
-           EN LA IMPRESORA.
-        */
-
-        let nombreProd =
-            item.nombre
-                .replace(/á/g, "a")
-                .replace(/é/g, "e")
-                .replace(/í/g, "i")
-                .replace(/ó/g, "o")
-                .replace(/ú/g, "u")
-                .replace(/ñ/g, "n");
-
-
-        /*
-           PRODUCTO Y PRECIO EN LA MISMA LINEA.
-           Separamos el precio visualmente hacia
-           la derecha sin depender de un ancho fijo.
-        */
-
-        const precioTexto =
-            "$" +
-            subtotal.toLocaleString("es-AR");
-
-
-        productosTexto +=
-            `${item.cantidad} x ${nombreProd}    ${precioTexto}\n`;
-
-    });
-
-    /* =====================================================
-       REGISTRAR VENTA EN CAJA
-    ===================================================== */
-
-    cajaRegistrarVentaDesdePedido({
-        nombre: nombre,
-        tipoEntrega: tipoEntrega,
-        pago: pago,
-        total: total,
-        items: carrito.map(function (item) {
-            return { nombre: item.nombre, precio: item.precio, cantidad: item.cantidad };
-        })
-    });
-
-    /* =====================================================
-       CONSTRUIR TICKET
-    ===================================================== */
-
-    const tituloTicket = modoVenta === "salon" ? "VENTA SALON" : "COMANDA";
-
-    let ticket = `
-
-     MYCFOODS
-       ${tituloTicket}
---------------------------------
-FECHA: ${fechaPedido}
-HORA:  ${horaPedido}
---------------------------------
-CLIENTE: ${nombre.toUpperCase()}
-ENTREGA: ${tipoEntrega.toUpperCase()}
-`;
-
-
-    if (tipoEntrega === "Delivery") {
-
-        ticket +=
-`DIRECCION:
-${direccion.toUpperCase()}
-`;
-    }
-
-
-    ticket +=
-`HORARIO: ${horario}
-PAGO:    ${pago}
---------------------------------
-PEDIDO:
-${productosTexto}--------------------------------
-TOTAL: $${total.toLocaleString("es-AR")}
-`;
-
-
-    if (notas) {
-
-        ticket +=
-`--------------------------------
-OBSERVACIONES:
-${notas.toUpperCase()}
-`;
-    }
-
-
-    ticket +=
-`--------------------------------
-     MYCFOODS
-
-
-`;
-
-
-    /* =====================================================
-       VENTANA DE IMPRESIÓN
-    ===================================================== */
-
-    const ventana =
-        window.open(
-            "",
-            "_blank",
-            "width=400,height=600"
-        );
-
-
-    if (!ventana) {
-
-        impresionEnCurso = false;
-
-        alert(
-            "El navegador bloqueó la ventana de impresión."
-        );
-
-        return;
-    }
-
-
-  ventana.document.open();
-
-ventana.document.write(`
-
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Comanda MYCFOODS</title>
-
-    <style>
-        @page {
-            size: 80mm auto;
-            margin: 0;
-        }
-
-        html,
-        body {
-            width: 80mm;
-            margin: 0;
-            padding: 0;
-            background: #ffffff;
-        }
-
-        body {
-            padding: 2mm 3mm;
-            font-family: Arial, sans-serif;
-            font-size: 15px;
-            font-weight: bold;
-            line-height: 1.25;
-            color: #000000;
-            text-align: left;
-        }
-
-        .ticket-container {
-            width: 100%;
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            text-align: left;
-        }
-
-        @media print {
-            html,
-            body {
-                width: 80mm;
-                margin: 0;
-                padding: 0;
-            }
-
-            body {
-                padding: 2mm 3mm;
-                text-align: left;
-            }
-
-            .ticket-container {
-                width: 100%;
-                margin: 0;
-                padding: 0;
-            }
-        }
-    </style>
-</head>
-
-<body>
-    <div class="ticket-container">${ticket}</div>
-</body>
-
-</html>`);
-
-ventana.document.close();
-
-    /*
-       IMPORTANTE:
-
-       La impresión se dispara UNA SOLA VEZ.
-    */
-
-    setTimeout(function() {
-
-        try {
-
-            ventana.focus();
-
-            ventana.print();
-
-        } catch (error) {
-
-            console.error(
-                "Error de impresión:",
-                error
-            );
-
-        }
-
-
-        setTimeout(function() {
-
-            try {
-                ventana.close();
-            } catch (e) {}
-
-            impresionEnCurso = false;
-
-        }, 1200);
-
-    }, 300);
-}
-
-
-/* =========================================================
-   INICIO
-========================================================= */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function() {
-
-        aplicarConfiguracionSitio();
-
-        renderMenuPagina();
-
-        toggleDireccion();
-
-        cargarMenuDesdeGoogle();
-
-        actualizarCarritoUI();
-
-        actualizarBotonCarrito();
-
-    }
-);
-
-</script>
+            <div class="space-y-4 pt-4 border-t border-white/10">
+                <div class="flex justify-between items-center text-lg font-extrabold">
+                    <span>TOTAL A COBRAR:</span>
+                    <span class="text-2xl text-amber-400">$ 15.100</span>
+                </div>
+                <button class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold py-3.5 rounded-xl shadow-lg transition text-center">
+                    🖨️ CONFIRMAR & IMPRIMIR COMANDA
+                </button>
+            </div>
+        </div>
+    </main>
 </body>
 </html>
+```
