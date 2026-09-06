@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MYCFOODS - Centro de Configuración</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        surface: '#0b1326',
+                        'surface-container-low': '#131b2e',
+                        'surface-bright': '#31394d',
+                        amber: { 500: '#f59e0b', 600: '#d97706' }
+                    },
+                    fontFamily: { sans: ['Montserrat', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#0b1326] text-white font-sans min-h-screen flex flex-col">
+    <!-- Navbar -->
+    <header class="bg-[#131b2e] border-b border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 z-50">
+        <div class="flex items-center gap-4">
+            <div class="bg-amber-500/15 border border-amber-500 rounded-lg p-2 flex items-center justify-center">
+                <svg class="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+            </div>
+            <div>
+                <h1 class="text-xl font-extrabold tracking-wide text-white">MYCFOODS</h1>
+                <p class="text-xs text-amber-500 font-semibold tracking-wider">CONFIGURACIÓN GENERAL</p>
+            </div>
+        </div>
+        <nav class="hidden md:flex items-center gap-6 text-sm font-semibold">
+            <a href="index.html" class="text-gray-300 hover:text-amber-500 transition">Pedidos</a>
+            <a href="salon.html" class="text-gray-300 hover:text-amber-500 transition">Salón</a>
+            <a href="cocina.html" class="text-gray-300 hover:text-amber-500 transition">Cocina</a>
+            <a href="caja.html" class="text-gray-300 hover:text-amber-500 transition">Caja</a>
+            <a href="delivery.html" class="text-gray-300 hover:text-amber-500 transition">Delivery</a>
+            <a href="stock.html" class="text-gray-300 hover:text-amber-500 transition">Stock</a>
+            <a href="equilibrio.html" class="text-gray-300 hover:text-amber-500 transition">P. Equilibrio</a>
+            <a href="ranking.html" class="text-gray-300 hover:text-amber-500 transition">Ranking</a>
+            <a href="config.html" class="text-amber-500 border-b-2 border-amber-500 pb-1">Configuración</a>
+        </nav>
+        <span class="text-xs text-gray-400">Versión POS: v2.4 (Build 2025)</span>
+    </header>
+
+    <!-- Main -->
+    <main class="flex-1 p-6 max-w-[1200px] mx-auto w-full space-y-6">
+        <div class="bg-[#131b2e] border border-white/10 rounded-2xl p-6 space-y-6">
+            <h3 class="text-xl font-bold text-white border-b border-white/10 pb-4">Parámetros del Local y Facturación</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-2 uppercase">Nombre Comercial</label>
+                    <input type="text" value="MYCFOODS" class="w-full bg-[#0b1326] border border-white/10 rounded-xl px-4 py-2.5 text-white font-bold focus:outline-none focus:border-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-2 uppercase">Dirección de Retiro</label>
+                    <input type="text" value="Luis Pereyra 440, Tigre Centro" class="w-full bg-[#0b1326] border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-2 uppercase">Teléfono / WhatsApp de Pedidos</label>
+                    <input type="text" value="+54 9 11 2345-6789" class="w-full bg-[#0b1326] border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-2 uppercase">Impresora Térmica de Comandas</label>
+                    <select class="w-full bg-[#0b1326] border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-amber-500">
+                        <option>EPSON TM-T20III (80mm USB / Ethernet)</option>
+                        <option>Hasar Térmica 58mm</option>
+                        <option>Impresión Digital / PDF</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="pt-4 border-t border-white/10 flex justify-end">
+                <button class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold px-6 py-3 rounded-xl transition shadow-lg">
+                    💾 Guardar Configuración
+                </button>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
+```
