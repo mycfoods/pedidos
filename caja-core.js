@@ -69,6 +69,8 @@ const CAJA_EXPENSE_CATS = [
 ];
 
 // Mapeo del campo "Tipo de Entrega" (código interno, value del <select>) a categoría de caja.
+// Usa el código fijo, no el texto visible — así podés renombrar el cartel en Ajustes
+// sin romper la categorización de ventas.
 const CAJA_ENTREGA_TO_CATEGORY = {
   "Delivery": "Ventas delivery",
   "Take Away": "Ventas take away",
@@ -83,6 +85,7 @@ function cajaEscapeHtml(s) {
 
 /* =========================================================
    MENÚ EDITABLE (productos y categorías)
+   Se edita directo desde index.html, sin tocar el HTML.
 ========================================================= */
 const MENU_STORAGE_KEY = "mycfoods_menu_v1";
 
@@ -166,6 +169,7 @@ function cajaLoad() {
     const parsed = JSON.parse(raw);
     const defaults = cajaDefaults();
     const merged = Object.assign(defaults, parsed);
+    // Merge profundo de "config" para no perder campos si lo guardado es viejo/incompleto.
     merged.config = Object.assign(defaults.config, parsed.config || {});
     if (!Array.isArray(merged.config.fixedCosts)) merged.config.fixedCosts = [];
     if (!merged.transactions) merged.transactions = [];
@@ -191,6 +195,7 @@ function cajaUid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 
+// Fecha local (no UTC) en formato YYYY-MM-DD.
 function cajaTodayStr() {
   const d = new Date();
   const tz = d.getTimezoneOffset() * 60000;
@@ -218,6 +223,11 @@ function cajaFmtDateLabel(dateStr) {
   return p[2] + "/" + p[1];
 }
 
+// Saldo = último saldo de apertura registrado (<= hoy) + movimientos desde esa fecha en adelante.
+// Saldo FÍSICO de caja: apertura (efectivo contado) + ingresos en Efectivo − egresos en Efectivo.
+// Transferencia / Tarjeta / QR-Mercado Pago son "plata virtual": no entran ni salen del cajón,
+// así que no deben sumar ni restar del saldo de caja física (aunque sí cuentan como venta real
+// en Libro Mayor y Reportes, que suman todos los métodos).
 function cajaComputeBalances(transactions, openings) {
   const dates = Object.keys(openings || {}).sort();
   const today = cajaTodayStr();
@@ -239,6 +249,8 @@ function cajaComputeBalances(transactions, openings) {
   return { principal: principal, chica: chica, baseDate: baseDate };
 }
 
+// Calcula cuál sería la apertura de HOY si no se ajustó manualmente:
+// el saldo físico acumulado con todo lo cargado hasta el día anterior.
 function cajaAutoApertura(transactions, openings) {
   const today = cajaTodayStr();
   const priorTx = transactions.filter(function (t) { return t.date < today; });
@@ -252,6 +264,11 @@ function cajaAddTransaction(tx) {
   return data;
 }
 
+/* =========================================================
+   Registrar una venta desde la página de pedidos.
+   Se llama una sola vez, justo cuando se confirma e imprime
+   la comanda (ver instrucciones de integración en index.html).
+========================================================= */
 function cajaRegistrarVentaDesdePedido(opts) {
   const categoria = CAJA_ENTREGA_TO_CATEGORY[opts.tipoEntrega] || "Otros ingresos";
   cajaAddTransaction({
@@ -262,5 +279,33 @@ function cajaRegistrarVentaDesdePedido(opts) {
     method: opts.pago,
     amount: Number(opts.total) || 0,
     note: "Pedido: " + opts.nombre,
+    items: Array.isArray(opts.items) ? opts.items : [],
   });
+}
+
+/* =========================================================
+   Ranking de productos vendidos, a partir del detalle de
+   ítems guardado en cada venta (ver cajaRegistrarVentaDesdePedido).
+   Ventas cargadas a mano en Movimientos no tienen ítems y no entran acá.
+========================================================= */
+function cajaProductRanking(transactions, opts) {
+  opts = opts || {};
+  const desde = opts.desde || null; // "YYYY-MM-DD"
+  const hasta = opts.hasta || null;
+  const map = {};
+
+  transactions.forEach(function (t) {
+    if (!t.items || !t.items.length) return;
+    if (desde && t.date < desde) return;
+    if (hasta && t.date > hasta) return;
+    t.items.forEach(function (it) {
+      const key = it.nombre;
+      if (!map[key]) map[key] = { nombre: key, cantidad: 0, total: 0, ventas: 0 };
+      map[key].cantidad += Number(it.cantidad) || 0;
+      map[key].total += (Number(it.precio) || 0) * (Number(it.cantidad) || 0);
+      map[key].ventas += 1;
+    });
+  });
+
+  return Object.keys(map).map(function (k) { return map[k]; }).sort(function (a, b) { return b.cantidad - a.cantidad; });
 }
