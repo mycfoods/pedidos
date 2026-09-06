@@ -1,61 +1,102 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MYCFOODS · CAJA</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="caja.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>MYCFOODS - Caja y Arqueo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        surface: '#0b1326',
+                        'surface-container-low': '#131b2e',
+                        'surface-bright': '#31394d',
+                        amber: { 500: '#f59e0b', 600: '#d97706' }
+                    },
+                    fontFamily: { sans: ['Montserrat', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
 </head>
-<body>
-
-<nav class="navbar">
-    <div class="container logo-container">
-        <a href="index.html#menu" class="logo">
-            <i class="fa-solid fa-utensils"></i> MYC<span>FOODS</span>
-        </a>
-        <div class="nav-links">
-            <a href="index.html#menu">Pedidos</a>
-            <a href="caja.html">Caja</a>
+<body class="bg-[#0b1326] text-white font-sans min-h-screen flex flex-col">
+    <!-- Navbar -->
+    <header class="bg-[#131b2e] border-b border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 z-50">
+        <div class="flex items-center gap-4">
+            <div class="bg-amber-500/15 border border-amber-500 rounded-lg p-2 flex items-center justify-center">
+                <svg class="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+            </div>
+            <div>
+                <h1 class="text-xl font-extrabold tracking-wide text-white">MYCFOODS</h1>
+                <p class="text-xs text-amber-500 font-semibold tracking-wider">CAJA & ARQUEO</p>
+            </div>
         </div>
-    </div>
-</nav>
+        <nav class="hidden md:flex items-center gap-6 text-sm font-semibold">
+            <a href="index.html" class="text-gray-300 hover:text-amber-500 transition">Pedidos</a>
+            <a href="salon.html" class="text-gray-300 hover:text-amber-500 transition">Salón</a>
+            <a href="cocina.html" class="text-gray-300 hover:text-amber-500 transition">Cocina KDS</a>
+            <a href="caja.html" class="text-amber-500 border-b-2 border-amber-500 pb-1">Caja & Arqueo</a>
+            <a href="delivery.html" class="text-gray-300 hover:text-amber-500 transition">Delivery</a>
+            <a href="stock.html" class="text-gray-300 hover:text-amber-500 transition">Stock</a>
+            <a href="equilibrio.html" class="text-gray-300 hover:text-amber-500 transition">P. Equilibrio</a>
+            <a href="ranking.html" class="text-gray-300 hover:text-amber-500 transition">Ranking</a>
+            <a href="config.html" class="text-gray-300 hover:text-amber-500 transition">Configuración</a>
+        </nav>
+        <span class="text-xs text-emerald-400 font-bold bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">Turno Activo #04</span>
+    </header>
 
-<div class="caja-page">
-    <div class="container" style="text-align:center; margin-bottom:26px;">
-        <span class="sub-title">ADMINISTRACIÓN</span>
-        <h2 style="font-size:2rem; font-weight:800;">Caja</h2>
-    </div>
+    <!-- Main -->
+    <main class="flex-1 p-6 max-w-[1600px] mx-auto w-full space-y-6">
+        <!-- KPIs Principales -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-[#131b2e] border border-white/10 rounded-2xl p-6">
+                <p class="text-xs text-gray-400 uppercase font-bold">Total Facturado Hoy</p>
+                <h3 class="text-4xl font-extrabold text-amber-400 mt-2">$ 842.650</h3>
+                <p class="text-xs text-emerald-400 mt-1 font-semibold">↑ +18.4% vs ayer</p>
+            </div>
+            <div class="bg-[#131b2e] border border-white/10 rounded-2xl p-6">
+                <p class="text-xs text-gray-400 uppercase font-bold">Efectivo en Gaveta</p>
+                <h3 class="text-4xl font-extrabold text-white mt-2">$ 186.400</h3>
+                <p class="text-xs text-emerald-400 mt-1 font-semibold">● Conciliado</p>
+            </div>
+            <div class="bg-[#131b2e] border border-white/10 rounded-2xl p-6 flex flex-col justify-center">
+                <button class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold py-3 rounded-xl transition shadow-lg">
+                    🔒 Realizar Arqueo y Cierre
+                </button>
+            </div>
+        </div>
 
-    <div class="caja-tabs">
-        <button class="caja-tab-btn active" data-tab="resumen"><i class="fa-solid fa-wallet"></i><span>Resumen</span></button>
-        <button class="caja-tab-btn" data-tab="movimientos"><i class="fa-solid fa-coins"></i><span>Movimientos</span></button>
-        <button class="caja-tab-btn" data-tab="menu"><i class="fa-solid fa-utensils"></i><span>Menú</span></button>
-        <button class="caja-tab-btn" data-tab="mayor"><i class="fa-solid fa-sitemap"></i><span>Libro mayor</span></button>
-        <button class="caja-tab-btn" data-tab="equilibrio"><i class="fa-solid fa-calculator"></i><span>Punto equilibrio</span></button>
-        <button class="caja-tab-btn" data-tab="reportes"><i class="fa-solid fa-chart-column"></i><span>Reportes</span></button>
-        <button class="caja-tab-btn" data-tab="ajustes"><i class="fa-solid fa-gear"></i><span>Ajustes</span></button>
-    </div>
-
-    <div class="caja-panel active" id="panel-resumen"></div>
-    <div class="caja-panel" id="panel-movimientos"></div>
-    <div class="caja-panel" id="panel-menu"></div>
-    <div class="caja-panel" id="panel-mayor"></div>
-    <div class="caja-panel" id="panel-equilibrio"></div>
-    <div class="caja-panel" id="panel-reportes"></div>
-    <div class="caja-panel" id="panel-ajustes"></div>
-</div>
-
-<div id="caja-print-area"></div>
-
-<!-- MODAL DE DETALLE DE MOVIMIENTO -->
-<div class="mc-modal-overlay" id="mov-detail-modal" onclick="if(event.target===this) cerrarDetalleMovimiento()">
-    <div class="mc-modal-box" id="mov-detail-content"></div>
-</div>
-
-<script src="caja-core.js"></script>
-<script src="caja.js"></script>
+        <!-- Desglose de Medios de Pago -->
+        <div class="bg-[#131b2e] border border-white/10 rounded-2xl p-6">
+            <h3 class="text-lg font-bold text-white mb-4">Desglose por Medios de Pago (Turno Actual)</h3>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="bg-[#0b1326] p-4 rounded-xl border border-white/5">
+                    <span class="text-xs text-gray-400 uppercase font-bold">Efectivo</span>
+                    <p class="text-xl font-extrabold text-white mt-1">$ 186.400</p>
+                    <span class="text-[11px] text-gray-400">22.1% del total</span>
+                </div>
+                <div class="bg-[#0b1326] p-4 rounded-xl border border-white/5">
+                    <span class="text-xs text-gray-400 uppercase font-bold">MercadoPago / QR</span>
+                    <p class="text-xl font-extrabold text-amber-400 mt-1">$ 412.850</p>
+                    <span class="text-[11px] text-gray-400">49.0% del total</span>
+                </div>
+                <div class="bg-[#0b1326] p-4 rounded-xl border border-white/5">
+                    <span class="text-xs text-gray-400 uppercase font-bold">Tarjetas Débito/Crédito</span>
+                    <p class="text-xl font-extrabold text-white mt-1">$ 198.400</p>
+                    <span class="text-[11px] text-gray-400">23.5% del total</span>
+                </div>
+                <div class="bg-[#0b1326] p-4 rounded-xl border border-white/5">
+                    <span class="text-xs text-gray-400 uppercase font-bold">Transferencias</span>
+                    <p class="text-xl font-extrabold text-white mt-1">$ 45.000</p>
+                    <span class="text-[11px] text-gray-400">5.4% del total</span>
+                </div>
+            </div>
+        </div>
+    </main>
 </body>
 </html>
+```
