@@ -429,6 +429,9 @@ function renderMovimientos() {
     '<div class="caja-field"><label>Fecha</label><input class="caja-input" type="date" id="mov-date" value="' + fechaActual + '" onchange="movFormDate = this.value"></div>' +
     '<div class="caja-field"><label>Caja</label><select class="caja-select" id="mov-ledger"><option value="principal">Caja mayor</option><option value="chica">Caja chica</option></select></div>' +
     "</div>" +
+    (movFormType === "ingreso"
+      ? '<div class="caja-field" style="margin-bottom:10px;"><label>Cantidad de tickets/pedidos que representa (1 si es una sola venta)</label><input class="caja-input" id="mov-tickets" type="number" min="1" value="1"></div>'
+      : "") +
     '<div class="stat-label" style="margin:10px 0 6px;">Categoría</div>' +
     '<div class="caja-row" id="mov-cats">' +
     cats.map(function (c, i) { return '<button type="button" class="chip ' + (i === 0 ? "active" : "") + '" data-cat="' + escapeHtml(c) + '" onclick="selectMovCat(this)">' + escapeHtml(c) + "</button>"; }).join("") +
@@ -497,7 +500,11 @@ function registrarMovimiento() {
   const category = catBtn ? catBtn.dataset.cat : (movFormType === "ingreso" ? CAJA_INCOME_CATS[0] : CAJA_EXPENSE_CATS[0]);
   const method = methodBtn ? methodBtn.dataset.method : getMetodosPago()[0];
   const note = document.getElementById("mov-note").value.trim();
-  state.transactions.push({ id: cajaUid(), type: movFormType, ledger: ledger, date: date, category: category, method: method, amount: amount, note: note });
+  const ticketsInput = document.getElementById("mov-tickets");
+  const tickets = movFormType === "ingreso" ? (parseInt(ticketsInput ? ticketsInput.value : "1") || 1) : undefined;
+  const tx = { id: cajaUid(), type: movFormType, ledger: ledger, date: date, category: category, method: method, amount: amount, note: note };
+  if (tickets !== undefined) tx.tickets = tickets;
+  state.transactions.push(tx);
   cajaSave(state);
   renderMovimientos();
 }
@@ -568,7 +575,7 @@ function renderEquilibrio() {
 
   const thisMonth = cajaMonthKey(cajaTodayStr());
   const monthIncomeTx = state.transactions.filter(function (t) { return t.type === "ingreso" && cajaMonthKey(t.date) === thisMonth; });
-  const realCount = monthIncomeTx.length;
+  const realCount = monthIncomeTx.reduce(function (a, t) { return a + (t.tickets || 1); }, 0);
   const realTotal = monthIncomeTx.reduce(function (a, t) { return a + t.amount; }, 0);
   const realAvg = realCount > 0 ? realTotal / realCount : null;
 
