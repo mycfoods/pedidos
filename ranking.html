@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MYCFOODS · RANKING</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="caja.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="container logo-container">
+        <a href="index.html#menu" class="logo">
+            <i class="fa-solid fa-utensils"></i> MYC<span>FOODS</span>
+        </a>
+        <div class="nav-links">
+            <a href="index.html#menu">Pedidos</a>
+            <a href="salon.html">Salón</a>
+            <a href="cocina.html">Cocina</a>
+            <a href="caja.html">Caja</a>
+            <a href="delivery.html">Delivery</a>
+            <a href="stock.html">Stock</a>
+            <a href="empleados.html">Empleados</a>
+            <a href="ranking.html">Ranking</a>
+            <a href="config.html">Config</a>
+        </div>
+    </div>
+</nav>
+
+<div class="caja-page">
+    <div class="container" style="text-align:center; margin-bottom:22px;">
+        <span class="sub-title">ANÁLISIS DE VENTAS</span>
+        <h2 style="font-size:2rem; font-weight:800;">Ranking de productos</h2>
+    </div>
+
+    <div class="container" style="max-width:800px;">
+        <div class="caja-card">
+            <div class="caja-row" style="align-items:center;">
+                <div class="caja-field">
+                    <label>Mes</label>
+                    <select class="caja-select" id="ranking-mes" onchange="renderRanking()"></select>
+                </div>
+                <div class="caja-field">
+                    <label>Ordenar por</label>
+                    <select class="caja-select" id="ranking-orden" onchange="renderRanking()">
+                        <option value="cantidad">Cantidad vendida</option>
+                        <option value="total">Total facturado</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="caja-card" id="ranking-resumen"></div>
+
+        <div class="caja-section-title"><h2>Más vendidos</h2></div>
+        <div class="caja-card" id="ranking-top"></div>
+
+        <div class="caja-section-title"><h2>Menos vendidos</h2></div>
+        <div class="caja-card" id="ranking-bottom"></div>
+    </div>
+</div>
+
+<!-- MODAL DE DETALLE POR PRODUCTO (día a día) -->
+<div class="mc-modal-overlay" id="producto-modal" onclick="if(event.target===this) cerrarDetalleProducto()">
+    <div class="mc-modal-box" id="producto-modal-content"></div>
+</div>
+
+<script src="caja-core.js"></script>
+<script src="ranking.js"></script>
+</body>
+</html>
