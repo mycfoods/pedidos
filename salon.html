@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MYCFOODS · SALÓN</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="caja.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="container logo-container">
+        <a href="index.html#menu" class="logo">
+            <i class="fa-solid fa-utensils"></i> MYC<span>FOODS</span>
+        </a>
+        <div class="nav-links">
+            <a href="index.html#menu">Pedidos</a>
+            <a href="salon.html">Salón</a>
+            <a href="cocina.html">Cocina</a>
+            <a href="caja.html">Caja</a>
+            <a href="delivery.html">Delivery</a>
+            <a href="stock.html">Stock</a>
+            <a href="empleados.html">Empleados</a>
+            <a href="config.html">Config</a>
+        </div>
+    </div>
+</nav>
+
+<div class="caja-page">
+    <div class="container" style="text-align:center; margin-bottom:22px;">
+        <span class="sub-title">SALÓN</span>
+        <h2 style="font-size:2rem; font-weight:800;">Mesas</h2>
+    </div>
+
+    <div class="container" style="max-width:900px;">
+        <div style="display:flex; justify-content:flex-end; margin-bottom:16px;">
+            <button class="caja-btn caja-btn-ghost" onclick="agregarMesaNueva()"><i class="fa-solid fa-plus"></i> Agregar mesa</button>
+        </div>
+        <div class="mesa-grid" id="mesa-grid"></div>
+    </div>
+</div>
+
+<!-- MODAL DE MESA -->
+<div class="mc-modal-overlay" id="mesa-modal" onclick="if(event.target===this) cerrarModalMesa()">
+    <div class="mc-modal-box" id="mesa-modal-content" style="max-width:480px;"></div>
+</div>
+
+<script src="caja-core.js"></script>
+<script src="salon.js"></script>
+</body>
+</html>
