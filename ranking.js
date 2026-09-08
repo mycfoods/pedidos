@@ -124,6 +124,7 @@ function cerrarDetalleProducto() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+  cajaAplicarTema();
   poblarSelectorMeses();
   renderRanking();
 });
