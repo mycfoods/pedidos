@@ -98,9 +98,56 @@ function renderConfig() {
   html += '<div class="stat-sub" style="margin-top:8px;">Esto es solo para que el local tenga anotado qué impresora usa cada sector — el navegador no puede configurar impresoras automáticamente por seguridad. Cuando imprimís una comanda o un ticket, elegís la impresora en el diálogo de impresión normal.</div>';
   html += '</div>';
 
+  // --- Apariencia ---
+  html += '<div class="caja-card">';
+  html += '<div class="stat-label" style="margin-bottom:10px;">Apariencia (afecta todas las páginas)</div>';
+  html += '<div class="caja-row" style="margin-bottom:10px; flex-wrap:wrap;">';
+  html += colorField("Color de acento (botones, precios)", "colorAcento", site.colorAcento);
+  html += colorField("Color de fondo", "colorFondo", site.colorFondo);
+  html += colorField("Color de tarjetas", "colorTarjeta", site.colorTarjeta);
+  html += colorField("Color de borde", "colorBorde", site.colorBorde);
+  html += colorField("Texto principal", "colorTexto", site.colorTexto);
+  html += colorField("Texto secundario", "colorTextoSecundario", site.colorTextoSecundario);
+  html += '</div>';
+  html += '<div class="caja-row" style="margin-bottom:10px;">';
+  html += '<div class="caja-field"><label>Tipografía</label><select class="caja-select" onchange="actualizarSitio(\'fuente\', this.value); cajaAplicarTema();">';
+  ["Montserrat", "Inter", "Poppins", "Roboto", "Playfair Display"].forEach(function (f) {
+    html += '<option value="' + f + '"' + (site.fuente === f ? " selected" : "") + '>' + f + '</option>';
+  });
+  html += '</select></div>';
+  html += '<div class="caja-field"><label>Tamaño de letra general</label><select class="caja-select" onchange="actualizarSitio(\'tamanoBase\', this.value); cajaAplicarTema();">';
+  [["85", "Más chico"], ["100", "Normal"], ["115", "Más grande"], ["130", "Extra grande"]].forEach(function (opt) {
+    html += '<option value="' + opt[0] + '"' + (site.tamanoBase === opt[0] ? " selected" : "") + '>' + opt[1] + '</option>';
+  });
+  html += '</select></div>';
+  html += '</div>';
+  html += '<button class="caja-btn caja-btn-ghost" onclick="restablecerTema()">Restablecer colores originales</button>';
+  html += '<div class="stat-sub" style="margin-top:8px;">Los cambios se ven al toque en esta misma página — recargá cualquier otra pestaña abierta para verlos ahí también.</div>';
+  html += '</div>';
+
   html += '<div class="empty-note">⚠️ Todo lo que ves acá (mesas, comandas, stock, ventas, ajustes) se guarda en el navegador de este dispositivo. Si abrís el sitio desde otro celular o computadora, no va a ver los mismos datos — no hay sincronización automática entre dispositivos todavía.</div>';
 
   el.innerHTML = html;
+}
+
+function colorField(label, campo, valorActual) {
+  return '<div class="caja-field" style="min-width:130px; flex:1;">' +
+    '<label>' + label + '</label>' +
+    '<input type="color" value="' + valorActual + '" style="width:100%; height:38px; border-radius:6px; border:1px solid var(--border-color); background:var(--bg-main); padding:2px; cursor:pointer;" ' +
+    'onchange="actualizarSitio(\'' + campo + '\', this.value); cajaAplicarTema();">' +
+    '</div>';
+}
+
+function restablecerTema() {
+  if (!confirm("¿Volver a los colores y fuente originales?")) return;
+  const site = siteLoad();
+  const defaults = siteDefaults();
+  ["colorFondo", "colorTarjeta", "colorAcento", "colorTexto", "colorTextoSecundario", "colorBorde", "fuente", "tamanoBase"].forEach(function (k) {
+    site[k] = defaults[k];
+  });
+  siteSave(site);
+  cajaAplicarTema();
+  renderConfig();
 }
 
 function actualizarSitio(campo, valor) {
@@ -151,6 +198,6 @@ function agregarMetodoPagoConfig() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+  cajaAplicarTema();
   renderConfig();
 });
-    
