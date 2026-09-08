@@ -272,6 +272,6 @@ function liberarMesaSinCobrar() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+  cajaAplicarTema();
   renderMesas();
 });
-    
