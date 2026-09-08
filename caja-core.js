@@ -41,7 +41,62 @@ function siteDefaults() {
     // Impresoras (informativo, para referencia del local)
     impresoraCocina: "",
     impresoraCaja: "",
+    // Apariencia (tema visual de todas las páginas)
+    colorFondo: "#0b0b0b",
+    colorTarjeta: "#141414",
+    colorAcento: "#f1a80a",
+    colorTexto: "#ffffff",
+    colorTextoSecundario: "#a0a0a0",
+    colorBorde: "#262626",
+    fuente: "Montserrat",
+    tamanoBase: "100",
   };
+}
+
+/* =========================================================
+   APARIENCIA — aplica el tema guardado como variables CSS.
+   Llamar una vez en cada página, apenas carga.
+========================================================= */
+const CAJA_FUENTES_DISPONIBLES = {
+  "Montserrat": "'Montserrat', sans-serif",
+  "Inter": "'Inter', sans-serif",
+  "Poppins": "'Poppins', sans-serif",
+  "Roboto": "'Roboto', sans-serif",
+  "Playfair Display": "'Playfair Display', serif",
+};
+
+function cajaAplicarTema() {
+  const site = siteLoad();
+  let style = document.getElementById("tema-dinamico");
+  if (!style) {
+    style = document.createElement("style");
+    style.id = "tema-dinamico";
+    document.head.appendChild(style);
+  }
+
+  const familiaFuente = CAJA_FUENTES_DISPONIBLES[site.fuente] || CAJA_FUENTES_DISPONIBLES["Montserrat"];
+
+  style.textContent =
+    ":root {" +
+    "--bg-main:" + site.colorFondo + ";" +
+    "--bg-card:" + site.colorTarjeta + ";" +
+    "--accent:" + site.colorAcento + ";" +
+    "--text-white:" + site.colorTexto + ";" +
+    "--text-gray:" + site.colorTextoSecundario + ";" +
+    "--border-color:" + site.colorBorde + ";" +
+    "--font-main:" + familiaFuente + ";" +
+    "}" +
+    "html{font-size:" + (site.tamanoBase || 100) + "%;}" +
+    "body{font-family:var(--font-main);}";
+
+  // Si la fuente elegida no es Montserrat (ya cargada por defecto), la trae de Google Fonts.
+  if (site.fuente && site.fuente !== "Montserrat" && !document.getElementById("fuente-dinamica")) {
+    const link = document.createElement("link");
+    link.id = "fuente-dinamica";
+    link.rel = "stylesheet";
+    link.href = "https://fonts.googleapis.com/css2?family=" + site.fuente.replace(/ /g, "+") + ":wght@400;600;700;800&display=swap";
+    document.head.appendChild(link);
+  }
 }
 
 function siteLoad() {
