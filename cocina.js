@@ -206,6 +206,7 @@ function borrarComandaActual() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+  cajaAplicarTema();
   renderCocina();
   setInterval(renderCocina, 4000);
 });
