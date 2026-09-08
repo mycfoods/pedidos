@@ -282,6 +282,7 @@ function renderFichajeList() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+  cajaAplicarTema();
   document.querySelectorAll(".caja-tab-btn").forEach(function (btn) {
     btn.addEventListener("click", function () { setEmpTab(btn.dataset.tab); });
   });
