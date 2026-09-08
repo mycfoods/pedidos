@@ -103,6 +103,7 @@ function borrarStock(id) {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+  cajaAplicarTema();
   renderStockForm();
   renderStockList();
 });
