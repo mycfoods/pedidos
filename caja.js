@@ -823,6 +823,7 @@ function imprimirReporteMensual() {
    INICIO
 ========================================================= */
 document.addEventListener("DOMContentLoaded", function () {
+  cajaAplicarTema();
   document.querySelectorAll(".caja-tab-btn").forEach(function (btn) {
     btn.addEventListener("click", function () { setTab(btn.dataset.tab); });
   });
