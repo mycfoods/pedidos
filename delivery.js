@@ -73,7 +73,7 @@ function avanzarDelivery(id) {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+  cajaAplicarTema();
   renderDelivery();
   setInterval(renderDelivery, 5000);
 });
-        
