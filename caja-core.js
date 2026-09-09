@@ -72,7 +72,6 @@ const CAJA_FUENTES_DISPONIBLES = {
 
 function cajaAplicarTema() {
   const site = siteLoad();
-  aplicarSeccionesNav(site);
   let style = document.getElementById("tema-dinamico");
   if (!style) {
     style = document.createElement("style");
