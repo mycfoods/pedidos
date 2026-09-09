@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MYCFOODS · CONFIGURACIÓN</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="caja.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="container logo-container">
+        <a href="index.html#menu" class="logo">
+            <i class="fa-solid fa-utensils"></i> MYC<span>FOODS</span>
+        </a>
+        <div class="nav-links">
+            <a href="index.html#menu">Pedidos</a>
+            <a href="salon.html">Salón</a>
+            <a href="cocina.html">Cocina</a>
+            <a href="caja.html">Caja</a>
+            <div class="nav-dropdown">
+                <button class="nav-dropdown-btn">Más <i class="fa-solid fa-chevron-down" style="font-size:0.7rem;"></i></button>
+                <div class="nav-dropdown-menu">
+                    <a href="delivery.html">Delivery</a>
+                    <a href="stock.html">Stock</a>
+                    <a href="empleados.html">Empleados</a>
+                    <a href="ranking.html">Ranking</a>
+                    <a href="config.html">Config</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="caja-page">
+    <div class="container" style="text-align:center; margin-bottom:22px;">
+        <span class="sub-title">ADMINISTRACIÓN</span>
+        <h2 style="font-size:2rem; font-weight:800;">Configuración</h2>
+    </div>
+
+    <div class="container" style="max-width:700px;">
+        <div id="config-content"></div>
+    </div>
+</div>
+
+<script src="caja-core.js"></script>
+<script src="config.js"></script>
+</body>
+</html>
