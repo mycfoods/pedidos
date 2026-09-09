@@ -1254,12 +1254,13 @@ ${notas.toUpperCase()}
        (solo productos, sin datos económicos).
     ===================================================== */
 
-    imprimirTicketEnVentana(ticket, function() {
-        imprimirTicketEnVentana(ticketCocina, function() {
-            impresionEnCurso = false;
-        });
+   imprimirTicketEnVentana(ticket, function() {
+    imprimirTicketEnVentana(ticketCocina, function() {
+        impresionEnCurso = false;
+        vaciarCarrito();
     });
-}
+});
+}    
 
 function imprimirTicketEnVentana(textoTicket, alTerminar) {
 
