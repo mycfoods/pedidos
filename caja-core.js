@@ -358,10 +358,15 @@ function cajaAddTransaction(tx) {
 
 /* =========================================================
    Registrar una venta desde la página de pedidos.
-   Se llama una sola vez, justo cuando se confirma e imprime
-   la comanda (ver instrucciones de integración en index.html).
+   Solo registra el ingreso si NO es un pago pendiente.
 ========================================================= */
 function cajaRegistrarVentaDesdePedido(opts) {
+  const metodoPago = String(opts.pago || "").trim();
+  const esPendiente = metodoPago.toLowerCase() === "pendiente";
+
+  // Si es pago pendiente, NO sumamos el dinero a la caja todavía
+  if (esPendiente) return;
+
   const categoria = CAJA_ENTREGA_TO_CATEGORY[opts.tipoEntrega] || "Otros ingresos";
   cajaAddTransaction({
     type: "ingreso",
@@ -535,6 +540,8 @@ function cajaCrearComanda(opts) {
     referencia: opts.referencia || "", // nombre del cliente o nombre de la mesa
     tipoEntrega: opts.tipoEntrega || "",
     direccion: opts.direccion || "",
+    pago: opts.pago || "",
+    estadoPago: opts.estadoPago || "cobrado", // <--- Guarda si está pendiente o cobrado
     items: Array.isArray(opts.items) ? opts.items : [],
     notas: opts.notas || "",
     estado: "pendiente",
@@ -545,7 +552,6 @@ function cajaCrearComanda(opts) {
   comandasSave(data);
   return comanda;
 }
-
 function cajaAvanzarComanda(id) {
   const orden = ["pendiente", "en_preparacion", "listo", "entregado"];
   const data = comandasLoad();
@@ -650,4 +656,37 @@ function calcularHorasTrabajadas(horaEntrada, horaSalida) {
   let minSalida = hs * 60 + ms;
   if (minSalida < minEntrada) minSalida += 24 * 60;
   return (minSalida - minEntrada) / 60;
+}
+/* =========================================================
+   Resumen diario para auditoría o consulta por fecha
+========================================================= */
+function cajaResumenPorDia(fechaStr) {
+  const data = cajaLoad();
+  const txs = data.transactions.filter(function(t) { return t.date === fechaStr; });
+  
+  let totalIngresos = 0;
+  let totalEgresos = 0;
+  const porMetodo = {};
+  const porCategoria = {};
+
+  txs.forEach(function(t) {
+    const monto = Number(t.amount) || 0;
+    if (t.type === "ingreso") {
+      totalIngresos += monto;
+      porMetodo[t.method] = (porMetodo[t.method] || 0) + monto;
+    } else {
+      totalEgresos += monto;
+    }
+    porCategoria[t.category] = (porCategoria[t.category] || 0) + monto;
+  });
+
+  return {
+    fecha: fechaStr,
+    transacciones: txs,
+    totalIngresos: totalIngresos,
+    totalEgresos: totalEgresos,
+    balanceNeto: totalIngresos - totalEgresos,
+    porMetodo: porMetodo,
+    porCategoria: porCategoria
+  };
 }
