@@ -8,7 +8,7 @@
 
 const CAJA_STORAGE_KEY = "mycfoods_caja_v1";
 
-const CAJA_METHODS = ["Efectivo", "Transferencia", "Tarjeta de Débito / Crédito", "QR / Mercado Pago", "Otro", "Pago Pendiente / A cobrar al retirar"];
+const CAJA_METHODS = ["Efectivo", "Transferencia", "Tarjeta de Débito / Crédito", "QR / Mercado Pago", "Otro", "Pendiente"];
 
 /* =========================================================
    AJUSTES DEL SITIO — editables desde caja.html > Ajustes,
@@ -25,7 +25,7 @@ function siteDefaults() {
     entregaRetiroLabel: "Retiro por local (Luis Pereyra 440)",
     horarioMin: "09:00",
     horarioMax: "20:00",
-    metodosPago: ["Efectivo", "Tarjeta", "Billetera Virtual (Mercado Pago/QR)", "Transferencia","Pago Pendiente / A cobrar al retirar"],
+    metodosPago: ["Efectivo", "Tarjeta", "Billetera Virtual (Mercado Pago/QR)", "Transferencia","Pendiente"],
     whatsapp: "",
     // Datos del negocio
     cuit: "",
