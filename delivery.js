@@ -1,6 +1,6 @@
 /* =========================================================
-    MYCFOODS · PENDIENTES DE PAGO — gestión y cobro al retirar
-    Requiere caja-core.js cargado antes.
+   MYCFOODS · PENDIENTES DE PAGO — gestión y cobro al retirar
+   Requiere caja-core.js cargado antes.
 ========================================================= */
 
 function escapeHtml(s) {
@@ -83,6 +83,17 @@ function confirmarCobroPedido(id) {
   // Actualizamos los datos del pago
   c.pago = nuevoMedioPago;
   c.estadoPago = "cobrado";
+
+  // Registramos formalmente el ingreso en la caja con el pago definitivo
+  const totalCalculado = c.items.reduce(function(acc, it) { return acc + (it.precio * it.cantidad); }, 0);
+  cajaRegistrarVentaDesdePedido({
+    pago: c.pago,
+    tipoEntrega: c.tipoEntrega,
+    total: totalCalculado,
+    nombre: c.nombre,
+    ledger: c.ledger || "principal",
+    items: c.items
+  });
 
   // Guardamos los cambios en el almacenamiento de comandas
   comandasSave(data);
