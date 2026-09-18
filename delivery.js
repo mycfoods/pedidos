@@ -1,6 +1,6 @@
 /* =========================================================
-   MYCFOODS · DELIVERY — despacho y seguimiento de repartos
-   Requiere caja-core.js cargado antes.
+    MYCFOODS · PENDIENTES DE PAGO — gestión y cobro al retirar
+    Requiere caja-core.js cargado antes.
 ========================================================= */
 
 function escapeHtml(s) {
@@ -9,72 +9,91 @@ function escapeHtml(s) {
   });
 }
 
-const DELIVERY_ESTADOS = ["pendiente", "en_camino", "entregado"];
-const DELIVERY_LABELS = { pendiente: "Pendiente", en_camino: "En camino", entregado: "Entregado" };
-const DELIVERY_BOTON = { pendiente: "Despachar (en camino)", en_camino: "Marcar entregado" };
-const DELIVERY_COLOR = { pendiente: "#e2564a", en_camino: "var(--accent)", entregado: "#5fa372" };
+const PAGO_LABELS = { pendiente: "⏳ Pago Pendiente", cobrado: "✅ Pagado" };
+const PAGO_COLOR = { pendiente: "#e2564a", cobrado: "#5fa372" };
 
-function renderDelivery() {
+function renderPendientesPago() {
   const data = comandasLoad();
   const today = cajaTodayStr();
+  
+  // Filtramos los pedidos del día que sean de Retiro o que tengan pago pendiente
   const lista = data.comandas
-    .filter(function (c) { return c.tipoEntrega === "Delivery" && c.fecha === today; })
+    .filter(function (c) { return c.fecha === today; })
     .sort(function (a, b) { return a.hora < b.hora ? 1 : -1; });
 
   const cont = document.getElementById("delivery-list");
   if (!cont) return;
 
   if (lista.length === 0) {
-    cont.innerHTML = '<div class="caja-card empty-note">No hay pedidos de delivery hoy.</div>';
+    cont.innerHTML = '<div class="caja-card empty-note">No hay pedidos registrados hoy.</div>';
     return;
   }
 
   cont.innerHTML = lista.map(function (c) {
-    const estado = c.estadoEntrega || "pendiente";
+    const estadoPago = c.estadoPago || (c.pago === "pendiente" ? "pendiente" : "cobrado");
     let html = '<div class="caja-card">';
+    
+    // Cabecera de la tarjeta
     html += '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">';
-    html += '<span style="font-weight:700; font-size:0.95rem;">' + escapeHtml(c.referencia) + '</span>';
-    html += '<span style="font-size:0.7rem; font-weight:800; padding:3px 10px; border-radius:20px; color:' + DELIVERY_COLOR[estado] + '; border:1px solid ' + DELIVERY_COLOR[estado] + ';">' + DELIVERY_LABELS[estado] + '</span>';
+    html += '<span style="font-weight:700; font-size:0.95rem;">' + escapeHtml(c.referencia || c.nombre) + '</span>';
+    html += '<span style="font-size:0.7rem; font-weight:800; padding:3px 10px; border-radius:20px; color:' + PAGO_COLOR[estadoPago] + '; border:1px solid ' + PAGO_COLOR[estadoPago] + ';">' + PAGO_LABELS[estadoPago] + '</span>';
     html += '</div>';
-    html += '<div class="stat-sub" style="margin-bottom:6px;">🕐 ' + c.hora + (c.direccion ? ' &middot; 📍 ' + escapeHtml(c.direccion) : '') + '</div>';
+    
+    // Subtítulo con hora, cliente y forma de pago actual
+    html += '<div class="stat-sub" style="margin-bottom:6px;">🕐 ' + c.hora + ' &middot; 👤 ' + escapeHtml(c.nombre || "Cliente") + ' &middot; 💳 <i>' + escapeHtml(c.pago) + '</i></div>';
+    
+    // Items del pedido
     c.items.forEach(function (it) {
       html += '<div class="mc-item-row"><span>' + it.cantidad + ' x ' + escapeHtml(it.nombre) + '</span><span>' + cajaFmtMoney(it.precio * it.cantidad) + '</span></div>';
     });
+    
     if (c.notas) html += '<div class="stat-sub" style="margin-top:6px; font-style:italic;">"' + escapeHtml(c.notas) + '"</div>';
 
-    html += '<div class="caja-row" style="margin-top:12px;">';
-    html += '<input class="caja-input" placeholder="Repartidor (opcional)" value="' + escapeHtml(c.repartidor || "") + '" onchange="asignarRepartidor(\'' + c.id + '\', this.value)" style="flex:1;">';
-    html += '</div>';
-
-    if (DELIVERY_BOTON[estado]) {
-      html += '<button class="caja-btn caja-btn-primary caja-btn-block" style="margin-top:10px;" onclick="avanzarDelivery(\'' + c.id + '\')">' + DELIVERY_BOTON[estado] + '</button>';
+    // Si el pago está pendiente, mostramos el selector de medio de pago real y el botón para confirmar
+    if (estadoPago === "pendiente") {
+      html += '<div class="caja-row" style="margin-top:12px; gap:8px; display:flex; flex-direction:column;">';
+      html += '<select id="pago-real-' + c.id + '" class="caja-input" style="width:100%;">';
+      html += '<option value="" disabled selected>Elegir pago real (Efectivo / Transferencia)...</option>';
+      html += '<option value="Efectivo">Efectivo</option>';
+      html += '<option value="Transferencia">Transferencia</option>';
+      html += '<option value="Tarjeta">Tarjeta</option>';
+      html += '</select>';
+      html += '<button class="caja-btn caja-btn-primary caja-btn-block" onclick="confirmarCobroPedido(\'' + c.id + '\')">Confirmar Pago y Cerrar</button>';
+      html += '</div>';
     }
+
     html += '</div>';
     return html;
   }).join("");
 }
 
-function asignarRepartidor(id, valor) {
-  const data = comandasLoad();
-  const c = data.comandas.find(function (x) { return x.id === id; });
-  if (!c) return;
-  c.repartidor = valor;
-  comandasSave(data);
-}
+function confirmarCobroPedido(id) {
+  const selectEl = document.getElementById('pago-real-' + id);
+  const nuevoMedioPago = selectEl ? selectEl.value : "";
 
-function avanzarDelivery(id) {
+  if (!nuevoMedioPago) {
+    alert("Por favor seleccioná con qué medio pagó el cliente antes de confirmar.");
+    return;
+  }
+
   const data = comandasLoad();
   const c = data.comandas.find(function (x) { return x.id === id; });
   if (!c) return;
-  const idx = DELIVERY_ESTADOS.indexOf(c.estadoEntrega || "pendiente");
-  if (idx >= 0 && idx < DELIVERY_ESTADOS.length - 1) c.estadoEntrega = DELIVERY_ESTADOS[idx + 1];
+
+  // Actualizamos los datos del pago
+  c.pago = nuevoMedioPago;
+  c.estadoPago = "cobrado";
+
+  // Guardamos los cambios en el almacenamiento de comandas
   comandasSave(data);
-  renderDelivery();
+
+  // Refrescamos la vista de la pantalla
+  renderPendientesPago();
 }
 
 document.addEventListener("DOMContentLoaded", function () {
   cajaAplicarTema();
   cajaInitNavDropdown();
-  renderDelivery();
-  setInterval(renderDelivery, 5000);
+  renderPendientesPago();
+  setInterval(renderPendientesPago, 5000);
 });
