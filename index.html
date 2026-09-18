@@ -1258,6 +1258,7 @@ ${notas.toUpperCase()}
     imprimirTicketEnVentana(ticketCocina, function() {
         impresionEnCurso = false;
         vaciarCarrito();
+        limpiarFormularioCliente();
     });
 });
 }    
@@ -1422,7 +1423,23 @@ document.addEventListener(
 
     }
 );
+function limpiarFormularioCliente() {
+    const ids = [
+        "cliente-nombre",
+        "cliente-entrega",
+        "cliente-direccion",
+        "cliente-horario",
+        "cliente-pago",
+        "cliente-notas"
+    ];
 
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.value = ""; 
+        }
+    });
+}
 </script>
 </body>
 </html>
