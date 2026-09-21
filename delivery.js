@@ -16,6 +16,10 @@ function renderPendientesPago() {
   const data = comandasLoad();
   const today = cajaTodayStr();
   
+  // Cargamos los productos del menú para el selector de extras (si existe la función menuLoad)
+  const menuData = typeof menuLoad === 'function' ? menuLoad() : { products: [] };
+  const productosDisponibles = menuData.products || [];
+
   // Filtramos los pedidos del día que sean de Retiro o que tengan pago pendiente
   const lista = data.comandas
     .filter(function (c) { return c.fecha === today; })
@@ -49,9 +53,25 @@ function renderPendientesPago() {
     
     if (c.notas) html += '<div class="stat-sub" style="margin-top:6px; font-style:italic;">"' + escapeHtml(c.notas) + '"</div>';
 
-    // Si el pago está pendiente, mostramos el selector de medio de pago real y el botón para confirmar
+    // Si el pago está pendiente, mostramos la opción de agregar extras y el selector de medio de pago real
     if (estadoPago === "pendiente") {
-      html += '<div class="caja-row" style="margin-top:12px; gap:8px; display:flex; flex-direction:column;">';
+      
+      // Sección para sumar un producto extra al pedido antes de cobrar
+      html += '<div style="margin-top:10px; border-top:1px dashed #ddd; padding-top:8px;">';
+      html += '<div style="font-size:0.75rem; font-weight:700; margin-bottom:4px; color:#555;">➕ Agregar algo más al pedido:</div>';
+      html += '<div style="display:flex; gap:6px;">';
+      html += '<select id="extra-prod-' + c.id + '" class="caja-input" style="flex:1; font-size:0.8rem; padding:4px;">';
+      html += '<option value="" disabled selected>Elegir producto...</option>';
+      productosDisponibles.forEach(function(p) {
+        html += '<option value="' + escapeHtml(p.name) + '" data-precio="' + p.price + '">' + escapeHtml(p.name) + ' ($' + p.price + ')</option>';
+      });
+      html += '</select>';
+      html += '<button class="caja-btn" style="padding:4px 10px; font-size:0.8rem; white-space:nowrap;" onclick="agregarItemAPedido(\'' + c.id + '\')">Agregar</button>';
+      html += '</div>';
+      html += '</div>';
+
+      // Selector de pago real y botón de cierre
+      html += '<div class="caja-row" style="margin-top:12px; gap:8px; display:flex; flex-direction:column; border-top:1px solid #eee; padding-top:8px;">';
       html += '<select id="pago-real-' + c.id + '" class="caja-input" style="width:100%;">';
       html += '<option value="" disabled selected>Elegir pago real (Efectivo / Transferencia)...</option>';
       html += '<option value="Efectivo">Efectivo</option>';
@@ -65,6 +85,37 @@ function renderPendientesPago() {
     html += '</div>';
     return html;
   }).join("");
+}
+
+function agregarItemAPedido(id) {
+  const selectEl = document.getElementById('extra-prod-' + id);
+  if (!selectEl || !selectEl.value) {
+    alert("Por favor seleccioná un producto para agregar.");
+    return;
+  }
+
+  const nombreProd = selectEl.value;
+  const selectedOption = selectEl.options[selectEl.selectedIndex];
+  const precioProd = Number(selectedOption.getAttribute('data-precio')) || 0;
+
+  const data = comandasLoad();
+  const c = data.comandas.find(function (x) { return x.id === id; });
+  if (!c) return;
+
+  // Si el producto ya estaba en el pedido, le sumamos 1. Si no, lo agregamos como nuevo ítem.
+  const itemExistente = c.items.find(function (it) { return it.nombre === nombreProd; });
+  if (itemExistente) {
+    itemExistente.cantidad += 1;
+  } else {
+    c.items.push({
+      nombre: nombreProd,
+      precio: precioProd,
+      cantidad: 1
+    });
+  }
+
+  comandasSave(data);
+  renderPendientesPago();
 }
 
 function confirmarCobroPedido(id) {
@@ -84,7 +135,7 @@ function confirmarCobroPedido(id) {
   c.pago = nuevoMedioPago;
   c.estadoPago = "cobrado";
 
-  // Registramos formalmente el ingreso en la caja con el pago definitivo
+  // Registramos formalmente el ingreso en la caja con el total recalculado (incluyendo los agregados)
   const totalCalculado = c.items.reduce(function(acc, it) { return acc + (it.precio * it.cantidad); }, 0);
   cajaRegistrarVentaDesdePedido({
     pago: c.pago,
