@@ -517,4 +517,3 @@ document.addEventListener("DOMContentLoaded", function () {
   setInterval(renderPendientesPago, 5000);
 
 });
-```
