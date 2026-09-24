@@ -27,39 +27,32 @@ const PAGO_COLOR = {
 
 
 /* =========================================================
-   CALCULAR TOTAL ACTUAL DEL PEDIDO
-   Suma siempre los items que tenga la comanda en ese momento.
+   TOTAL ACTUAL DEL PEDIDO
 ========================================================= */
+
 function calcularTotalPendiente(c) {
   if (!c || !Array.isArray(c.items)) return 0;
 
   return c.items.reduce(function (total, it) {
-    return total + (
-      (Number(it.precio) || 0) *
-      (Number(it.cantidad) || 0)
-    );
+    return total +
+      ((Number(it.precio) || 0) * (Number(it.cantidad) || 0));
   }, 0);
 }
 
 
 /* =========================================================
-   FORMATO DE DINERO
-========================================================= */
-function formatearDineroPendiente(valor) {
-  return "$" + Number(valor || 0).toLocaleString("es-AR");
-}
+   RENDER PENDIENTES DE PAGO
 
-
-/* =========================================================
-   RENDER PENDIENTES
-   SE MANTIENE LA LÓGICA ORIGINAL.
+   IMPORTANTE:
+   La lógica original de recepción de pedidos se mantiene.
 ========================================================= */
+
 function renderPendientesPago() {
 
   const data = comandasLoad();
   const today = cajaTodayStr();
 
-  // Productos disponibles del menú
+  // Cargamos los productos del menú para los botones rápidos
   const menuData =
     typeof menuLoad === "function"
       ? menuLoad()
@@ -67,8 +60,11 @@ function renderPendientesPago() {
 
   const productosDisponibles = menuData.products || [];
 
-  // IMPORTANTE:
-  // Se mantiene exactamente el filtro original.
+
+  // =======================================================
+  // FILTRADO ORIGINAL — NO MODIFICADO
+  // =======================================================
+
   const lista = data.comandas
     .filter(function (c) {
       return c.fecha === today;
@@ -77,31 +73,42 @@ function renderPendientesPago() {
       return a.hora < b.hora ? 1 : -1;
     });
 
+
   const cont = document.getElementById("delivery-list");
 
   if (!cont) return;
 
+
   if (lista.length === 0) {
+
     cont.innerHTML =
       '<div class="caja-card empty-note">No hay pedidos registrados hoy.</div>';
+
     return;
   }
 
 
   cont.innerHTML = lista.map(function (c) {
 
+    // =====================================================
+    // ESTADO ORIGINAL — NO MODIFICADO
+    // =====================================================
+
     const estadoPago =
       c.estadoPago ||
       (c.pago === "pendiente" ? "pendiente" : "cobrado");
 
+
+    // Total actual del pedido
     const totalActual = calcularTotalPendiente(c);
+
 
     let html = '<div class="caja-card">';
 
 
-    /* =====================================================
-       CABECERA
-    ===================================================== */
+    // =====================================================
+    // CABECERA
+    // =====================================================
 
     html +=
       '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">';
@@ -123,115 +130,122 @@ function renderPendientesPago() {
     html += '</div>';
 
 
-    /* =====================================================
-       DATOS DEL PEDIDO
-    ===================================================== */
+    // =====================================================
+    // DATOS DEL PEDIDO
+    // =====================================================
 
     html +=
       '<div class="stat-sub" style="margin-bottom:8px;">' +
-      '🕐 ' + escapeHtml(c.hora || "") +
-      ' &middot; 👤 ' + escapeHtml(c.nombre || "Cliente") +
-      ' &middot; 💳 <i>' + escapeHtml(c.pago || "") + '</i>' +
+      '🕐 ' +
+      c.hora +
+      ' &middot; 👤 ' +
+      escapeHtml(c.nombre || "Cliente") +
+      ' &middot; 💳 <i>' +
+      escapeHtml(c.pago) +
+      '</i>' +
       '</div>';
 
 
-    /* =====================================================
-       ITEMS
-    ===================================================== */
+    // =====================================================
+    // PRODUCTOS DEL PEDIDO
+    // =====================================================
 
-    if (Array.isArray(c.items)) {
+    c.items.forEach(function (it, itIndex) {
 
-      c.items.forEach(function (it, itIndex) {
+      const subtotalItem =
+        it.precio * it.cantidad;
 
-        const subtotalItem =
-          (Number(it.precio) || 0) *
-          (Number(it.cantidad) || 0);
+
+      html +=
+        '<div style="display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px solid #f2f2f2;">';
+
+
+      html +=
+        '<span style="font-size:0.85rem;">' +
+        it.cantidad +
+        ' x ' +
+        escapeHtml(it.nombre) +
+        ' <b style="color:#333;">$' +
+        subtotalItem.toLocaleString("es-AR") +
+        '</b>' +
+        '</span>';
+
+
+      // ===================================================
+      // BOTONES + / -
+      // ===================================================
+
+      if (estadoPago === "pendiente") {
 
         html +=
-          '<div style="display:flex; justify-content:space-between; align-items:center; padding:5px 0; border-bottom:1px solid #f2f2f2;">';
+          '<div style="display:flex; align-items:center; gap:4px;">';
 
         html +=
-          '<span style="font-size:0.85rem; flex:1;">' +
-          escapeHtml(it.cantidad) +
-          ' x ' +
-          escapeHtml(it.nombre) +
-          ' <b style="color:#333;">' +
-          formatearDineroPendiente(subtotalItem) +
-          '</b>' +
+          '<button type="button" class="caja-btn" ' +
+          'style="padding:2px 8px; font-size:0.8rem;" ' +
+          'onclick="modificarCantidadItemPendiente(\'' +
+          c.id +
+          '\', ' +
+          itIndex +
+          ', -1)">−</button>';
+
+        html +=
+          '<span style="font-size:0.85rem; font-weight:bold; padding:0 4px;">' +
+          it.cantidad +
           '</span>';
 
-
-        /* BOTONES + / - */
-
-        if (estadoPago === "pendiente") {
-
-          html +=
-            '<div style="display:flex; align-items:center; gap:4px; margin-left:8px;">';
-
-          html +=
-            '<button type="button" class="caja-btn" ' +
-            'style="padding:2px 9px; font-size:0.8rem; min-width:30px;" ' +
-            'onclick="modificarCantidadItemPendiente(\'' +
-            c.id +
-            '\', ' +
-            itIndex +
-            ', -1)">−</button>';
-
-          html +=
-            '<span style="font-size:0.85rem; font-weight:bold; min-width:18px; text-align:center;">' +
-            it.cantidad +
-            '</span>';
-
-          html +=
-            '<button type="button" class="caja-btn" ' +
-            'style="padding:2px 9px; font-size:0.8rem; min-width:30px;" ' +
-            'onclick="modificarCantidadItemPendiente(\'' +
-            c.id +
-            '\', ' +
-            itIndex +
-            ', 1)">+</button>';
-
-          html += '</div>';
-        }
+        html +=
+          '<button type="button" class="caja-btn" ' +
+          'style="padding:2px 8px; font-size:0.8rem;" ' +
+          'onclick="modificarCantidadItemPendiente(\'' +
+          c.id +
+          '\', ' +
+          itIndex +
+          ', 1)">+</button>';
 
         html += '</div>';
-      });
-    }
+      }
 
 
-    /* =====================================================
-       TOTAL ACTUAL
-    ===================================================== */
+      html += '</div>';
+    });
+
+
+    // =====================================================
+    // TOTAL ACTUAL
+    // =====================================================
 
     if (estadoPago === "pendiente") {
 
       html +=
         '<div style="' +
-        'margin-top:10px;' +
-        'padding:10px 12px;' +
-        'background:#f7f7f7;' +
-        'border:1px solid #e5e5e5;' +
-        'border-radius:8px;' +
         'display:flex;' +
         'justify-content:space-between;' +
         'align-items:center;' +
+        'margin-top:10px;' +
+        'padding:10px 12px;' +
+        'background:#f7f7f7;' +
+        'border:1px solid #e1e1e1;' +
+        'border-radius:8px;' +
         '">';
 
       html +=
-        '<span style="font-size:0.85rem; font-weight:700; color:#555;">TOTAL ACTUAL</span>';
+        '<span style="font-size:0.8rem; font-weight:800; color:#555;">' +
+        'TOTAL ACTUAL' +
+        '</span>';
 
       html +=
-        '<strong style="font-size:1.25rem; color:#111;">' +
-        formatearDineroPendiente(totalActual) +
+        '<strong style="font-size:1.25rem; color:#111;">$' +
+        totalActual.toLocaleString("es-AR") +
         '</strong>';
 
       html += '</div>';
     }
 
 
-    /* =====================================================
-       NOTAS
-    ===================================================== */
+    // =====================================================
+    // NOTAS
+    // =====================================================
 
     if (c.notas) {
 
@@ -242,52 +256,55 @@ function renderPendientesPago() {
     }
 
 
-    /* =====================================================
-       EDICIÓN Y COBRO
-    ===================================================== */
+    // =====================================================
+    // EDICIÓN DEL PEDIDO + COBRO
+    // =====================================================
 
     if (estadoPago === "pendiente") {
 
 
-      /* ===================================================
-         BOTONERA DE PRODUCTOS
-      =================================================== */
+      // ===================================================
+      // BOTONERA DE PRODUCTOS
+      // ===================================================
 
       html +=
-        '<div style="margin-top:12px; border-top:1px dashed #ddd; padding-top:10px;">';
+        '<div style="margin-top:10px; border-top:1px dashed #ddd; padding-top:8px;">';
 
       html +=
-        '<div style="font-size:0.78rem; font-weight:700; margin-bottom:7px; color:#555;">' +
-        '➕ AGREGAR PRODUCTO' +
+        '<div style="font-size:0.75rem; font-weight:700; margin-bottom:7px; color:#555;">' +
+        '➕ Agregar al pedido' +
         '</div>';
 
 
       /*
-         Los botones quedan compactos, ordenados y
-         fáciles de tocar.
+         Grid compacto.
+         No cambia la lógica de agregar productos.
       */
 
       html +=
         '<div style="' +
         'display:grid;' +
-        'grid-template-columns:repeat(auto-fit,minmax(145px,1fr));' +
+        'grid-template-columns:repeat(auto-fit,minmax(140px,1fr));' +
         'gap:5px;' +
         'max-height:180px;' +
         'overflow-y:auto;' +
-        'padding:2px;' +
+        'padding-bottom:4px;' +
         '">';
 
 
       productosDisponibles.forEach(function (p) {
 
         const nombreEscapado =
-          String(p.name || "").replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+          String(p.name || "")
+            .replace(/\\/g, "\\\\")
+            .replace(/'/g, "\\'");
+
 
         html +=
           '<button type="button" class="caja-btn" ' +
           'style="' +
           'font-size:0.73rem;' +
-          'padding:7px 6px;' +
+          'padding:6px 7px;' +
           'background:#f8f9fa;' +
           'color:#333;' +
           'border:1px solid #ccc;' +
@@ -300,18 +317,20 @@ function renderPendientesPago() {
           '\', \'' +
           nombreEscapado +
           '\', ' +
-          Number(p.price || 0) +
-          ')">' +
+          p.price +
+          ')">';
 
+        html +=
           '<span style="display:block; font-weight:700;">' +
           escapeHtml(p.name) +
-          '</span>' +
+          '</span>';
 
-          '<span style="display:block; margin-top:2px; font-size:0.68rem; color:#777;">' +
-          formatearDineroPendiente(p.price) +
-          '</span>' +
+        html +=
+          '<span style="display:block; margin-top:2px; font-size:0.68rem; color:#777;">$' +
+          Number(p.price || 0).toLocaleString("es-AR") +
+          '</span>';
 
-          '</button>';
+        html += '</button>';
       });
 
 
@@ -319,9 +338,9 @@ function renderPendientesPago() {
       html += '</div>';
 
 
-      /* ===================================================
-         MEDIO DE PAGO REAL
-      =================================================== */
+      // ===================================================
+      // MEDIO DE PAGO REAL
+      // ===================================================
 
       html +=
         '<div class="caja-row" style="' +
@@ -330,8 +349,9 @@ function renderPendientesPago() {
         'display:flex;' +
         'flex-direction:column;' +
         'border-top:1px solid #eee;' +
-        'padding-top:10px;' +
+        'padding-top:8px;' +
         '">';
+
 
       html +=
         '<select id="pago-real-' +
@@ -339,24 +359,35 @@ function renderPendientesPago() {
         '" class="caja-input" style="width:100%;">';
 
       html +=
-        '<option value="" disabled selected>Elegir pago real...</option>';
+        '<option value="" disabled selected>' +
+        'Elegir pago real...' +
+        '</option>';
 
-      html += '<option value="Efectivo">Efectivo</option>';
-      html += '<option value="Transferencia">Transferencia</option>';
-      html += '<option value="Tarjeta">Tarjeta</option>';
-      html += '<option value="Mercado Pago">Mercado Pago</option>';
+      html +=
+        '<option value="Efectivo">Efectivo</option>';
+
+      html +=
+        '<option value="Transferencia">Transferencia</option>';
+
+      html +=
+        '<option value="Tarjeta">Tarjeta</option>';
 
       html += '</select>';
 
+
+      // ===================================================
+      // BOTÓN DE COBRO
+      // ===================================================
 
       html +=
         '<button type="button" class="caja-btn caja-btn-primary caja-btn-block" ' +
         'onclick="confirmarCobroPedido(\'' +
         c.id +
         '\')">' +
-        '💰 Cobrar ' +
-        formatearDineroPendiente(totalActual) +
+        '💰 Cobrar $' +
+        totalActual.toLocaleString("es-AR") +
         '</button>';
+
 
       html += '</div>';
     }
@@ -374,7 +405,11 @@ function renderPendientesPago() {
    MODIFICAR CANTIDAD
 ========================================================= */
 
-function modificarCantidadItemPendiente(idComanda, indexItem, cambio) {
+function modificarCantidadItemPendiente(
+  idComanda,
+  indexItem,
+  cambio
+) {
 
   const data = comandasLoad();
 
@@ -388,7 +423,7 @@ function modificarCantidadItemPendiente(idComanda, indexItem, cambio) {
   c.items[indexItem].cantidad += cambio;
 
 
-  // Si llega a 0 o menos, eliminamos el producto.
+  // Si llega a 0 o menos, lo removemos del pedido
   if (c.items[indexItem].cantidad <= 0) {
     c.items.splice(indexItem, 1);
   }
@@ -404,7 +439,11 @@ function modificarCantidadItemPendiente(idComanda, indexItem, cambio) {
    AGREGAR PRODUCTO
 ========================================================= */
 
-function agregarProductoPendiente(idComanda, nombreProd, precioProd) {
+function agregarProductoPendiente(
+  idComanda,
+  nombreProd,
+  precioProd
+) {
 
   const data = comandasLoad();
 
@@ -472,16 +511,22 @@ function confirmarCobroPedido(id) {
   if (!c) return;
 
 
-  /*
-     IMPORTANTE:
-     Se calcula nuevamente JUSTO al cobrar.
-     Así nunca se usa el total viejo.
-  */
+  // =====================================================
+  // IMPORTANTE:
+  // Se vuelve a calcular el total EN ESTE MOMENTO.
+  // Incluye cualquier producto agregado o modificado.
+  // =====================================================
 
-  const totalCalculado = calcularTotalPendiente(c);
+  const totalCalculado =
+    c.items.reduce(function (acc, it) {
+      return acc +
+        ((Number(it.precio) || 0) *
+         (Number(it.cantidad) || 0));
+    }, 0);
 
 
   c.pago = nuevoMedioPago;
+
   c.estadoPago = "cobrado";
 
 
