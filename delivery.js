@@ -81,7 +81,7 @@ function calcularTotalPedido(c) {
    RENDER PRINCIPAL
 ========================================================= */
 
-function renderPendientesPago() {
+function renderPendiente() {
 
   const data =
     comandasLoad();
@@ -829,10 +829,10 @@ function seleccionarCategoriaPendiente(
   categoria
 ) {
 
-  categoriasPendientes[idComanda] =
+  categoriasPendiente[idComanda] =
     categoria;
 
-  renderPendientesPago();
+  renderPendiente();
 
 }
 
@@ -892,7 +892,7 @@ function modificarCantidadItemPendiente(
   comandasSave(data);
 
 
-  renderPendientesPago();
+  renderPendiente();
 
 }
 
@@ -973,7 +973,7 @@ function agregarProductoPendiente(
   comandasSave(data);
 
 
-  renderPendientesPago();
+  renderPendiente();
 
 }
 
@@ -1082,10 +1082,10 @@ function confirmarCobroPedido(id) {
   comandasSave(data);
 
 
-  delete categoriasPendientes[id];
+  delete categoriasPendiente[id];
 
 
-  renderPendientesPago();
+  renderPendiente();
 
 }
 
@@ -1102,7 +1102,7 @@ document.addEventListener(
 
     cajaInitNavDropdown();
 
-    renderPendientesPago();
+    renderPendiente();
 
   }
 );
