@@ -559,6 +559,7 @@ function registrarMovimiento() {
 }
 
 function borrarMovimiento(id) {
+  cajaMarcarBorrado(id);
   state.transactions = state.transactions.filter(function (t) { return t.id !== id; });
   cajaSave(state);
   renderActive();
@@ -850,34 +851,6 @@ function buildCierreOrReporteHtml(title, txList, balances, stamp) {
   html += ticketRow("Saldo caja chica (efectivo)", cajaFmtMoney(balances.chica), true);
   html += '<div class="divider"></div><div class="center" style="font-size:10px;">Generado con Caja MYCFOODS</div>';
   return html;
-}
-const GOOGLE_BACKUP_URL = "https://script.google.com/macros/s/AKfycbykgc8ol4Hx1mg4Le6K7ZXQQ4nHCkcqaGo0GQyOBFqbrj-6YGnT61S3bijEYflyq_9t/exec";
-
-function guardarRespaldoCaja() {
-  const datos = {
-    fecha: cajaTodayStr(),
-    state: state
-  };
-
-  const formulario = document.createElement("form");
-
-  formulario.method = "POST";
-  formulario.action = GOOGLE_BACKUP_URL;
-  formulario.target = "_blank";
-  formulario.style.display = "none";
-
-  const campo = document.createElement("input");
-
-  campo.type = "hidden";
-  campo.name = "datos";
-  campo.value = JSON.stringify(datos);
-
-  formulario.appendChild(campo);
-  document.body.appendChild(formulario);
-
-  formulario.submit();
-
-  formulario.remove();
 }
 
 function imprimirCierreDiario() {
