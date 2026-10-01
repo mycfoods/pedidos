@@ -305,7 +305,7 @@ function cajaMovimientoAFila(t) {
     t.method,
     Number(t.amount) || 0,
     t.ledger === "principal" ? "Caja mayor" : "Caja chica",
-    t.tickets || "",
+    t.type === "ingreso" ? (t.tickets || 1) : "",
     t.note || "",
     productos,
     t.id
