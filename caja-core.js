@@ -136,10 +136,11 @@ function getMetodosPago() {
   return (site.metodosPago && site.metodosPago.length) ? site.metodosPago : CAJA_METHODS;
 }
 
-const CAJA_INCOME_CATS = ["Ventas delivery", "Ventas take away", "Ventas salón", "Aportes", "Eventos", "Otros ingresos"];
+const CAJA_INCOME_CATS = ["Ventas delivery", "Ventas take away", "Ventas salón", "Aportes", "Eventos", "Otros ingresos", "Fondeo desde caja mayor"];
 const CAJA_EXPENSE_CATS = [
   "Mercadería e insumos", "Sueldos y cargas sociales", "Alquiler",
   "Servicios (luz/agua/gas)", "Mantenimiento", "Marketing", "Impuestos", "Otros gastos",
+  "Retiro para gastos",
 ];
 
 // Mapeo del campo "Tipo de Entrega" (código interno, value del <select>) a categoría de caja.
