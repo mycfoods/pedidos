@@ -344,7 +344,7 @@ function cerrarDetalleMovimiento() {
 function renderResumen() {
   const el = document.getElementById("panel-resumen");
   if (!el) return;
-  const balances = cajaComputeBalances(state.transactions, state.openings);
+ const balances = cajaComputeBalances(TX_TODAS, state.openings);
   const today = cajaTodayStr();
   const thisMonth = cajaMonthKey(today);
 
@@ -376,7 +376,7 @@ function renderResumen() {
     "ingreso-efectivo": { valor: cajaFmtMoney(ingresoEfectivoHoy), tono: "up" },
     "egreso-efectivo": { valor: cajaFmtMoney(egresoEfectivoHoy), tono: "down" },
     "otros-medios": { valor: cajaFmtMoney(otrosMediosHoy), tono: "" },
-    "total-caja": { valor: cajaFmtMoney(balances.principal), tono: "" },
+       "total-caja": { valor: cajaFmtMoney(saldoVista(balances)), tono: "" },
   };
   const cajaResueltos = cajaPanelResolver("resumen-caja", cajaDefs).filter(function (s) { return s.visible; });
   const cajaHtml = cajaResueltos.length === 0 ? "" :
