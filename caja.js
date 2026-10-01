@@ -10,7 +10,25 @@ let movFormType = "ingreso";
 let movFormDate = null;
 let aperturaEditing = false;
 let mayorMonth = null;
+let vistaCaja = "principal"; // "principal" | "chica" | "todas"
+let TX_TODAS = null;
+const CAJA_TRASPASOS = ["Retiro para gastos", "Fondeo desde caja mayor"];
 
+function soloCaja(tx, c) { return tx.filter(function (t) { return t.ledger === c; }); }
+function sinTraspasos(tx) { return tx.filter(function (t) { return CAJA_TRASPASOS.indexOf(t.category) === -1; }); }
+function txVista() {
+  return vistaCaja === "todas" ? sinTraspasos(state.transactions) : soloCaja(state.transactions, vistaCaja);
+}
+function saldoVista(b) {
+  return vistaCaja === "chica" ? b.chica : (vistaCaja === "todas" ? b.principal + b.chica : b.principal);
+}
+function setVista(v) { vistaCaja = v; renderActive(); }
+function vistaSelectorHtml() {
+  const op = [["principal", "Caja mayor"], ["chica", "Caja chica"], ["todas", "Todo sumado"]];
+  return '<div class="caja-row" style="margin-bottom:12px;">' + op.map(function (o) {
+    return '<button type="button" class="chip ' + (vistaCaja === o[0] ? "active" : "") + '" onclick="setVista(\'' + o[0] + '\')">' + o[1] + "</button>";
+  }).join("") + "</div>";
+}
 function escapeHtml(s) {
   return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
     return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
@@ -32,14 +50,24 @@ function setTab(id) {
 }
 
 function renderActive() {
-  if (activeTab === "resumen") renderResumen();
-  else if (activeTab === "movimientos") renderMovimientos();
-  else if (activeTab === "menu") renderMenuAdmin();
-  else if (activeTab === "ajustes") renderAjustes();
-  else if (activeTab === "mayor") renderMayor();
-  else if (activeTab === "equilibrio") renderEquilibrio();
-  else if (activeTab === "reportes") renderReportes();
-}
+  const conVista = ["resumen", "mayor", "reportes"].indexOf(activeTab) >= 0;
+  if (conVista) { TX_TODAS = state.transactions; state.transactions = txVista(); }
+  try {
+    if (activeTab === "resumen") renderResumen();
+    else if (activeTab === "movimientos") renderMovimientos();
+    else if (activeTab === "menu") renderMenuAdmin();
+    else if (activeTab === "ajustes") renderAjustes();
+    else if (activeTab === "mayor") renderMayor();
+    else if (activeTab === "equilibrio") renderEquilibrio();
+    else if (activeTab === "reportes") renderReportes();
+  } finally {
+    if (conVista) { state.transactions = TX_TODAS; TX_TODAS = null; }
+  }
+  if (conVista) {
+    const panel = document.getElementById("panel-" + activeTab);
+    if (panel) panel.insertAdjacentHTML("afterbegin", vistaSelectorHtml());
+  }
+
 
 /* =========================================================
    AJUSTES DEL SITIO
@@ -611,7 +639,7 @@ function renderMayor() {
     groupHtml("Cuentas de ingreso", income, totalIn, "up") +
     groupHtml("Cuentas de egreso", expense, totalOut, "down");
 }
-function setMayorMonth(v) { mayorMonth = v; renderMayor(); }
+function setMayorMonth(v) { mayorMonth = v; renderActive(); }
 
 /* =========================================================
    PUNTO DE EQUILIBRIO
@@ -854,22 +882,31 @@ function buildCierreOrReporteHtml(title, txList, balances, stamp) {
 }
 
 function imprimirCierreDiario() {
-  guardarRespaldoCaja();
-
   const today = cajaTodayStr();
-  const todayTx = state.transactions.filter(function (t) { return t.date === today; });
+  const tx = state.transactions.filter(function (t) { return t.date === today; });
   const balances = cajaComputeBalances(state.transactions, state.openings);
-  const html = buildCierreOrReporteHtml("CIERRE DE CAJA DIARIO", todayTx, balances, new Date().toLocaleString("es-AR"));
+  const stamp = new Date().toLocaleString("es-AR");
+  const sep = '<div class="divider"></div><div class="divider"></div>';
+  const html =
+    buildCierreOrReporteHtml("CIERRE DIARIO - CAJA MAYOR", soloCaja(tx, "principal"), balances, stamp) + sep +
+    buildCierreOrReporteHtml("CIERRE DIARIO - CAJA CHICA", soloCaja(tx, "chica"), balances, stamp) + sep +
+    buildCierreOrReporteHtml("CIERRE DIARIO - TOTAL SUMADO", sinTraspasos(tx), balances, stamp);
   abrirVentanaImpresion(html);
 }
+
 function imprimirReporteMensual() {
   const monthKey = cajaMonthKey(cajaTodayStr());
-  const monthTx = state.transactions.filter(function (t) { return cajaMonthKey(t.date) === monthKey; });
+  const label = cajaMonthLabel(monthKey).toUpperCase();
+  const tx = state.transactions.filter(function (t) { return cajaMonthKey(t.date) === monthKey; });
   const balances = cajaComputeBalances(state.transactions, state.openings);
-  const html = buildCierreOrReporteHtml("REPORTE MENSUAL — " + cajaMonthLabel(monthKey).toUpperCase(), monthTx, balances, new Date().toLocaleString("es-AR"));
+  const stamp = new Date().toLocaleString("es-AR");
+  const sep = '<div class="divider"></div><div class="divider"></div>';
+  const html =
+    buildCierreOrReporteHtml("REPORTE MENSUAL - CAJA MAYOR - " + label, soloCaja(tx, "principal"), balances, stamp) + sep +
+    buildCierreOrReporteHtml("REPORTE MENSUAL - CAJA CHICA - " + label, soloCaja(tx, "chica"), balances, stamp) + sep +
+    buildCierreOrReporteHtml("REPORTE MENSUAL - TOTAL SUMADO - " + label, sinTraspasos(tx), balances, stamp);
   abrirVentanaImpresion(html);
 }
-
 /* =========================================================
    INICIO
 ========================================================= */
