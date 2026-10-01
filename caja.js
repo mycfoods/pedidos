@@ -851,8 +851,26 @@ function buildCierreOrReporteHtml(title, txList, balances, stamp) {
   html += '<div class="divider"></div><div class="center" style="font-size:10px;">Generado con Caja MYCFOODS</div>';
   return html;
 }
+const GOOGLE_BACKUP_URL = "https://script.google.com/macros/s/AKfycbykgc8ol4Hx1mg4Le6K7ZXQQ4nHCkcqaGo0GQyOBFqbrj-6YGnT61S3bijEYflyq_9t/exec";
 
+function guardarRespaldoCaja() {
+  const datos = {
+    fecha: cajaTodayStr(),
+    state: state
+  };
+
+  fetch(GOOGLE_BACKUP_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "text/plain;charset=utf-8"
+    },
+    body: JSON.stringify(datos),
+    mode: "no-cors"
+  });
+}
 function imprimirCierreDiario() {
+  guardarRespaldoCaja();
+
   const today = cajaTodayStr();
   const todayTx = state.transactions.filter(function (t) { return t.date === today; });
   const balances = cajaComputeBalances(state.transactions, state.openings);
