@@ -859,15 +859,27 @@ function guardarRespaldoCaja() {
     state: state
   };
 
-  fetch(GOOGLE_BACKUP_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "text/plain;charset=utf-8"
-    },
-    body: JSON.stringify(datos),
-    mode: "no-cors"
-  });
+  const formulario = document.createElement("form");
+
+  formulario.method = "POST";
+  formulario.action = GOOGLE_BACKUP_URL;
+  formulario.target = "_blank";
+  formulario.style.display = "none";
+
+  const campo = document.createElement("input");
+
+  campo.type = "hidden";
+  campo.name = "datos";
+  campo.value = JSON.stringify(datos);
+
+  formulario.appendChild(campo);
+  document.body.appendChild(formulario);
+
+  formulario.submit();
+
+  formulario.remove();
 }
+
 function imprimirCierreDiario() {
   guardarRespaldoCaja();
 
@@ -877,7 +889,6 @@ function imprimirCierreDiario() {
   const html = buildCierreOrReporteHtml("CIERRE DE CAJA DIARIO", todayTx, balances, new Date().toLocaleString("es-AR"));
   abrirVentanaImpresion(html);
 }
-
 function imprimirReporteMensual() {
   const monthKey = cajaMonthKey(cajaTodayStr());
   const monthTx = state.transactions.filter(function (t) { return cajaMonthKey(t.date) === monthKey; });
