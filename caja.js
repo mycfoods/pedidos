@@ -68,7 +68,7 @@ function renderActive() {
     if (panel) panel.insertAdjacentHTML("afterbegin", vistaSelectorHtml());
   }
 
-
+}
 /* =========================================================
    AJUSTES DEL SITIO
 ========================================================= */
