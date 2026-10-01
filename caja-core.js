@@ -285,7 +285,7 @@ function cajaSave(data) {
 }
 
 /* ===== RESPALDO EN GOOGLE SHEETS ===== */
-const CAJA_SHEETS_URL = "PEGAR_ACA_TU_URL_QUE_TERMINA_EN_/exec";
+const CAJA_SHEETS_URL = "https://script.google.com/macros/s/AKfycbykgc8ol4Hx1mg4Le6K7ZXQQ4nHCkcqaGo0GQyOBFqbrj-6YGnT61S3bijEYflyq_9t/exec";
 let _respaldoTimer = null;
 let _respaldoBorrar = [];
 
