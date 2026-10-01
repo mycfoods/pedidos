@@ -276,11 +276,67 @@ function cajaLoad() {
 function cajaSave(data) {
   try {
     localStorage.setItem(CAJA_STORAGE_KEY, JSON.stringify(data));
+    cajaProgramarRespaldo();
     return true;
   } catch (e) {
     console.error("Error guardando caja:", e);
     return false;
   }
+}
+
+/* ===== RESPALDO EN GOOGLE SHEETS ===== */
+const CAJA_SHEETS_URL = "PEGAR_ACA_TU_URL_QUE_TERMINA_EN_/exec";
+let _respaldoTimer = null;
+let _respaldoBorrar = [];
+
+function cajaMarcarBorrado(id) { _respaldoBorrar.push(id); }
+
+function cajaProgramarRespaldo() {
+  clearTimeout(_respaldoTimer);
+  _respaldoTimer = setTimeout(function () { cajaEnviarRespaldo(false); }, 1500);
+}
+
+function cajaMovimientoAFila(t) {
+  const productos = (t.items || []).map(function (it) { return it.cantidad + " x " + it.nombre; }).join("; ");
+  return [
+    t.date,
+    t.type === "ingreso" ? "Ingreso" : "Egreso",
+    t.category,
+    t.method,
+    Number(t.amount) || 0,
+    t.ledger === "principal" ? "Caja mayor" : "Caja chica",
+    t.tickets || "",
+    t.note || "",
+    productos,
+    t.id
+  ];
+}
+
+// todo = true manda el historial completo (usar una sola vez, la primera vez).
+function cajaEnviarRespaldo(todo) {
+  if (CAJA_SHEETS_URL.indexOf("https://script.google.com/macros/s/AKfycbykgc8ol4Hx1mg4Le6K7ZXQQ4nHCkcqaGo0GQyOBFqbrj-6YGnT61S3bijEYflyq_9t/exec") !== 0) return;
+  const data = cajaLoad();
+  let tx = data.transactions;
+  if (!todo) {
+    const limite = new Date(Date.now() - 45 * 86400000).toISOString().slice(0, 10);
+    tx = tx.filter(function (t) { return t.date >= limite; });
+  }
+  const borrar = _respaldoBorrar;
+  _respaldoBorrar = [];
+  if (tx.length === 0 && borrar.length === 0) return;
+
+  fetch(CAJA_SHEETS_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({ rows: tx.map(cajaMovimientoAFila), borrar: borrar })
+  }).catch(function (err) {
+    _respaldoBorrar = borrar.concat(_respaldoBorrar);
+    console.error("No se pudo respaldar en Sheets:", err);
+  });
+}
+
+function cajaRespaldarTodo() { cajaEnviarRespaldo(true); }
 }
 
 function cajaUid() {
