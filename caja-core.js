@@ -337,7 +337,7 @@ function cajaEnviarRespaldo(todo) {
 }
 
 function cajaRespaldarTodo() { cajaEnviarRespaldo(true); }
-}
+
 
 function cajaUid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
