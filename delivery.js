@@ -252,81 +252,88 @@ function renderPendientesPago() {
 
     if (estadoPago === "pendiente") {
 
-      /* ---------------------------------------------------
-         AGREGAR PRODUCTOS
-      --------------------------------------------------- */
+     /* ---------------------------------------------------
+   AGREGAR PRODUCTOS
+--------------------------------------------------- */
 
-      html +=
-        '<div style="' +
-        'margin-top:14px;' +
-        'border-top:1px dashed #ddd;' +
-        'padding-top:10px;' +
-        '">';
+html +=
+  '<div style="' +
+  'margin-top:14px;' +
+  'border-top:1px dashed #ddd;' +
+  'padding-top:10px;' +
+  '">';
 
-      html +=
-        '<div style="' +
-        'font-size:0.78rem;' +
-        'font-weight:800;' +
-        'margin-bottom:8px;' +
-        'color:#333;' +
-        '">' +
-        '➕ AGREGAR PRODUCTO' +
-        '</div>';
+html +=
+  '<div style="' +
+  'font-size:0.78rem;' +
+  'font-weight:800;' +
+  'margin-bottom:8px;' +
+  'color:#333;' +
+  '">' +
+  '➕ AGREGAR PRODUCTO' +
+  '</div>';
 
-      html +=
-        '<div style="' +
-        'display:grid;' +
-        'grid-template-columns:repeat(2, minmax(0, 1fr));' +
-        'gap:6px;' +
-        'max-height:180px;' +
-        'overflow-y:auto;' +
-        'padding:2px;' +
-        '">';
+html +=
+  '<div style="' +
+  'display:grid;' +
+  'grid-template-columns:repeat(auto-fill,minmax(120px,1fr));' +
+  'gap:6px;' +
+  'max-height:180px;' +
+  'overflow-y:auto;' +
+  'padding:2px;' +
+  '">';
 
+productosDisponibles.forEach(function (p) {
 
-      productosDisponibles.forEach(function (p) {
+  const nombreEscapado =
+    String(p.name).replace(/'/g, "\\'");
 
-        const nombreEscapado =
-          String(p.name).replace(/'/g, "\\'");
+  html +=
+    '<button type="button" ' +
+    'class="caja-btn" ' +
+    'style="' +
+    'padding:8px 7px;' +
+    'background:#fff;' +
+    'color:#222;' +
+    'border:1px solid #ddd;' +
+    'border-radius:7px;' +
+    'cursor:pointer;' +
+    'text-align:center;' +
+    'line-height:1.1;' +
+    'min-height:48px;' +
+    'transition:all .15s ease;' +
+    '" ' +
+    'onclick="agregarProductoPendiente(\'' +
+    c.id +
+    '\', \'' +
+    nombreEscapado +
+    '\', ' +
+    p.price +
+    ')">' +
 
-        html +=
-          '<button type="button" class="caja-btn" ' +
-          'style="' +
-          'font-size:0.72rem;' +
-          'padding:8px 9px;' +
-          'background:#fff;' +
-          'color:#222;' +
-          'border:1px solid #ccc;' +
-          'border-radius:6px;' +
-          'cursor:pointer;' +
-          'text-align:left;' +
-          'line-height:1.15;' +
-          'min-height:46px;' +
-          '" ' +
-          'onclick="agregarProductoPendiente(\'' +
-          c.id +
-          '\', \'' +
-          nombreEscapado +
-          '\', ' +
-          p.price +
-          ')">';
+    '<span style="' +
+    'display:block;' +
+    'font-size:0.72rem;' +
+    'font-weight:800;' +
+    '">' +
+    escapeHtml(p.name) +
+    '</span>' +
 
-        html +=
-          '<span style="display:block; font-weight:700;">' +
-          escapeHtml(p.name) +
-          '</span>';
+    '<span style="' +
+    'display:block;' +
+    'margin-top:4px;' +
+    'font-size:0.67rem;' +
+    'font-weight:700;' +
+    'color:#f1a80a;' +
+    '">' +
+    '$' + Number(p.price).toLocaleString("es-AR") +
+    '</span>' +
 
-        html +=
-          '<span style="display:block; margin-top:3px; font-size:0.67rem; color:#777;">$' +
-          Number(p.price).toLocaleString("es-AR") +
-          '</span>';
+    '</button>';
+});
 
-        html += '</button>';
-      });
-
-      html += '</div>';
-      html += '</div>';
-
+html += '</div>';
+html += '</div>';
 
       /* ---------------------------------------------------
          PAGO REAL
@@ -343,21 +350,67 @@ function renderPendientesPago() {
         'padding-top:8px;' +
         '">';
 
-      html +=
-        '<select id="pago-real-' +
-        c.id +
-        '" class="caja-input" style="width:100%;">';
+ html +=
+  '<div id="pago-real-' + c.id + '" ' +
+  'style="' +
+  'display:grid;' +
+  'grid-template-columns:repeat(3,1fr);' +
+  'gap:6px;' +
+  'width:100%;' +
+  '">';
 
-      html +=
-        '<option value="" disabled selected>' +
-        'Elegir pago real (Efectivo / Transferencia)...' +
-        '</option>';
+html +=
+  '<button type="button" ' +
+  'class="caja-btn pago-btn-' + c.id + '" ' +
+  'data-pago="Efectivo" ' +
+  'onclick="seleccionarPagoPendiente(\'' + c.id + '\', \'Efectivo\', this)" ' +
+  'style="' +
+  'padding:9px 5px;' +
+  'font-size:0.72rem;' +
+  'font-weight:800;' +
+  'background:#fff;' +
+  'border:1px solid #ccc;' +
+  'border-radius:7px;' +
+  'cursor:pointer;' +
+  '">' +
+  '💵 EFECTIVO' +
+  '</button>';
 
-      html += '<option value="Efectivo">Efectivo</option>';
-      html += '<option value="Transferencia">Transferencia</option>';
-      html += '<option value="Tarjeta">Tarjeta</option>';
+html +=
+  '<button type="button" ' +
+  'class="caja-btn pago-btn-' + c.id + '" ' +
+  'data-pago="Transferencia" ' +
+  'onclick="seleccionarPagoPendiente(\'' + c.id + '\', \'Transferencia\', this)" ' +
+  'style="' +
+  'padding:9px 5px;' +
+  'font-size:0.72rem;' +
+  'font-weight:800;' +
+  'background:#fff;' +
+  'border:1px solid #ccc;' +
+  'border-radius:7px;' +
+  'cursor:pointer;' +
+  '">' +
+  '🏦 TRANSFERENCIA' +
+  '</button>';
 
-      html += '</select>';
+html +=
+  '<button type="button" ' +
+  'class="caja-btn pago-btn-' + c.id + '" ' +
+  'data-pago="Tarjeta" ' +
+  'onclick="seleccionarPagoPendiente(\'' + c.id + '\', \'Tarjeta\', this)" ' +
+  'style="' +
+  'padding:9px 5px;' +
+  'font-size:0.72rem;' +
+  'font-weight:800;' +
+  'background:#fff;' +
+  'border:1px solid #ccc;' +
+  'border-radius:7px;' +
+  'cursor:pointer;' +
+  '">' +
+  '💳 TARJETA' +
+  '</button>';
+
+html += '</div>';
 
 
       /* ---------------------------------------------------
@@ -449,18 +502,41 @@ function agregarProductoPendiente(idComanda, nombreProd, precioProd) {
   renderPendientesPago();
 }
 
+function seleccionarPagoPendiente(id, medio, boton) {
 
+  const contenedor =
+    document.getElementById("pago-real-" + id);
+
+  if (!contenedor) return;
+
+  const botones =
+    contenedor.querySelectorAll("button");
+
+  botones.forEach(function (btn) {
+
+    btn.style.background = "#fff";
+    btn.style.color = "#222";
+    btn.style.borderColor = "#ccc";
+
+  });
+
+  boton.style.background = "#f1a80a";
+  boton.style.color = "#111";
+  boton.style.borderColor = "#f1a80a";
+
+  contenedor.dataset.pagoSeleccionado = medio;
+}
 /* =========================================================
    CONFIRMAR COBRO
 ========================================================= */
 
 function confirmarCobroPedido(id) {
 
-  const selectEl =
-    document.getElementById("pago-real-" + id);
+const pagoEl =
+  document.getElementById("pago-real-" + id);
 
-  const nuevoMedioPago =
-    selectEl ? selectEl.value : "";
+const nuevoMedioPago =
+  pagoEl ? (pagoEl.dataset.pagoSeleccionado || "") : "";
 
   if (!nuevoMedioPago) {
 
