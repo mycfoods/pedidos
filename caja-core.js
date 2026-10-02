@@ -313,24 +313,27 @@ function cajaMovimientoAFila(t) {
   ];
 }
 
-// todo = true manda el historial completo (usar una sola vez, la primera vez).
 function cajaEnviarRespaldo(todo) {
-  if (CAJA_SHEETS_URL.indexOf("https://script.google.com/macros/s/AKfycbykgc8ol4Hx1mg4Le6K7ZXQQ4nHCkcqaGo0GQyOBFqbrj-6YGnT61S3bijEYflyq_9t/exec") !== 0) return;
+  if (CAJA_SHEETS_URL.indexOf("http") !== 0) return;
   const data = cajaLoad();
   let tx = data.transactions;
   if (!todo) {
     const limite = new Date(Date.now() - 45 * 86400000).toISOString().slice(0, 10);
     tx = tx.filter(function (t) { return t.date >= limite; });
   }
+  const aperturas = Object.keys(data.openings || {}).map(function (d) {
+    const o = data.openings[d] || {};
+    return [d, Number(o.principal) || 0, Number(o.chica) || 0];
+  });
   const borrar = _respaldoBorrar;
   _respaldoBorrar = [];
-  if (tx.length === 0 && borrar.length === 0) return;
+  if (tx.length === 0 && borrar.length === 0 && aperturas.length === 0) return;
 
   fetch(CAJA_SHEETS_URL, {
     method: "POST",
     mode: "no-cors",
     headers: { "Content-Type": "text/plain;charset=utf-8" },
-    body: JSON.stringify({ rows: tx.map(cajaMovimientoAFila), borrar: borrar })
+    body: JSON.stringify({ rows: tx.map(cajaMovimientoAFila), borrar: borrar, aperturas: aperturas })
   }).catch(function (err) {
     _respaldoBorrar = borrar.concat(_respaldoBorrar);
     console.error("No se pudo respaldar en Sheets:", err);
