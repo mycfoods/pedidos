@@ -580,15 +580,27 @@ function registrarMovimiento() {
   const ticketsInput = document.getElementById("mov-tickets");
   const tickets = movFormType === "ingreso" ? (parseInt(ticketsInput ? ticketsInput.value : "1") || 1) : undefined;
   const tx = { id: cajaUid(), type: movFormType, ledger: ledger, date: date, category: category, method: method, amount: amount, note: note };
-  if (tickets !== undefined) tx.tickets = tickets;
+   if (tickets !== undefined) tx.tickets = tickets;
   state.transactions.push(tx);
+  if (tx.type === "egreso" && tx.ledger === "principal" && tx.category === "Retiro para gastos") {
+    tx.pairId = cajaUid();
+    state.transactions.push({
+      id: cajaUid(), pairId: tx.pairId, type: "ingreso", ledger: "chica", date: date,
+      category: "Fondeo desde caja mayor", method: method, amount: amount,
+      note: note || "Retiro de caja mayor"
+    });
+  }
   cajaSave(state);
   renderMovimientos();
 }
 
 function borrarMovimiento(id) {
-  cajaMarcarBorrado(id);
-  state.transactions = state.transactions.filter(function (t) { return t.id !== id; });
+  const m = state.transactions.find(function (t) { return t.id === id; });
+  const ids = state.transactions
+    .filter(function (t) { return t.id === id || (m && m.pairId && t.pairId === m.pairId); })
+    .map(function (t) { return t.id; });
+  ids.forEach(cajaMarcarBorrado);
+  state.transactions = state.transactions.filter(function (t) { return ids.indexOf(t.id) === -1; });
   cajaSave(state);
   renderActive();
 }
@@ -652,7 +664,7 @@ function renderEquilibrio() {
   const unitLabel = cfg.unit || "pedidos";
 
   const thisMonth = cajaMonthKey(cajaTodayStr());
-  const monthIncomeTx = state.transactions.filter(function (t) { return t.type === "ingreso" && cajaMonthKey(t.date) === thisMonth; });
+  const monthIncomeTx = state.transactions.filter(function (t) { return t.type === "ingreso" && cajaMonthKey(t.date) === thisMonth && CAJA_TRASPASOS.indexOf(t.category) === -1; });
   const realCount = monthIncomeTx.reduce(function (a, t) { return a + (t.tickets || 1); }, 0);
   const realTotal = monthIncomeTx.reduce(function (a, t) { return a + t.amount; }, 0);
   const realAvg = realCount > 0 ? realTotal / realCount : null;
