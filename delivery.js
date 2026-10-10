@@ -42,9 +42,20 @@ function calcularTotalPendiente(c) {
    RENDER PENDIENTES
 ========================================================= */
 
-function renderPendientesPago() {
+// Estado de pantalla que sobrevive a cada re-dibujado
+const PEND_CAT = {};   // categoría de productos abierta por pedido
+const PAGO_SEL = {};   // medio de pago elegido por pedido
+let _pendHash = "";
+
+function renderPendientesPago(soloSiCambio) {
 
   const data = comandasLoad();
+
+  // El refresco automático NO redibuja si no cambió nada (evita saltos de pantalla).
+  const hash = JSON.stringify(data.comandas) + cajaTodayStr();
+  if (soloSiCambio && hash === _pendHash) return;
+  _pendHash = hash;
+  const scrollY = window.scrollY;
   const today = cajaTodayStr();
 
   const menuData =
@@ -274,43 +285,35 @@ function renderPendientesPago() {
         '➕ AGREGAR PRODUCTO' +
         '</div>';
 
-      html += '<div class="pendiente-productos">';
-
+      // Categorías como botones + productos como botones (sin lista larga)
+      const categoriasMenu = [];
       productosDisponibles.forEach(function (p) {
-
-        const nombreEscapado =
-          String(p.name).replace(/'/g, "\\'");
-
-        html +=
-          '<div class="pendiente-producto-row">';
-
-        html +=
-          '<span class="pendiente-producto-name">' +
-          escapeHtml(p.name) +
-          '</span>';
-
-        html +=
-          '<span class="pendiente-producto-price">' +
-          '$' + Number(p.price).toLocaleString("es-AR") +
-          '</span>';
-
-        html +=
-          '<button type="button" ' +
-          'class="pendiente-producto-add" ' +
-          'title="Agregar producto" ' +
-          'onclick="agregarProductoPendiente(\'' +
-          c.id +
-          '\', \'' +
-          nombreEscapado +
-          '\', ' +
-          p.price +
-          ')">' +
-          '+' +
-          '</button>';
-
-        html += '</div>';
+        if (categoriasMenu.indexOf(p.category) === -1) categoriasMenu.push(p.category);
       });
+      if (!PEND_CAT[c.id] || categoriasMenu.indexOf(PEND_CAT[c.id]) === -1) {
+        PEND_CAT[c.id] = categoriasMenu[0];
+      }
 
+      html += '<div class="pendiente-cats">';
+      categoriasMenu.forEach(function (cat, ci) {
+        html +=
+          '<button type="button" class="pendiente-cat-btn' + (PEND_CAT[c.id] === cat ? ' active' : '') + '" ' +
+          'onclick="cambiarCategoriaPendiente(\'' + c.id + '\', ' + ci + ')">' +
+          escapeHtml(cat) + '</button>';
+      });
+      html += '</div>';
+
+      html += '<div class="pendiente-grid">';
+      productosDisponibles
+        .filter(function (p) { return p.category === PEND_CAT[c.id]; })
+        .forEach(function (p) {
+          html +=
+            '<button type="button" class="pendiente-prod-btn" ' +
+            'onclick="agregarProductoPendientePorId(\'' + c.id + '\', \'' + p.id + '\')">' +
+            '<span class="pendiente-prod-nombre">' + escapeHtml(p.name) + '</span>' +
+            '<span class="pendiente-prod-precio">$' + Number(p.price).toLocaleString("es-AR") + '</span>' +
+            '</button>';
+        });
       html += '</div>';
       html += '</div>';
 
@@ -396,6 +399,14 @@ function renderPendientesPago() {
     return html;
 
   }).join("");
+
+  Object.keys(PAGO_SEL).forEach(function (id) {
+    const cont = document.getElementById("pago-real-" + id);
+    if (!cont) return;
+    const btn = cont.querySelector('.pendiente-pago-btn[data-pago="' + PAGO_SEL[id] + '"]');
+    if (btn) { btn.classList.add("active"); cont.dataset.pagoSeleccionado = PAGO_SEL[id]; }
+  });
+  window.scrollTo(0, scrollY);
 }
 
 
@@ -428,6 +439,19 @@ function modificarCantidadItemPendiente(idComanda, indexItem, cambio) {
 /* =========================================================
    AGREGAR PRODUCTO
 ========================================================= */
+
+function cambiarCategoriaPendiente(idComanda, indice) {
+  const cats = [];
+  (menuLoad().products || []).forEach(function (p) { if (cats.indexOf(p.category) === -1) cats.push(p.category); });
+  PEND_CAT[idComanda] = cats[indice];
+  renderPendientesPago();
+}
+
+function agregarProductoPendientePorId(idComanda, idProd) {
+  const prod = (menuLoad().products || []).find(function (p) { return p.id === idProd; });
+  if (!prod) return;
+  agregarProductoPendiente(idComanda, prod.name, prod.price);
+}
 
 function agregarProductoPendiente(idComanda, nombreProd, precioProd) {
 
@@ -483,6 +507,7 @@ function seleccionarPagoPendiente(id, medio, boton) {
   boton.classList.add("active");
 
   contenedor.dataset.pagoSeleccionado = medio;
+  PAGO_SEL[id] = medio;
 }
 
 
@@ -517,6 +542,7 @@ function confirmarCobroPedido(id) {
 
   if (!c) return;
 
+  delete PAGO_SEL[id];
   c.pago = nuevoMedioPago;
   c.estadoPago = "cobrado";
 
@@ -552,6 +578,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   renderPendientesPago();
 
-  setInterval(renderPendientesPago, 5000);
+  setInterval(function () { renderPendientesPago(true); }, 5000);
 
 });
