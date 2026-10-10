@@ -700,9 +700,6 @@ function renderEquilibrio() {
   const thisMonth = cajaMonthKey(cajaTodayStr());
   // Solo ventas del menú: aportes, eventos y otros ingresos NO entran.
   const monthIncomeTx = state.transactions.filter(function (t) { return cajaEsVentaMenu(t) && cajaMonthKey(t.date) === thisMonth; });
-  // Solo gastos reales de caja chica (sin traspasos desde caja mayor).
-  const monthGastoTx = state.transactions.filter(function (t) { return cajaEsGastoChica(t) && cajaMonthKey(t.date) === thisMonth; });
-  const gastoRealMes = monthGastoTx.reduce(function (a, t) { return a + t.amount; }, 0);
   const realCount = monthIncomeTx.length;
   const realTotal = monthIncomeTx.reduce(function (a, t) { return a + t.amount; }, 0);
   const realAvg = realCount > 0 ? realTotal / realCount : null;
@@ -752,14 +749,6 @@ function renderEquilibrio() {
     html += '<div class="caja-field"><label>Ticket promedio ($)</label><input class="caja-input" type="number" value="' + cfg.avgTicket + '" onchange="updateConfig(\'avgTicket\', this.value)"></div>';
   }
   html += "</div>";
-
-  html += '<div class="caja-card">' +
-    '<div class="stat-label" style="margin-bottom:8px;">Este mes (solo ventas del menú y gastos de caja chica)</div>' +
-    '<div class="report-cat-row"><span>Ventas del menú</span><span style="color:#5fa372;">' + cajaFmtMoney(realTotal) + '</span></div>' +
-    '<div class="report-cat-row"><span>Gastos caja chica</span><span style="color:#e2564a;">' + cajaFmtMoney(gastoRealMes) + '</span></div>' +
-    '<div class="report-cat-row"><span>Resultado</span><span style="color:' + (realTotal - gastoRealMes >= 0 ? "#5fa372" : "#e2564a") + ';">' + cajaFmtMoney(realTotal - gastoRealMes) + '</span></div>' +
-    (totalFixed > 0 ? '<div class="stat-sub" style="margin-top:6px;">Gastos de caja chica vs. costos fijos cargados: ' + cajaFmtMoney(gastoRealMes) + " / " + cajaFmtMoney(totalFixed) + "</div>" : "") +
-    "</div>";
 
   if (peMonto === null) {
     html += '<div class="caja-card empty-note">Cargá un % de costo variable menor a 100 para calcular el punto de equilibrio.</div>';
