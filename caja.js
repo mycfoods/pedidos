@@ -12,6 +12,9 @@ let aperturaEditing = false;
 let mayorMonth = null;
 let vistaCaja = "principal"; // "principal" | "chica" | "todas" (el total entre cajas solo se ve si lo elegís)
 let movFormLedger = "principal";
+// Nombres que se ven en pantalla (por dentro siguen siendo "principal"/"chica" para no romper datos ni la planilla).
+const NOM_CAJA = { principal: "Ingresos (caja mayor)", chica: "Gastos (caja chica)" };
+function nombreCaja(l) { return NOM_CAJA[l] || l; }
 let TX_TODAS = null;
 
 function soloCaja(tx, c) { return tx.filter(function (t) { return t.ledger === c; }); }
@@ -21,7 +24,7 @@ function txVista() { return vistaCaja === "todas" ? sinTraspasos(state.transacti
 function saldoVista(b) { return vistaCaja === "chica" ? b.chica : (vistaCaja === "todas" ? b.principal + b.chica : b.principal); }
 function setVista(v) { vistaCaja = v; renderActive(); }
 function vistaSelectorHtml() {
-  const op = [["principal", "Caja mayor"], ["chica", "Caja chica"], ["todas", "Total ambas cajas"]];
+  const op = [["principal", NOM_CAJA.principal], ["chica", NOM_CAJA.chica], ["todas", "Total ambas cajas"]];
   return '<div class="caja-row" style="margin-bottom:12px;">' + op.map(function (o) {
     return '<button type="button" class="chip ' + (vistaCaja === o[0] ? "active" : "") + '" onclick="setVista(\'' + o[0] + '\')">' + o[1] + "</button>";
   }).join("") + "</div>";
@@ -285,7 +288,7 @@ function movRowHtml(m) {
     '<div style="flex:1; min-width:0;">' +
     '<div class="mov-cat">' + escapeHtml(m.category) + (m.note ? ' <span style="font-weight:600; color:var(--text-white);">&mdash; ' + escapeHtml(m.note) + "</span>" : "") + "</div>" +
     '<div class="mov-meta">' + cajaFmtDateLabel(m.date) + " &middot; " + escapeHtml(m.method) + " &middot; " +
-    (m.ledger === "principal" ? "Caja mayor" : "Caja chica") + "</div>" +
+    nombreCaja(m.ledger) + "</div>" +
     "</div>" +
     '<div class="mov-amount ' + (isIn ? "in" : "out") + '">' + (isIn ? "+" : "\u2212") + cajaFmtMoney(m.amount) + "</div>" +
     '<button class="mov-del" onclick="event.stopPropagation(); borrarMovimiento(\'' + m.id + '\')"><i class="fa-solid fa-trash"></i></button>' +
@@ -314,7 +317,7 @@ function abrirDetalleMovimiento(id) {
   html += '<div class="mc-detail-row"><span>Fecha</span><span>' + cajaFmtDateLabel(m.date) + " (" + m.date + ")</span></div>";
   html += '<div class="mc-detail-row"><span>Categoría</span><span>' + escapeHtml(m.category) + "</span></div>";
   html += '<div class="mc-detail-row"><span>Método de pago</span><span>' + escapeHtml(m.method) + "</span></div>";
-  html += '<div class="mc-detail-row"><span>Caja</span><span>' + (m.ledger === "principal" ? "Caja mayor" : "Caja chica") + "</span></div>";
+  html += '<div class="mc-detail-row"><span>Caja</span><span>' + nombreCaja(m.ledger) + "</span></div>";
   html += '<div class="stat-label" style="margin:12px 0 6px;">Detalle</div>' +
     '<input class="caja-input" id="mov-detail-note" placeholder="Escribí de qué es este movimiento" value="' + escapeHtml(m.note || "") + '">' +
     '<button class="caja-btn caja-btn-primary caja-btn-block" style="margin-top:8px;" onclick="guardarDetalleMovimiento(\'' + m.id + '\')">Guardar detalle</button>';
@@ -493,8 +496,8 @@ function renderMovimientos() {
     aperturaHtml =
       '<div class="stat-label" style="margin-bottom:10px;">Ajustar apertura de hoy (por ejemplo, si el conteo físico no coincide)</div>' +
       '<div class="caja-row">' +
-      '<div class="caja-field"><label>Saldo inicial caja mayor (efectivo contado)</label><input class="caja-input" id="apertura-principal" type="number" placeholder="0" value="' + valPrincipal + '"></div>' +
-      '<div class="caja-field"><label>Saldo inicial caja chica (efectivo contado)</label><input class="caja-input" id="apertura-chica" type="number" placeholder="0" value="' + valChica + '"></div>' +
+      '<div class="caja-field"><label>Saldo inicial · Ingresos / caja mayor (efectivo contado)</label><input class="caja-input" id="apertura-principal" type="number" placeholder="0" value="' + valPrincipal + '"></div>' +
+      '<div class="caja-field"><label>Saldo inicial · Gastos / caja chica (efectivo contado)</label><input class="caja-input" id="apertura-chica" type="number" placeholder="0" value="' + valChica + '"></div>' +
       "</div>" +
       '<div class="caja-row">' +
       '<button class="caja-btn caja-btn-primary" style="flex:1;" onclick="guardarApertura()">Guardar ajuste</button>' +
@@ -503,13 +506,13 @@ function renderMovimientos() {
   } else if (opening) {
     aperturaHtml =
       '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">' +
-      '<div class="stat-label">Apertura de hoy (ajustada a mano): <span style="color:var(--text-white); font-family:\'Courier New\',monospace;">' + cajaFmtMoney(opening.principal) + '</span> mayor &middot; <span style="color:var(--text-white); font-family:\'Courier New\',monospace;">' + cajaFmtMoney(opening.chica) + "</span> chica</div>" +
+      '<div class="stat-label">Apertura de hoy (ajustada a mano): <span style="color:var(--text-white); font-family:\'Courier New\',monospace;">' + cajaFmtMoney(opening.principal) + '</span> ingresos &middot; <span style="color:var(--text-white); font-family:\'Courier New\',monospace;">' + cajaFmtMoney(opening.chica) + "</span> gastos</div>" +
       '<button class="caja-btn caja-btn-ghost" onclick="editarApertura()">Ajustar</button>' +
       "</div>";
   } else {
     aperturaHtml =
       '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">' +
-      '<div class="stat-label">Apertura de hoy (automática, sigue del cierre de ayer): <span style="color:var(--text-white); font-family:\'Courier New\',monospace;">' + cajaFmtMoney(autoApertura.principal) + '</span> mayor &middot; <span style="color:var(--text-white); font-family:\'Courier New\',monospace;">' + cajaFmtMoney(autoApertura.chica) + "</span> chica</div>" +
+      '<div class="stat-label">Apertura de hoy (automática, sigue del cierre de ayer): <span style="color:var(--text-white); font-family:\'Courier New\',monospace;">' + cajaFmtMoney(autoApertura.principal) + '</span> ingresos &middot; <span style="color:var(--text-white); font-family:\'Courier New\',monospace;">' + cajaFmtMoney(autoApertura.chica) + "</span> gastos</div>" +
       '<button class="caja-btn caja-btn-ghost" onclick="editarApertura()">Ajustar</button>' +
       "</div>";
   }
@@ -529,11 +532,11 @@ function renderMovimientos() {
     '<div class="big-amount-box"><span>$</span><input type="number" id="mov-amount" placeholder="0"></div>' +
     '<div class="caja-row">' +
     '<div class="caja-field"><label>Fecha</label><input class="caja-input" type="date" id="mov-date" value="' + fechaActual + '" onchange="movFormDate = this.value"></div>' +
-    '<div class="caja-field"><label>Caja</label><select class="caja-select" id="mov-ledger" onchange="setMovLedger(this.value)"><option value="principal"' + (movFormLedger === "principal" ? " selected" : "") + '>Caja mayor</option><option value="chica"' + (movFormLedger === "chica" ? " selected" : "") + '>Caja chica</option></select></div>' +
+    '<div class="caja-field"><label>Caja</label><select class="caja-select" id="mov-ledger" onchange="setMovLedger(this.value)"><option value="principal"' + (movFormLedger === "principal" ? " selected" : "") + '>' + NOM_CAJA.principal + '</option><option value="chica"' + (movFormLedger === "chica" ? " selected" : "") + '>' + NOM_CAJA.chica + '</option></select></div>' +
     "</div>" +
     '<div class="stat-sub" style="margin-bottom:8px;">' + (movFormLedger === "principal"
-      ? "Caja mayor: las ventas entran solas desde el menú. Acá solo cargás retiros, aportes o eventos (no cuentan como venta)."
-      : "Caja chica: gastos del día a día. Es lo que mide el punto de equilibrio.") + "</div>" +
+      ? "INGRESOS (caja mayor): las ventas del menú entran solas. Acá cargás aportes, eventos u otros ingresos y retiros. Aportes y eventos son movimientos, NO cuentan como venta ni en el punto de equilibrio."
+      : "GASTOS (caja chica): todo lo que se gasta en el día a día. Es lo que usa el punto de equilibrio.") + "</div>" +
     '<div class="stat-label" style="margin:10px 0 6px;">Categoría</div>' +
     '<div class="caja-row" id="mov-cats">' +
     cats.map(function (c, i) { return '<button type="button" class="chip ' + (i === 0 ? "active" : "") + '" data-cat="' + escapeHtml(c) + '" onclick="selectMovCat(this)">' + escapeHtml(c) + "</button>"; }).join("") +
@@ -549,16 +552,16 @@ function renderMovimientos() {
 
     '<div class="stat-grid">' +
     '<div class="stat-card"><div class="stat-label">Hoy &mdash; ventas del menú</div><div class="stat-value up">' + cajaFmtMoney(todayIn) + "</div></div>" +
-    '<div class="stat-card"><div class="stat-label">Hoy &mdash; gastos caja chica</div><div class="stat-value down">' + cajaFmtMoney(todayOut) + "</div></div>" +
-    '<div class="stat-card"><div class="stat-label">Saldo caja mayor (efectivo)</div><div class="stat-value">' + cajaFmtMoney(balances.principal) + "</div></div>" +
-    '<div class="stat-card"><div class="stat-label">Saldo caja chica (efectivo)</div><div class="stat-value">' + cajaFmtMoney(balances.chica) + "</div></div>" +
+    '<div class="stat-card"><div class="stat-label">Hoy &mdash; gastos (caja chica)</div><div class="stat-value down">' + cajaFmtMoney(todayOut) + "</div></div>" +
+    '<div class="stat-card"><div class="stat-label">Saldo ingresos / caja mayor (efectivo)</div><div class="stat-value">' + cajaFmtMoney(balances.principal) + "</div></div>" +
+    '<div class="stat-card"><div class="stat-label">Saldo gastos / caja chica (efectivo)</div><div class="stat-value">' + cajaFmtMoney(balances.chica) + "</div></div>" +
     "</div>" +
 
     '<div class="caja-section-title"><h2>Historial</h2>' +
     '<select class="caja-select" style="width:auto; padding:6px 10px; font-size:0.8rem;" onchange="setMovFilter(this.value)">' +
     '<option value="todas"' + (movFilterLedger === "todas" ? " selected" : "") + ">Todas las cajas</option>" +
-    '<option value="principal"' + (movFilterLedger === "principal" ? " selected" : "") + ">Caja mayor</option>" +
-    '<option value="chica"' + (movFilterLedger === "chica" ? " selected" : "") + ">Caja chica</option>" +
+    '<option value="principal"' + (movFilterLedger === "principal" ? " selected" : "") + ">" + NOM_CAJA.principal + "</option>" +
+    '<option value="chica"' + (movFilterLedger === "chica" ? " selected" : "") + ">" + NOM_CAJA.chica + "</option>" +
     "</select></div>" +
     '<div class="caja-card">' +
     (filtered.length === 0 ? '<div class="empty-note">No hay movimientos para este filtro.</div>' : filtered.map(movRowHtml).join("")) +
@@ -930,8 +933,8 @@ function buildCierreOrReporteHtml(title, txList, balances, stamp) {
   html += Object.keys(byMethod).map(function (k) { return ticketRow(escapeHtml(k), cajaFmtMoney(byMethod[k])); }).join("");
   html += '<div class="divider"></div>';
   html += ticketRow(title.indexOf("MENSUAL") >= 0 ? "Resultado del mes" : "Resultado del día", cajaFmtMoney(inTotal - outTotal), true);
-  html += ticketRow("Saldo caja mayor (efectivo)", cajaFmtMoney(balances.principal), true);
-  html += ticketRow("Saldo caja chica (efectivo)", cajaFmtMoney(balances.chica), true);
+  html += ticketRow("Saldo INGRESOS (efectivo)", cajaFmtMoney(balances.principal), true);
+  html += ticketRow("Saldo GASTOS (efectivo)", cajaFmtMoney(balances.chica), true);
   html += '<div class="divider"></div><div class="center" style="font-size:10px;">Generado con Caja MYCFOODS</div>';
   return html;
 }
@@ -943,8 +946,8 @@ function imprimirCierreDiario() {
   const stamp = new Date().toLocaleString("es-AR");
   const sep = '<div class="divider"></div><div class="divider"></div>';
   const html =
-    buildCierreOrReporteHtml("CIERRE DIARIO - CAJA MAYOR", soloCaja(tx, "principal"), balances, stamp) + sep +
-    buildCierreOrReporteHtml("CIERRE DIARIO - CAJA CHICA", soloCaja(tx, "chica"), balances, stamp) + sep +
+    buildCierreOrReporteHtml("CIERRE DIARIO - INGRESOS (CAJA MAYOR)", soloCaja(tx, "principal"), balances, stamp) + sep +
+    buildCierreOrReporteHtml("CIERRE DIARIO - GASTOS (CAJA CHICA)", soloCaja(tx, "chica"), balances, stamp) + sep +
     buildCierreOrReporteHtml("CIERRE DIARIO - TOTAL AMBAS CAJAS", sinTraspasos(tx), balances, stamp);
   abrirVentanaImpresion(html);
 }
@@ -957,8 +960,8 @@ function imprimirReporteMensual() {
   const stamp = new Date().toLocaleString("es-AR");
   const sep = '<div class="divider"></div><div class="divider"></div>';
   const html =
-    buildCierreOrReporteHtml("REPORTE MENSUAL - CAJA MAYOR - " + label, soloCaja(tx, "principal"), balances, stamp) + sep +
-    buildCierreOrReporteHtml("REPORTE MENSUAL - CAJA CHICA - " + label, soloCaja(tx, "chica"), balances, stamp) + sep +
+    buildCierreOrReporteHtml("REPORTE MENSUAL - INGRESOS (CAJA MAYOR) - " + label, soloCaja(tx, "principal"), balances, stamp) + sep +
+    buildCierreOrReporteHtml("REPORTE MENSUAL - GASTOS (CAJA CHICA) - " + label, soloCaja(tx, "chica"), balances, stamp) + sep +
     buildCierreOrReporteHtml("REPORTE MENSUAL - TOTAL AMBAS CAJAS - " + label, sinTraspasos(tx), balances, stamp);
   abrirVentanaImpresion(html);
 }
