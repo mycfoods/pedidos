@@ -237,7 +237,7 @@ function pagarTotalPendiente(empleadoId) {
 
   cajaAddTransaction({
     type: "egreso",
-    ledger: "principal",
+    ledger: "chica", // los sueldos son gasto del día a día: caja chica
     date: cajaTodayStr(),
     category: "Sueldos y cargas sociales",
     method: metodo,
