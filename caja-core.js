@@ -136,12 +136,44 @@ function getMetodosPago() {
   return (site.metodosPago && site.metodosPago.length) ? site.metodosPago : CAJA_METHODS;
 }
 
-const CAJA_INCOME_CATS = ["Ventas delivery", "Ventas take away", "Ventas salón", "Aportes", "Eventos", "Otros ingresos", "Fondeo desde caja mayor"];
-const CAJA_EXPENSE_CATS = [
-  "Mercadería e insumos", "Sueldos y cargas sociales", "Alquiler",
-  "Servicios (luz/agua/gas)", "Mantenimiento", "Marketing", "Impuestos", "Otros gastos",
-  "Retiro para gastos",
-];
+/* =========================================================
+   CAJAS SEPARADAS (nunca se mezclan)
+   - Caja mayor: SOLO ventas del menú (salón / delivery / take away),
+     más retiros. Las ventas entran solas desde Pedidos / Salón / Delivery.
+   - Caja chica: el día a día. Recibe dinero de caja mayor ("Retiro para
+     gastos") y de ahí salen los gastos. Es la base del punto de equilibrio.
+   Una venta es SOLO lo que viene del menú (con productos). Aportes,
+   eventos u otros ingresos NO son ventas y no entran al punto de equilibrio.
+========================================================= */
+const CAJA_VENTA_CATS = ["Ventas delivery", "Ventas take away", "Ventas salón"];
+const CAJA_TRASPASOS = ["Retiro para gastos", "Fondeo desde caja mayor"];
+
+// Categorías que se pueden cargar a mano, según la caja y el tipo de movimiento.
+const CAJA_CATS_MANUAL = {
+  principal: {
+    ingreso: ["Aportes", "Eventos", "Otros ingresos"],
+    egreso: ["Retiro para gastos", "Retiro"],
+  },
+  chica: {
+    ingreso: ["Aportes", "Otros ingresos"],
+    egreso: [
+      "Mercadería e insumos", "Sueldos y cargas sociales", "Alquiler",
+      "Servicios (luz/agua/gas)", "Mantenimiento", "Marketing", "Impuestos", "Otros gastos",
+    ],
+  },
+};
+
+// ¿Es una venta real del menú? (categoría de venta + detalle de productos)
+function cajaEsVentaMenu(t) {
+  return t.type === "ingreso" &&
+    CAJA_VENTA_CATS.indexOf(t.category) !== -1 &&
+    Array.isArray(t.items) && t.items.length > 0;
+}
+
+// ¿Es un gasto real de caja chica? (egreso de caja chica; los traspasos no existen como egreso ahí)
+function cajaEsGastoChica(t) {
+  return t.type === "egreso" && t.ledger === "chica" && CAJA_TRASPASOS.indexOf(t.category) === -1;
+}
 
 // Mapeo del campo "Tipo de Entrega" (código interno, value del <select>) a categoría de caja.
 // Usa el código fijo, no el texto visible — así podés renombrar el cartel en Ajustes
@@ -430,7 +462,7 @@ function cajaRegistrarVentaDesdePedido(opts) {
   const categoria = CAJA_ENTREGA_TO_CATEGORY[opts.tipoEntrega] || "Otros ingresos";
   cajaAddTransaction({
     type: "ingreso",
-    ledger: opts.ledger || "principal",
+    ledger: "principal", // las ventas del menú SIEMPRE van a caja mayor
     date: cajaTodayStr(),
     category: categoria,
     method: opts.pago,
