@@ -10,21 +10,18 @@ let movFormType = "ingreso";
 let movFormDate = null;
 let aperturaEditing = false;
 let mayorMonth = null;
-let vistaCaja = "principal"; // "principal" | "chica" | "todas"
+let vistaCaja = "principal"; // "principal" | "chica" | "todas" (el total entre cajas solo se ve si lo elegís)
+let movFormLedger = "principal";
 let TX_TODAS = null;
-const CAJA_TRASPASOS = ["Retiro para gastos", "Fondeo desde caja mayor"];
 
 function soloCaja(tx, c) { return tx.filter(function (t) { return t.ledger === c; }); }
+// Total entre cajas: no cuenta los traspasos internos (retiro para gastos / fondeo) para no duplicar plata.
 function sinTraspasos(tx) { return tx.filter(function (t) { return CAJA_TRASPASOS.indexOf(t.category) === -1; }); }
-function txVista() {
-  return vistaCaja === "todas" ? sinTraspasos(state.transactions) : soloCaja(state.transactions, vistaCaja);
-}
-function saldoVista(b) {
-  return vistaCaja === "chica" ? b.chica : (vistaCaja === "todas" ? b.principal + b.chica : b.principal);
-}
+function txVista() { return vistaCaja === "todas" ? sinTraspasos(state.transactions) : soloCaja(state.transactions, vistaCaja); }
+function saldoVista(b) { return vistaCaja === "chica" ? b.chica : (vistaCaja === "todas" ? b.principal + b.chica : b.principal); }
 function setVista(v) { vistaCaja = v; renderActive(); }
 function vistaSelectorHtml() {
-  const op = [["principal", "Caja mayor"], ["chica", "Caja chica"], ["todas", "Todo sumado"]];
+  const op = [["principal", "Caja mayor"], ["chica", "Caja chica"], ["todas", "Total ambas cajas"]];
   return '<div class="caja-row" style="margin-bottom:12px;">' + op.map(function (o) {
     return '<button type="button" class="chip ' + (vistaCaja === o[0] ? "active" : "") + '" onclick="setVista(\'' + o[0] + '\')">' + o[1] + "</button>";
   }).join("") + "</div>";
@@ -286,9 +283,9 @@ function movRowHtml(m) {
     '<div class="mov-row" onclick="abrirDetalleMovimiento(\'' + m.id + '\')">' +
     '<div class="mov-icon ' + (isIn ? "in" : "out") + '">' + (isIn ? "&uarr;" : "&darr;") + "</div>" +
     '<div style="flex:1; min-width:0;">' +
-    '<div class="mov-cat">' + escapeHtml(m.category) + "</div>" +
+    '<div class="mov-cat">' + escapeHtml(m.category) + (m.note ? ' <span style="font-weight:600; color:var(--text-white);">&mdash; ' + escapeHtml(m.note) + "</span>" : "") + "</div>" +
     '<div class="mov-meta">' + cajaFmtDateLabel(m.date) + " &middot; " + escapeHtml(m.method) + " &middot; " +
-    (m.ledger === "principal" ? "Caja mayor" : "Caja chica") + (m.note ? " &middot; " + escapeHtml(m.note) : "") + "</div>" +
+    (m.ledger === "principal" ? "Caja mayor" : "Caja chica") + "</div>" +
     "</div>" +
     '<div class="mov-amount ' + (isIn ? "in" : "out") + '">' + (isIn ? "+" : "\u2212") + cajaFmtMoney(m.amount) + "</div>" +
     '<button class="mov-del" onclick="event.stopPropagation(); borrarMovimiento(\'' + m.id + '\')"><i class="fa-solid fa-trash"></i></button>' +
@@ -318,7 +315,9 @@ function abrirDetalleMovimiento(id) {
   html += '<div class="mc-detail-row"><span>Categoría</span><span>' + escapeHtml(m.category) + "</span></div>";
   html += '<div class="mc-detail-row"><span>Método de pago</span><span>' + escapeHtml(m.method) + "</span></div>";
   html += '<div class="mc-detail-row"><span>Caja</span><span>' + (m.ledger === "principal" ? "Caja mayor" : "Caja chica") + "</span></div>";
-  if (m.note) html += '<div class="mc-detail-row"><span>Nota</span><span>' + escapeHtml(m.note) + "</span></div>";
+  html += '<div class="stat-label" style="margin:12px 0 6px;">Detalle</div>' +
+    '<input class="caja-input" id="mov-detail-note" placeholder="Escribí de qué es este movimiento" value="' + escapeHtml(m.note || "") + '">' +
+    '<button class="caja-btn caja-btn-primary caja-btn-block" style="margin-top:8px;" onclick="guardarDetalleMovimiento(\'' + m.id + '\')">Guardar detalle</button>';
 
   if (m.items && m.items.length) {
     html += '<div class="stat-label" style="margin:14px 0 8px;">Productos de esta venta</div>';
@@ -331,6 +330,16 @@ function abrirDetalleMovimiento(id) {
 
   box.innerHTML = html;
   overlay.classList.add("open");
+}
+
+function guardarDetalleMovimiento(id) {
+  const m = state.transactions.find(function (t) { return t.id === id; });
+  const inp = document.getElementById("mov-detail-note");
+  if (!m || !inp) return;
+  m.note = inp.value.trim();
+  cajaSave(state);
+  cerrarDetalleMovimiento();
+  renderActive();
 }
 
 function cerrarDetalleMovimiento() {
@@ -355,9 +364,14 @@ function renderResumen() {
   const egresoEfectivoHoy = todayTx.filter(function (t) { return t.type === "egreso" && t.method === "Efectivo"; }).reduce(function (a, t) { return a + t.amount; }, 0);
   const otrosMediosHoy = todayTx.filter(function (t) { return t.type === "ingreso" && t.method !== "Efectivo"; }).reduce(function (a, t) { return a + t.amount; }, 0);
 
-  const ventasHoy = todayTx.filter(function (t) { return t.type === "ingreso"; });
+  // Ventas = SOLO lo que viene del menú (aportes, eventos u otros ingresos no son ventas).
+  const ventasHoy = todayTx.filter(cajaEsVentaMenu);
   const totalDia = ventasHoy.reduce(function (a, t) { return a + t.amount; }, 0);
-  const totalMes = monthTx.filter(function (t) { return t.type === "ingreso"; }).reduce(function (a, t) { return a + t.amount; }, 0);
+  const totalMes = monthTx.filter(cajaEsVentaMenu).reduce(function (a, t) { return a + t.amount; }, 0);
+  const gastoHoy = todayTx.filter(cajaEsGastoChica).reduce(function (a, t) { return a + t.amount; }, 0);
+  const gastoMes = monthTx.filter(cajaEsGastoChica).reduce(function (a, t) { return a + t.amount; }, 0);
+  const gastosPorCat = {};
+  monthTx.filter(cajaEsGastoChica).forEach(function (t) { gastosPorCat[t.category] = (gastosPorCat[t.category] || 0) + t.amount; });
   const ticketsHoy = ventasHoy.reduce(function (a, t) { return a + (t.tickets || 1); }, 0);
 
   const porMetodoHoy = {};
@@ -416,14 +430,25 @@ function renderResumen() {
     .map(function (v) { return ventaBloqueHtml(v.id, v.titulo); }).join("");
   const ventasMetodoItem = ventasResueltos.find(function (v) { return v.id === "por-metodo"; });
 
-  const ventasHtml =
+  const gastosHtml =
+    '<div class="stat-grid">' +
+    '<div class="stat-card"><div class="stat-label">Gastos hoy</div><div class="stat-value down">' + cajaFmtMoney(gastoHoy) + "</div></div>" +
+    '<div class="stat-card"><div class="stat-label">Gastos del mes</div><div class="stat-value down">' + cajaFmtMoney(gastoMes) + "</div></div>" +
+    "</div>" +
+    '<div class="caja-card"><div class="stat-label" style="margin-bottom:8px;">Gastos por categoría (mes)</div>' +
+    (Object.keys(gastosPorCat).length === 0 ? '<div class="empty-note">Sin gastos este mes todavía.</div>' :
+      Object.keys(gastosPorCat).map(function (k) { return '<div class="report-cat-row"><span>' + escapeHtml(k) + '</span><span>' + cajaFmtMoney(gastosPorCat[k]) + '</span></div>'; }).join("")) +
+    "</div>";
+
+  const ventasSoloHtml =
     (ventasStatsHtml ? '<div class="stat-grid">' + ventasStatsHtml + "</div>" : "") +
     (ventasMetodoItem ? ventaBloqueHtml("por-metodo", ventasMetodoItem.titulo) : "");
+  const ventasHtml = vistaCaja === "chica" ? gastosHtml : (vistaCaja === "todas" ? ventasSoloHtml + gastosHtml : ventasSoloHtml);
 
   // --- Bloques principales de la pestaña ---
   const bloquesDef = [
     { id: "caja-efectivo", titulo: "Caja en efectivo", orden: 1 },
-    { id: "ventas", titulo: "Ventas", orden: 2 },
+    { id: "ventas", titulo: vistaCaja === "chica" ? "Gastos" : (vistaCaja === "todas" ? "Ventas y gastos" : "Ventas"), orden: 2 },
     { id: "ultimos-movimientos", titulo: "Últimos movimientos", orden: 3 },
   ];
   const bloquesResueltos = cajaPanelResolver("resumen", bloquesDef);
@@ -431,7 +456,7 @@ function renderResumen() {
 
   const bloqueHtml = {
     "caja-efectivo": '<div class="caja-section-title"><h2>' + escapeHtml(tituloDe("caja-efectivo")) + '</h2></div>' + cajaHtml,
-    "ventas": '<div class="caja-section-title"><h2>' + escapeHtml(tituloDe("ventas")) + '</h2></div>' + ventasHtml,
+    "ventas": '<div class="caja-section-title"><h2>' + escapeHtml(vistaCaja === "chica" ? "Gastos (caja chica)" : (vistaCaja === "todas" ? "Ventas y gastos (ambas cajas)" : tituloDe("ventas"))) + '</h2></div>' + ventasHtml,
     "ultimos-movimientos": '<div class="caja-section-title"><h2>' + escapeHtml(tituloDe("ultimos-movimientos")) + '</h2></div>' +
       '<div class="caja-card">' +
       (recent.length === 0 ? '<div class="empty-note">Todavía no hay movimientos.</div>' : recent.map(movRowHtml).join("")) +
@@ -451,10 +476,10 @@ function renderMovimientos() {
   const opening = state.openings[today];
   const balances = cajaComputeBalances(state.transactions, state.openings);
   const todayTx = state.transactions.filter(function (t) { return t.date === today; });
-  const todayIn = todayTx.filter(function (t) { return t.type === "ingreso"; }).reduce(function (a, t) { return a + t.amount; }, 0);
-  const todayOut = todayTx.filter(function (t) { return t.type === "egreso"; }).reduce(function (a, t) { return a + t.amount; }, 0);
+  const todayIn = todayTx.filter(cajaEsVentaMenu).reduce(function (a, t) { return a + t.amount; }, 0);
+  const todayOut = todayTx.filter(cajaEsGastoChica).reduce(function (a, t) { return a + t.amount; }, 0);
 
-  const cats = movFormType === "ingreso" ? CAJA_INCOME_CATS : CAJA_EXPENSE_CATS;
+  const cats = CAJA_CATS_MANUAL[movFormLedger][movFormType];
   const sorted = state.transactions.slice().sort(function (a, b) { return a.date < b.date ? 1 : -1; });
   const filtered = movFilterLedger === "todas" ? sorted : sorted.filter(function (t) { return t.ledger === movFilterLedger; });
 
@@ -504,11 +529,11 @@ function renderMovimientos() {
     '<div class="big-amount-box"><span>$</span><input type="number" id="mov-amount" placeholder="0"></div>' +
     '<div class="caja-row">' +
     '<div class="caja-field"><label>Fecha</label><input class="caja-input" type="date" id="mov-date" value="' + fechaActual + '" onchange="movFormDate = this.value"></div>' +
-    '<div class="caja-field"><label>Caja</label><select class="caja-select" id="mov-ledger"><option value="principal">Caja mayor</option><option value="chica">Caja chica</option></select></div>' +
+    '<div class="caja-field"><label>Caja</label><select class="caja-select" id="mov-ledger" onchange="setMovLedger(this.value)"><option value="principal"' + (movFormLedger === "principal" ? " selected" : "") + '>Caja mayor</option><option value="chica"' + (movFormLedger === "chica" ? " selected" : "") + '>Caja chica</option></select></div>' +
     "</div>" +
-    (movFormType === "ingreso"
-      ? '<div class="caja-field" style="margin-bottom:10px;"><label>Cantidad de tickets/pedidos que representa (1 si es una sola venta)</label><input class="caja-input" id="mov-tickets" type="number" min="1" value="1"></div>'
-      : "") +
+    '<div class="stat-sub" style="margin-bottom:8px;">' + (movFormLedger === "principal"
+      ? "Caja mayor: las ventas entran solas desde el menú. Acá solo cargás retiros, aportes o eventos (no cuentan como venta)."
+      : "Caja chica: gastos del día a día. Es lo que mide el punto de equilibrio.") + "</div>" +
     '<div class="stat-label" style="margin:10px 0 6px;">Categoría</div>' +
     '<div class="caja-row" id="mov-cats">' +
     cats.map(function (c, i) { return '<button type="button" class="chip ' + (i === 0 ? "active" : "") + '" data-cat="' + escapeHtml(c) + '" onclick="selectMovCat(this)">' + escapeHtml(c) + "</button>"; }).join("") +
@@ -517,13 +542,14 @@ function renderMovimientos() {
     '<div class="caja-row" id="mov-methods">' +
     getMetodosPago().map(function (m, i) { return '<button type="button" class="chip ' + (i === 0 ? "active" : "") + '" data-method="' + escapeHtml(m) + '" onclick="selectMovMethod(this)">' + escapeHtml(m) + "</button>"; }).join("") +
     "</div>" +
-    '<input class="caja-input" id="mov-note" placeholder="Nota (opcional)" style="margin:10px 0 12px;">' +
+    '<div class="stat-label" style="margin:10px 0 6px;">Detalle (¿de qué es este movimiento?)</div>' +
+    '<input class="caja-input" id="mov-note" placeholder="Ej: verdura a Juan, pago de luz, retiro del dueño..." style="margin-bottom:12px;">' +
     '<button class="caja-btn caja-btn-primary caja-btn-block" onclick="registrarMovimiento()">+ Registrar movimiento</button>' +
     "</div>" +
 
     '<div class="stat-grid">' +
-    '<div class="stat-card"><div class="stat-label">Hoy &mdash; ingresos</div><div class="stat-value up">' + cajaFmtMoney(todayIn) + "</div></div>" +
-    '<div class="stat-card"><div class="stat-label">Hoy &mdash; egresos</div><div class="stat-value down">' + cajaFmtMoney(todayOut) + "</div></div>" +
+    '<div class="stat-card"><div class="stat-label">Hoy &mdash; ventas del menú</div><div class="stat-value up">' + cajaFmtMoney(todayIn) + "</div></div>" +
+    '<div class="stat-card"><div class="stat-label">Hoy &mdash; gastos caja chica</div><div class="stat-value down">' + cajaFmtMoney(todayOut) + "</div></div>" +
     '<div class="stat-card"><div class="stat-label">Saldo caja mayor (efectivo)</div><div class="stat-value">' + cajaFmtMoney(balances.principal) + "</div></div>" +
     '<div class="stat-card"><div class="stat-label">Saldo caja chica (efectivo)</div><div class="stat-value">' + cajaFmtMoney(balances.chica) + "</div></div>" +
     "</div>" +
@@ -550,6 +576,14 @@ function selectMovMethod(btn) {
   parent.querySelectorAll(".chip").forEach(function (b) { b.classList.remove("active"); });
   btn.classList.add("active");
 }
+function setMovLedger(v) {
+  const a = document.getElementById("mov-amount"), n = document.getElementById("mov-note");
+  const amt = a ? a.value : "", note = n ? n.value : "";
+  movFormLedger = v;
+  renderMovimientos();
+  if (document.getElementById("mov-amount")) document.getElementById("mov-amount").value = amt;
+  if (document.getElementById("mov-note")) document.getElementById("mov-note").value = note;
+}
 function setMovFilter(v) { movFilterLedger = v; renderMovimientos(); }
 function volverAHoy() { movFormDate = null; renderMovimientos(); }
 
@@ -574,13 +608,10 @@ function registrarMovimiento() {
   const ledger = document.getElementById("mov-ledger").value;
   const catBtn = document.querySelector("#mov-cats .chip.active");
   const methodBtn = document.querySelector("#mov-methods .chip.active");
-  const category = catBtn ? catBtn.dataset.cat : (movFormType === "ingreso" ? CAJA_INCOME_CATS[0] : CAJA_EXPENSE_CATS[0]);
+  const category = catBtn ? catBtn.dataset.cat : CAJA_CATS_MANUAL[ledger][movFormType][0];
   const method = methodBtn ? methodBtn.dataset.method : getMetodosPago()[0];
   const note = document.getElementById("mov-note").value.trim();
-  const ticketsInput = document.getElementById("mov-tickets");
-  const tickets = movFormType === "ingreso" ? (parseInt(ticketsInput ? ticketsInput.value : "1") || 1) : undefined;
   const tx = { id: cajaUid(), type: movFormType, ledger: ledger, date: date, category: category, method: method, amount: amount, note: note };
-   if (tickets !== undefined) tx.tickets = tickets;
   state.transactions.push(tx);
   if (tx.type === "egreso" && tx.ledger === "principal" && tx.category === "Retiro para gastos") {
     tx.pairId = cajaUid();
@@ -664,8 +695,12 @@ function renderEquilibrio() {
   const unitLabel = cfg.unit || "pedidos";
 
   const thisMonth = cajaMonthKey(cajaTodayStr());
-  const monthIncomeTx = state.transactions.filter(function (t) { return t.type === "ingreso" && cajaMonthKey(t.date) === thisMonth && CAJA_TRASPASOS.indexOf(t.category) === -1; });
-  const realCount = monthIncomeTx.reduce(function (a, t) { return a + (t.tickets || 1); }, 0);
+  // Solo ventas del menú: aportes, eventos y otros ingresos NO entran.
+  const monthIncomeTx = state.transactions.filter(function (t) { return cajaEsVentaMenu(t) && cajaMonthKey(t.date) === thisMonth; });
+  // Solo gastos reales de caja chica (sin traspasos desde caja mayor).
+  const monthGastoTx = state.transactions.filter(function (t) { return cajaEsGastoChica(t) && cajaMonthKey(t.date) === thisMonth; });
+  const gastoRealMes = monthGastoTx.reduce(function (a, t) { return a + t.amount; }, 0);
+  const realCount = monthIncomeTx.length;
   const realTotal = monthIncomeTx.reduce(function (a, t) { return a + t.amount; }, 0);
   const realAvg = realCount > 0 ? realTotal / realCount : null;
 
@@ -709,11 +744,19 @@ function renderEquilibrio() {
       ? '<div class="ticket-auto-box">' +
         '<span style="font-size:0.8rem; color:var(--text-gray);">Calculado con ' + realCount + " " + unitLabel + ' de este mes</span>' +
         '<span style="font-family:\'Courier New\',monospace; font-size:1.1rem; font-weight:700;">' + cajaFmtMoney(realAvg) + "</span></div>"
-      : '<div class="empty-note">Todavía no cargaste ingresos este mes &mdash; cargá movimientos o pedidos, o pasá a manual.</div>';
+      : '<div class="empty-note">Todavía no hay ventas del menú este mes &mdash; hacé pedidos o pasá a manual.</div>';
   } else {
     html += '<div class="caja-field"><label>Ticket promedio ($)</label><input class="caja-input" type="number" value="' + cfg.avgTicket + '" onchange="updateConfig(\'avgTicket\', this.value)"></div>';
   }
   html += "</div>";
+
+  html += '<div class="caja-card">' +
+    '<div class="stat-label" style="margin-bottom:8px;">Este mes (solo ventas del menú y gastos de caja chica)</div>' +
+    '<div class="report-cat-row"><span>Ventas del menú</span><span style="color:#5fa372;">' + cajaFmtMoney(realTotal) + '</span></div>' +
+    '<div class="report-cat-row"><span>Gastos caja chica</span><span style="color:#e2564a;">' + cajaFmtMoney(gastoRealMes) + '</span></div>' +
+    '<div class="report-cat-row"><span>Resultado</span><span style="color:' + (realTotal - gastoRealMes >= 0 ? "#5fa372" : "#e2564a") + ';">' + cajaFmtMoney(realTotal - gastoRealMes) + '</span></div>' +
+    (totalFixed > 0 ? '<div class="stat-sub" style="margin-top:6px;">Gastos de caja chica vs. costos fijos cargados: ' + cajaFmtMoney(gastoRealMes) + " / " + cajaFmtMoney(totalFixed) + "</div>" : "") +
+    "</div>";
 
   if (peMonto === null) {
     html += '<div class="caja-card empty-note">Cargá un % de costo variable menor a 100 para calcular el punto de equilibrio.</div>';
@@ -770,7 +813,7 @@ function renderReportes() {
   const byMethod = {};
   monthTx.forEach(function (t) { byMethod[t.method] = (byMethod[t.method] || 0) + (t.type === "ingreso" ? t.amount : -t.amount); });
 
-  const ranking = cajaProductRanking(state.transactions, { desde: thisMonth + "-01", hasta: thisMonth + "-31" }).slice(0, 10);
+  const ranking = cajaProductRanking(TX_TODAS || state.transactions, { desde: thisMonth + "-01", hasta: thisMonth + "-31" }).slice(0, 10);
   const maxRankQty = Math.max(1, Math.max.apply(null, ranking.map(function (r) { return r.cantidad; }).concat([0])));
 
   el.innerHTML =
@@ -902,7 +945,7 @@ function imprimirCierreDiario() {
   const html =
     buildCierreOrReporteHtml("CIERRE DIARIO - CAJA MAYOR", soloCaja(tx, "principal"), balances, stamp) + sep +
     buildCierreOrReporteHtml("CIERRE DIARIO - CAJA CHICA", soloCaja(tx, "chica"), balances, stamp) + sep +
-    buildCierreOrReporteHtml("CIERRE DIARIO - TOTAL SUMADO", sinTraspasos(tx), balances, stamp);
+    buildCierreOrReporteHtml("CIERRE DIARIO - TOTAL AMBAS CAJAS", sinTraspasos(tx), balances, stamp);
   abrirVentanaImpresion(html);
 }
 
@@ -916,7 +959,7 @@ function imprimirReporteMensual() {
   const html =
     buildCierreOrReporteHtml("REPORTE MENSUAL - CAJA MAYOR - " + label, soloCaja(tx, "principal"), balances, stamp) + sep +
     buildCierreOrReporteHtml("REPORTE MENSUAL - CAJA CHICA - " + label, soloCaja(tx, "chica"), balances, stamp) + sep +
-    buildCierreOrReporteHtml("REPORTE MENSUAL - TOTAL SUMADO - " + label, sinTraspasos(tx), balances, stamp);
+    buildCierreOrReporteHtml("REPORTE MENSUAL - TOTAL AMBAS CAJAS - " + label, sinTraspasos(tx), balances, stamp);
   abrirVentanaImpresion(html);
 }
 /* =========================================================
