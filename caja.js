@@ -697,14 +697,30 @@ function renderEquilibrio() {
   const isAuto = cfg.autoTicket !== false;
   const unitLabel = cfg.unit || "pedidos";
 
-  const thisMonth = cajaMonthKey(cajaTodayStr());
+  const todayStr = cajaTodayStr();
+  const thisMonth = cajaMonthKey(todayStr);
+  const [currentYear, currentMonth] = todayStr.split("-").map(Number);
+  const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
+
+  let workDaysThisMonth = 0;
+  for (let day = 1; day <= daysInMonth; day++) {
+    const weekDay = new Date(currentYear, currentMonth - 1, day).getDay();
+    if (weekDay !== 0) workDaysThisMonth++; // Cuenta lunes a sábado; excluye domingos
+  }
+
   // Solo ventas del menú: aportes, eventos y otros ingresos NO entran.
-  const monthIncomeTx = state.transactions.filter(function (t) { return cajaEsVentaMenu(t) && cajaMonthKey(t.date) === thisMonth; });
+  const monthIncomeTx = state.transactions.filter(function (t) {
+    return cajaEsVentaMenu(t) && cajaMonthKey(t.date) === thisMonth;
+  });
   const realCount = monthIncomeTx.length;
-  const realTotal = monthIncomeTx.reduce(function (a, t) { return a + t.amount; }, 0);
+  const realTotal = monthIncomeTx.reduce(function (a, t) {
+    return a + t.amount;
+  }, 0);
   const realAvg = realCount > 0 ? realTotal / realCount : null;
 
-  const totalFixed = cfg.fixedCosts.reduce(function (a, c) { return a + (parseFloat(c.amount) || 0); }, 0);
+  const totalFixed = cfg.fixedCosts.reduce(function (a, c) {
+    return a + (parseFloat(c.amount) || 0);
+  }, 0);
   const pct = parseFloat(cfg.variablePct) || 0;
   const margin = 1 - pct / 100;
   const peMonto = margin > 0 ? totalFixed / margin : null;
@@ -755,8 +771,8 @@ function renderEquilibrio() {
   } else {
     html += '<div class="stat-grid">' +
       '<div class="stat-card"><div class="stat-label">Punto de equilibrio mensual</div><div class="stat-value">' + cajaFmtMoney(peMonto) + "</div></div>" +
-      '<div class="stat-card"><div class="stat-label">Punto de equilibrio diario</div><div class="stat-value">' + cajaFmtMoney(peMonto / 30) + "</div></div>" +
-      (ticket > 0 ? '<div class="stat-card"><div class="stat-label">' + unitLabel + ' necesarios al mes</div><div class="stat-value">' + Math.ceil(peUnidades).toLocaleString("es-AR") + '</div><div class="stat-sub">&asymp; ' + Math.ceil(peUnidades / 30) + " por día</div></div>" : "") +
+      '<div class="stat-card"><div class="stat-label">Punto de equilibrio diario</div><div class="stat-value">' + cajaFmtMoney(peMonto / workDaysThisMonth) + "</div></div>" +
+      (ticket > 0 ? '<div class="stat-card"><div class="stat-label">' + unitLabel + ' necesarios al mes</div><div class="stat-value">' + Math.ceil(peUnidades).toLocaleString("es-AR") + '</div><div class="stat-sub">&asymp; ' + Math.ceil(peUnidades / workDaysThisMonth) + " por día</div></div>" : "") +
       "</div>";
 
     if (ticket > 0) {
@@ -775,11 +791,28 @@ function renderEquilibrio() {
   el.innerHTML = html;
 }
 
-function addFixedCost() { state.config.fixedCosts.push({ name: "", amount: "" }); cajaSave(state); renderEquilibrio(); }
-function removeFixedCost(i) { state.config.fixedCosts.splice(i, 1); cajaSave(state); renderEquilibrio(); }
-function updateFixedCost(i, field, value) { state.config.fixedCosts[i][field] = value; cajaSave(state); }
-function updateConfig(field, value) { state.config[field] = value; cajaSave(state); renderEquilibrio(); }
+function addFixedCost() {
+  state.config.fixedCosts.push({ name: "", amount: "" });
+  cajaSave(state);
+  renderEquilibrio();
+}
 
+function removeFixedCost(i) {
+  state.config.fixedCosts.splice(i, 1);
+  cajaSave(state);
+  renderEquilibrio();
+}
+
+function updateFixedCost(i, field, value) {
+  state.config.fixedCosts[i][field] = value;
+  cajaSave(state);
+}
+
+function updateConfig(field, value) {
+  state.config[field] = value;
+  cajaSave(state);
+  renderEquilibrio();
+}
 /* =========================================================
    REPORTES
 ========================================================= */
