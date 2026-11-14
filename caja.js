@@ -287,7 +287,7 @@ function movRowHtml(m) {
     '<div class="mov-icon ' + (isIn ? "in" : "out") + '">' + (isIn ? "&uarr;" : "&darr;") + "</div>" +
     '<div style="flex:1; min-width:0;">' +
     '<div class="mov-cat">' + escapeHtml(m.category) + (m.note ? ' <span style="font-weight:600; color:var(--text-white);">&mdash; ' + escapeHtml(m.note) + "</span>" : "") + "</div>" +
-    '<div class="mov-meta">' + cajaFmtDateLabel(m.date) + " &middot; " + escapeHtml(m.method) + " &middot; " +
+    '<div class="mov-meta">' + cajaFmtDateLabel(m.date) + (m.time ? " &middot; " + escapeHtml(m.time) + " hs" : "") + " &middot; " + escapeHtml(m.method) + " &middot; " +
     nombreCaja(m.ledger) + "</div>" +
     "</div>" +
     '<div class="mov-amount ' + (isIn ? "in" : "out") + '">' + (isIn ? "+" : "\u2212") + cajaFmtMoney(m.amount) + "</div>" +
@@ -315,6 +315,7 @@ function abrirDetalleMovimiento(id) {
     (isIn ? "+" : "\u2212") + cajaFmtMoney(m.amount) + '</div></div>';
 
   html += '<div class="mc-detail-row"><span>Fecha</span><span>' + cajaFmtDateLabel(m.date) + " (" + m.date + ")</span></div>";
+  if (m.time) html += '<div class="mc-detail-row"><span>Hora</span><span>' + escapeHtml(m.time) + " hs</span></div>";
   html += '<div class="mc-detail-row"><span>Categoría</span><span>' + escapeHtml(m.category) + "</span></div>";
   html += '<div class="mc-detail-row"><span>Método de pago</span><span>' + escapeHtml(m.method) + "</span></div>";
   html += '<div class="mc-detail-row"><span>Caja</span><span>' + nombreCaja(m.ledger) + "</span></div>";
@@ -615,6 +616,7 @@ function registrarMovimiento() {
   const method = methodBtn ? methodBtn.dataset.method : getMetodosPago()[0];
   const note = document.getElementById("mov-note").value.trim();
   const tx = { id: cajaUid(), type: movFormType, ledger: ledger, date: date, category: category, method: method, amount: amount, note: note };
+  if (date === cajaTodayStr()) tx.time = cajaNowTimeStr();
   state.transactions.push(tx);
   if (tx.type === "egreso" && tx.ledger === "principal" && tx.category === "Retiro para gastos") {
     tx.pairId = cajaUid();
