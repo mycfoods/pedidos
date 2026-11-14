@@ -203,7 +203,7 @@ function menuDefaultData() {
   return {
     version: MENU_VERSION,
     products: [
-      { id: "p1", category: "Wraps", name: "Wrap Ceasar $14500", price: 14500, desc: "Pollo, mix de lechuga, aderezo ceasar y parmesano." },
+      { id: "p1", category: "Wraps", name: "Wrap Ceasar", price: 14500, desc: "Pollo, mix de lechuga, aderezo ceasar y parmesano." },
       { id: "p2", category: "Wraps", name: "Wrap de Pollo", price: 13500, desc: "Mix de verdes, zanahoria asada, pollo y aderezo." },
       { id: "p3", category: "Wraps", name: "Wrap Veggie", price: 13000, desc: "Mix verdes, vegetales salteados, queso y aderezo." },
       { id: "p4", category: "Menú del Día", name: "Menú del Día", price: 13500, desc: "Consultar plato del día." },
