@@ -146,11 +146,18 @@
 }
 
 .pos-cart-col .cart-items-list {
-    max-height: 100px;
+    height: auto;
+    max-height: 90px;
+    min-height: 0;
     overflow-y: auto;
+    overflow-x: hidden;
     flex-shrink: 0;
+    margin-bottom: 4px;
+    padding: 0 4px;
 }
-
+.pos-cart-col .cart-items-list:empty {
+    display: none;
+}
 .pos-cart-col .venta-mode-toggle {
     display: flex;
     flex-shrink: 0;
