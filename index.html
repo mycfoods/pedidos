@@ -129,14 +129,15 @@
 }
 
 .pos-cart-col .cart-box {
-    height: 600px;
-    max-height: 600px;
+    width: 100%;
+    height: auto;
+    max-height: none;
     margin: 0;
     padding: 12px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .pos-cart-col .cart-box > h3 {
@@ -151,41 +152,70 @@
 }
 
 .pos-cart-col .venta-mode-toggle {
+    display: flex;
     flex-shrink: 0;
+    gap: 8px;
     margin-top: 8px !important;
 }
 
 .pos-cart-col .checkout-form {
-    flex: 1;
-    min-height: 0;
-    overflow: hidden;
+    flex: none;
+    min-height: auto;
+    overflow: visible;
     margin-top: 8px !important;
     padding-top: 8px !important;
 }
 
-.pos-cart-col .checkout-form h3 {
+.pos-cart-col #campos-pedido {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 8px;
+    row-gap: 0;
+}
+
+.pos-cart-col #campos-pedido h3 {
+    grid-column: 1 / -1;
     font-size: 0.9rem !important;
     margin-bottom: 7px !important;
 }
 
-.pos-cart-col .form-group {
-    margin-bottom: 6px !important;
+.pos-cart-col #campos-pedido .form-group {
+    min-width: 0;
+    margin-bottom: 7px !important;
+}
+
+.pos-cart-col #campos-pedido .form-group:nth-of-type(1),
+.pos-cart-col #campos-pedido .form-group:nth-of-type(3) {
+    grid-column: 1;
+}
+
+.pos-cart-col #campos-pedido .form-group:nth-of-type(2),
+.pos-cart-col #campos-pedido .form-group:nth-of-type(4) {
+    grid-column: 2;
+}
+
+.pos-cart-col #campos-pedido .form-group:nth-of-type(n+5) {
+    grid-column: 1 / -1;
+}
+
+.pos-cart-col .form-group label {
+    display: block;
+    font-size: 0.72rem !important;
+    margin-bottom: 3px !important;
 }
 
 .pos-cart-col .form-group input,
 .pos-cart-col .form-group select {
-    padding: 6px !important;
-    font-size: 0.82rem !important;
-}
-
-.pos-cart-col .form-group label {
-    font-size: 0.74rem !important;
-    margin-bottom: 2px !important;
+    width: 100%;
+    min-width: 0;
+    padding: 7px !important;
+    font-size: 0.78rem !important;
+    box-sizing: border-box;
 }
 
 .pos-cart-col .cart-summary {
     flex-shrink: 0;
-    margin-top: auto;
+    margin-top: 8px;
     padding-top: 8px;
     background: var(--bg-card);
     position: relative;
@@ -206,17 +236,10 @@
         width: 100%;
     }
 
-    .pos-cart-col .cart-box {
-        height: auto;
-        max-height: none;
-        overflow: visible;
-    }
-
-    .pos-cart-col .checkout-form {
-        overflow: visible;
+    .pos-cart-col #campos-pedido {
+        display: block;
     }
 }
-
 
         /* Menú de un toque: cada producto es un botón compacto (solo el nombre). Un toque = se suma al carrito. */
    .menu-list-dynamic {
