@@ -196,43 +196,58 @@ function cajaEscapeHtml(s) {
 ========================================================= */
 const MENU_STORAGE_KEY = "mycfoods_menu_v1";
 
+// Versión del menú: al subirla, todos los dispositivos reemplazan su menú guardado UNA sola vez por el de menuDefaultData().
+const MENU_VERSION = 2; // carta de noviembre 2026
+
 function menuDefaultData() {
   return {
+    version: MENU_VERSION,
     products: [
       { id: "p1", category: "Wraps", name: "Wrap Ceasar", price: 14500, desc: "Pollo, mix de lechuga, aderezo ceasar y parmesano." },
-      { id: "p2", category: "Menú del Día", name: "Menú del Día", price: 13500, desc: "Consultar plato del día." },
-      { id: "p3", category: "Minutas", name: "Pechuga Grillé", price: 10000, desc: "Minuta sin guarnición." },
-      { id: "p4", category: "Minutas", name: "Milanesa de Carne", price: 12000, desc: "Minuta sin guarnición." },
-      { id: "p5", category: "Minutas", name: "Suprema de Pollo", price: 9500, desc: "Minuta sin guarnición." },
-      { id: "p6", category: "Minutas", name: "Omelette de Queso", price: 8000, desc: "Minuta sin guarnición." },
-      { id: "p7", category: "Minutas", name: "Tortilla de Papa", price: 9500, desc: "Minuta sin guarnición." },
-      { id: "p8", category: "Adicionales", name: "Adicional Tomate", price: 2000, desc: "Porción individual (75g)." },
-      { id: "p9", category: "Adicionales", name: "Adicional Zanahoria", price: 2000, desc: "Porción individual (75g)." },
-      { id: "p10", category: "Adicionales", name: "Adicional Lechuga", price: 2000, desc: "Porción individual (75g)." },
-      { id: "p11", category: "Adicionales", name: "Adicional Cebolla", price: 2000, desc: "Porción individual (75g)." },
-      { id: "p12", category: "Adicionales", name: "Adicional Huevos Duros", price: 2000, desc: "Porción individual (75g)." },
-      { id: "p13", category: "Adicionales", name: "Puré de Papa", price: 3500, desc: "Porción individual (75g)." },
-      { id: "p14", category: "Adicionales", name: "Huevos Revueltos (x4)", price: 3000, desc: "Solos (x4 unidades)." },
-      { id: "p15", category: "Adicionales", name: "Papas Rústicas al Horno", price: 3500, desc: "Al horno." },
-      { id: "p16", category: "Adicionales", name: "Arroz Blanco", price: 3500, desc: "Porción individual (75g)." },
-      { id: "p17", category: "Adicionales", name: "Puré de Kabutia", price: 3500, desc: "Porción individual (75g)." },
-      { id: "p18", category: "Ensaladas", name: "Ensalada Completa", price: 12000, desc: "Mix verdes, tomate, choclo, zanahoria y huevo duro." },
-      { id: "p19", category: "Ensaladas", name: "Ensalada César", price: 13500, desc: "Mix verdes, pollo, parmesano y crutones." },
-      { id: "p20", category: "Empanadas", name: "Empanada Carne a Cuchillo", price: 3500, desc: "Individual." },
-      { id: "p21", category: "Empanadas", name: "Empanada Jamón y Queso", price: 3500, desc: "Individual." },
-      { id: "p22", category: "Empanadas", name: "Empanada Pollo", price: 3500, desc: "Individual." },
-      { id: "p23", category: "Empanadas", name: "Empanada Espinaca y Salsa Blanca", price: 3500, desc: "Individual." },
-      { id: "p24", category: "Tartas", name: "Tarta Jamón y Queso", price: 12000, desc: "Tarta individual (aprox 600g)." },
-      { id: "p25", category: "Tartas", name: "Tarta Kabutia", price: 12000, desc: "Tarta individual (aprox 600g)." },
-      { id: "p26", category: "Tartas", name: "Tarta Acelga", price: 12000, desc: "Tarta individual (aprox 600g)." },
-      { id: "p27", category: "Tartas", name: "Tarta Vegetales Mixta", price: 12000, desc: "Tarta individual (aprox 600g)." },
-      { id: "p28", category: "Sandwichs Ciabatta", name: "Sándwich Completo", price: 17000, desc: "Carne o pollo, lechuga, tomate, jamón y queso en pan ciabatta." },
-      { id: "p29", category: "Sandwichs Ciabatta", name: "Sándwich Mila Carne/Pollo c/ J&Q", price: 15000, desc: "Con jamón y queso en pan ciabatta." },
-      { id: "p30", category: "Sandwichs Ciabatta", name: "Sándwich Solo Carne o Pollo", price: 13500, desc: "En pan ciabatta." },
-      { id: "p31", category: "Sandwichs Ciabatta", name: "Sándwich De Pollo Especial", price: 15000, desc: "Pollo grillado, pesto de tomate seco y muzzarella en pan ciabatta." },
-      { id: "p32", category: "Sandwichs Ciabatta", name: "Sándwich Jamón y Queso", price: 12000, desc: "En pan ciabatta." },
-      { id: "p33", category: "Sandwichs Ciabatta", name: "Sándwich Jamón, Queso y Tomate", price: 12000, desc: "En pan ciabatta." },
-      { id: "p34", category: "Sandwichs Ciabatta", name: "Sándwich Queso y Tomate", price: 12000, desc: "En pan ciabatta." },
+      { id: "p2", category: "Wraps", name: "Wrap de Pollo", price: 13500, desc: "Mix de verdes, zanahoria asada, pollo y aderezo." },
+      { id: "p3", category: "Wraps", name: "Wrap Veggie", price: 13000, desc: "Mix verdes, vegetales salteados, queso y aderezo." },
+      { id: "p4", category: "Menú del Día", name: "Menú del Día", price: 13500, desc: "Consultar plato del día." },
+      { id: "p5", category: "Minutas", name: "Pechuga Grille con Ensalada", price: 16000, desc: "Minuta con ensalada." },
+      { id: "p6", category: "Minutas", name: "Milanesa Napolitana de Carne con Puré de Papas", price: 17000, desc: "Minuta con puré de papas." },
+      { id: "p7", category: "Minutas", name: "Milanesa Napolitana de Pollo con Puré de Kabutia", price: 15000, desc: "Minuta con puré de kabutia." },
+      { id: "p8", category: "Minutas", name: "Omelette de Queso con Ensalada", price: 13500, desc: "Minuta con ensalada." },
+      { id: "p9", category: "Minutas", name: "Wok de Vegetales con Arroz", price: 14000, desc: "Minuta con arroz." },
+      { id: "p10", category: "Minutas", name: "Tortilla de Papa y Cebolla con Ensalada", price: 12000, desc: "Minuta con ensalada." },
+      { id: "p11", category: "Minutas", name: "Tortilla de Papa", price: 9500, desc: "Tortilla individual." },
+      { id: "p12", category: "Minutas", name: "Tortilla de Verdura con Ensalada", price: 12000, desc: "Minuta con ensalada." },
+      { id: "p13", category: "Minutas", name: "Tortilla de Verdura", price: 9500, desc: "Tortilla individual." },
+      { id: "p14", category: "Minutas", name: "Buñuelos con Ali-oli", price: 12000, desc: "Minuta con ali-oli." },
+      { id: "p15", category: "Minutas", name: "Revuelto de Gramajo", price: 15000, desc: "Papas pai, jamón, huevo y arvejas." },
+      { id: "p16", category: "Minutas", name: "Bondiola a la Plancha con Guarnición", price: 15000, desc: "Minuta con guarnición." },
+      { id: "p17", category: "Ensaladas", name: "Ensalada Completa", price: 12000, desc: "Mix verdes, tomate, choclo, zanahoria y huevo duro." },
+      { id: "p18", category: "Ensaladas", name: "Ensalada César", price: 13500, desc: "Mix verdes, pollo, aderezo ceasar, parmesano y crutons." },
+      { id: "p19", category: "Ensaladas", name: "Ensalada de Atún", price: 14200, desc: "Atún, arroz, arvejas, cebolla morada y huevo duro." },
+      { id: "p20", category: "Ensaladas", name: "Ensalada de Pollo", price: 16000, desc: "Mix de verdes, pollo, cherry confitado, champignones salteados y palta." },
+      { id: "p21", category: "Empanadas", name: "Empanada Carne a Cuchillo", price: 2800, desc: "Individual." },
+      { id: "p22", category: "Empanadas", name: "Empanada Jamón y Queso", price: 2800, desc: "Individual." },
+      { id: "p23", category: "Empanadas", name: "Empanada Pollo", price: 2800, desc: "Individual." },
+      { id: "p24", category: "Empanadas", name: "Empanada Espinaca y Salsa Blanca", price: 2800, desc: "Individual." },
+      { id: "p25", category: "Tartas", name: "Tarta Jamón y Queso", price: 12000, desc: "Tarta individual (aprox 600g)." },
+      { id: "p26", category: "Tartas", name: "Tarta Kabutia", price: 12000, desc: "Tarta individual (aprox 600g)." },
+      { id: "p27", category: "Tartas", name: "Tarta Acelga", price: 12000, desc: "Tarta individual (aprox 600g)." },
+      { id: "p28", category: "Tartas", name: "Tarta Vegetales Mixta", price: 12000, desc: "Tarta individual (aprox 600g)." },
+      { id: "p29", category: "Sandwichs Ciabatta", name: "Sándwich Completo", price: 17000, desc: "Carne o pollo, lechuga, tomate, jamón y queso en pan ciabatta." },
+      { id: "p30", category: "Sandwichs Ciabatta", name: "Sándwich Mila Carne/Pollo c/ J&Q", price: 15000, desc: "Con jamón y queso en pan ciabatta." },
+      { id: "p31", category: "Sandwichs Ciabatta", name: "Sándwich Solo Carne o Pollo", price: 13500, desc: "En pan ciabatta." },
+      { id: "p32", category: "Sandwichs Ciabatta", name: "Sándwich De Pollo", price: 15000, desc: "Pollo grillado, queso dambo, lechuga y tomate en pan ciabatta." },
+      { id: "p33", category: "Sandwichs Ciabatta", name: "Sándwich Lomito Uruguayo", price: 23000, desc: "Lomo, lechuga, tomate, jamón, queso y huevo a la plancha en pan ciabatta." },
+      { id: "p34", category: "Sandwichs Ciabatta", name: "Sándwich Lomo BBQ", price: 21500, desc: "Lomo, cebolla caramelizada, bbq y huevo a la plancha en pan ciabatta." },
+      { id: "p35", category: "Sandwichs Ciabatta", name: "Sándwich Bondiola BBQ", price: 20000, desc: "Bondiola, cebolla caramelizada, bbq y huevo a la plancha en pan ciabatta." },
+      { id: "p36", category: "Sandwichs Ciabatta", name: "Sándwich Bondiola Completa", price: 22000, desc: "Bondiola, lechuga, tomate, jamón, queso y huevo a la plancha en pan ciabatta." },
+      { id: "p37", category: "Tostados", name: "Tostado Jamón y Queso", price: 12000, desc: "En pan ciabatta." },
+      { id: "p38", category: "Tostados", name: "Tostado Jamón, Queso y Tomate", price: 13500, desc: "En pan ciabatta." },
+      { id: "p39", category: "Tostados", name: "Tostado Queso y Tomate", price: 10000, desc: "En pan ciabatta." },
+      { id: "p40", category: "Bebidas", name: "Coca Cola 600ml", price: 2500, desc: "Botella de 600 ml." },
+      { id: "p41", category: "Bebidas", name: "Coca Cola Zero 600ml", price: 2500, desc: "Botella de 600 ml." },
+      { id: "p42", category: "Bebidas", name: "Fanta 600ml", price: 2300, desc: "Botella de 600 ml." },
+      { id: "p43", category: "Bebidas", name: "Sprite 600ml", price: 2300, desc: "Botella de 600 ml." },
+      { id: "p44", category: "Bebidas", name: "Agua Saborizada", price: 2000, desc: "Botella individual." },
+      { id: "p45", category: "Bebidas", name: "Agua sin Gas", price: 1800, desc: "Botella individual." },
     ],
   };
 }
@@ -243,6 +258,12 @@ function menuLoad() {
     if (!raw) return menuDefaultData();
     const parsed = JSON.parse(raw);
     if (!parsed || !Array.isArray(parsed.products) || parsed.products.length === 0) return menuDefaultData();
+    // Menú guardado de una versión anterior: se reemplaza una sola vez por la carta nueva.
+    if (!parsed.version || parsed.version < MENU_VERSION) {
+      const nuevo = menuDefaultData();
+      menuSave(nuevo);
+      return nuevo;
+    }
     return parsed;
   } catch (e) {
     console.error("Error leyendo menú:", e);
@@ -380,6 +401,11 @@ function cajaUid() {
 }
 
 // Fecha local (no UTC) en formato YYYY-MM-DD.
+// Hora actual "HH:MM" (24 hs) para registrar el horario de cada venta/movimiento.
+function cajaNowTimeStr() {
+  return new Date().toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit", hour12: false });
+}
+
 function cajaTodayStr() {
   const d = new Date();
   const tz = d.getTimezoneOffset() * 60000;
@@ -443,7 +469,7 @@ function cajaAutoApertura(transactions, openings) {
 
 function cajaAddTransaction(tx) {
   const data = cajaLoad();
-  data.transactions.push(Object.assign({ id: cajaUid() }, tx));
+  data.transactions.push(Object.assign({ id: cajaUid(), time: cajaNowTimeStr() }, tx));
   cajaSave(data);
   return data;
 }
@@ -531,6 +557,7 @@ function cajaProductRanking(transactions, opts) {
     if (desde && t.date < desde) return;
     if (hasta && t.date > hasta) return;
     t.items.forEach(function (it) {
+      if (it.manual) return; // los importes manuales ("Otro importe") no son productos del menú
       const key = it.nombre;
       if (!map[key]) map[key] = { nombre: key, cantidad: 0, total: 0, ventas: 0 };
       map[key].cantidad += Number(it.cantidad) || 0;
