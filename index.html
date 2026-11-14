@@ -13,7 +13,7 @@
     <!-- Ajustes puntuales: aire arriba del menú + botonera de categorías compacta -->
     <style>
         #menu.section {
-            padding-top: 100px;
+            padding-top: 35px;
         }
 
         #menu .section-title {
@@ -112,18 +112,18 @@
             align-items: flex-start;
         }
 
-        .pos-menu-col {
-            flex: 1.8;
-            min-width: 0;
-        }
+      .pos-menu-col {
+    flex: 3;
+    min-width: 0;
+}
 
-        .pos-cart-col {
-            flex: 0 0 320px;
-            max-width: 320px;
-            min-width: 0;
-            position: sticky;
-            top: 20px;
-        }
+.pos-cart-col {
+    flex: 1;
+    max-width: none;
+    min-width: 0;
+    position: sticky;
+    top: 20px;
+}
 
         .pos-cart-col .cart-box {
             margin: 0;
@@ -158,11 +158,11 @@
         }
 
         /* Menú de un toque: cada producto es un botón compacto (solo el nombre). Un toque = se suma al carrito. */
-        .menu-list-dynamic {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
-            gap: 8px;
-        }
+   .menu-list-dynamic {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+}
 
         .menu-item-btn {
             position: relative;
@@ -170,10 +170,10 @@
             color: var(--text-white);
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            padding: 12px 10px;
-            min-height: 54px;
+            padding: 14px 12px;
+            min-height: 82px;
             font-family: inherit;
-            font-size: 0.84rem;
+            font-size: 0.95rem;
             font-weight: 700;
             line-height: 1.25;
             text-align: center;
@@ -195,7 +195,7 @@
 }
 
 .menu-item-price {
-    font-size: 0.72rem;
+    font-size: 0.82rem;
     font-weight: 600;
     line-height: 1.1;
     opacity: 0.85;
