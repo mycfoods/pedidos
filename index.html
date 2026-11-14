@@ -157,63 +157,123 @@
             }
         }
 
-        /* Menú simplificado: filas planas, mismo lenguaje visual que caja.html */
+        /* Menú de un toque: cada producto es un botón compacto (solo el nombre). Un toque = se suma al carrito. */
         .menu-list-dynamic {
-            display: flex;
-            flex-direction: column;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
             gap: 8px;
         }
 
-        .menu-item-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
+        .menu-item-btn {
+            position: relative;
             background: var(--bg-card);
+            color: var(--text-white);
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            padding: 12px 14px;
+            padding: 12px 10px;
+            min-height: 54px;
+            font-family: inherit;
+            font-size: 0.84rem;
+            font-weight: 700;
+            line-height: 1.25;
+            text-align: center;
+            cursor: pointer;
             transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
 
-        .menu-item-row:hover {
+        .menu-item-btn:hover {
             border-color: var(--accent);
         }
 
-        .menu-item-name {
-            flex: 1;
+        .menu-item-btn:active,
+        .menu-item-btn.just-added {
+            background: var(--accent);
+            color: var(--bg-main);
+            border-color: var(--accent);
+            transform: scale(0.97);
+        }
+
+        .menu-item-badge {
+            position: absolute;
+            top: -7px;
+            right: -6px;
+            min-width: 22px;
+            height: 22px;
+            padding: 0 6px;
+            border-radius: 11px;
+            background: var(--accent);
+            color: var(--bg-main);
+            font-size: 0.72rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 0 2px var(--bg-main);
+        }
+
+        .menu-item-badge[hidden] {
+            display: none;
+        }
+
+        /* Pestaña "Otro importe" y su formulario */
+        .tab-btn.tab-manual {
+            border-style: dashed;
+        }
+
+        .manual-box {
+            grid-column: 1 / -1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 14px;
+        }
+
+        .manual-box .manual-title {
+            width: 100%;
+            font-size: 0.78rem;
+            color: var(--text-gray);
+        }
+
+        .manual-box input {
+            flex: 1 1 140px;
             min-width: 0;
-            font-size: 0.88rem;
-            font-weight: 600;
-            color: var(--text-white);
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #444;
+            background: #111;
+            color: #fff;
+            font-family: inherit;
+            font-size: 0.95rem;
         }
 
-        .menu-item-price {
+        .manual-box input#manual-importe {
+            flex: 0 1 160px;
             font-family: 'Courier New', monospace;
-            font-size: 0.85rem;
-            color: var(--accent);
-            white-space: nowrap;
+            font-weight: 700;
         }
 
-        .menu-item-btn-add {
+        .manual-box .manual-btn {
+            flex: 1 1 100%;
             background: var(--accent);
             color: var(--bg-main);
             border: none;
             border-radius: 6px;
-            width: 32px;
-            height: 32px;
-            font-size: 1rem;
+            padding: 13px;
+            font-family: inherit;
+            font-size: 0.9rem;
             font-weight: 800;
             cursor: pointer;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
-        .menu-item-btn-add:hover {
+        .manual-box .manual-btn:hover {
             background: var(--accent-hover);
         }
     </style>
@@ -464,6 +524,9 @@ function aplicarConfiguracionSitio() {
    RENDER DEL MENÚ (desde datos editables en caja.html)
 ========================================================= */
 
+const CAT_MANUAL = "__manual__";
+let menuProductosVista = [];
+
 function renderMenuPagina() {
 
     const data = menuLoad();
@@ -474,8 +537,8 @@ function renderMenuPagina() {
         if (categorias.indexOf(p.category) === -1) categorias.push(p.category);
     });
 
-    if (!categoriaActiva || categorias.indexOf(categoriaActiva) === -1) {
-        categoriaActiva = categorias[0] || null;
+    if (categoriaActiva !== CAT_MANUAL && (!categoriaActiva || categorias.indexOf(categoriaActiva) === -1)) {
+        categoriaActiva = categorias[0] || CAT_MANUAL;
     }
 
     const tabsHeader = document.getElementById("tabs-header-dynamic");
@@ -483,27 +546,90 @@ function renderMenuPagina() {
 
     if (!tabsHeader || !grid) return;
 
-    if (categorias.length === 0) {
-        tabsHeader.innerHTML = "";
-        grid.innerHTML = '<p style="color: var(--text-gray); text-align:center;">Todavía no hay productos cargados en el menú.</p>';
-        return;
-    }
-
     tabsHeader.innerHTML = categorias.map(function (cat) {
         const activo = cat === categoriaActiva ? " active-cat" : "";
         return '<button type="button" class="tab-btn' + activo + '" onclick="seleccionarCategoriaMenu(\'' + cat.replace(/'/g, "\\'") + '\')">' + cajaEscapeHtml(cat) + '</button>';
+    }).join("") +
+        '<button type="button" class="tab-btn tab-manual' + (categoriaActiva === CAT_MANUAL ? " active-cat" : "") + '" onclick="seleccionarCategoriaMenu(\'' + CAT_MANUAL + '\')"><i class="fa-solid fa-pen"></i> Otro importe</button>';
+
+    if (categoriaActiva === CAT_MANUAL) {
+        menuProductosVista = [];
+        grid.innerHTML =
+            '<div class="manual-box">' +
+            '<div class="manual-title">Cobrá un importe fuera de la carta: se suma al carrito como "Otro importe".</div>' +
+            '<input type="text" id="manual-desc" maxlength="60" placeholder="Descripción (opcional)" onkeydown="if(event.key===\'Enter\'){agregarImporteManual();}">' +
+            '<input type="number" id="manual-importe" inputmode="decimal" min="0" step="any" placeholder="Importe $" onkeydown="if(event.key===\'Enter\'){agregarImporteManual();}">' +
+            '<button type="button" class="manual-btn" onclick="agregarImporteManual()">Agregar al carrito</button>' +
+            '</div>';
+        return;
+    }
+
+    menuProductosVista = productos.filter(function (p) {
+        return p.category === categoriaActiva;
+    });
+
+    if (menuProductosVista.length === 0) {
+        grid.innerHTML = '<p style="color: var(--text-gray); text-align:center; grid-column:1/-1;">Todavía no hay productos cargados en el menú.</p>';
+        return;
+    }
+
+    grid.innerHTML = menuProductosVista.map(function (p, i) {
+        return '<button type="button" class="menu-item-btn" data-i="' + i + '" onclick="tocarProducto(' + i + ', this)">' +
+            cajaEscapeHtml(p.name) +
+            '<span class="menu-item-badge" hidden></span>' +
+            '</button>';
     }).join("");
 
-    grid.innerHTML = productos.filter(function (p) {
-        return p.category === categoriaActiva;
-    }).map(function (p) {
-        const nombreEscapado = p.name.replace(/'/g, "\\'");
-        return '<div class="menu-item-row">' +
-            '<span class="menu-item-name">' + cajaEscapeHtml(p.name) + '</span>' +
-            '<span class="menu-item-price">' + cajaFmtMoney(p.price) + '</span>' +
-            '<button class="menu-item-btn-add" onclick="agregarAlCarrito(\'' + nombreEscapado + '\', ' + p.price + ', 1)" aria-label="Agregar">+</button>' +
-            '</div>';
-    }).join("");
+    actualizarBadgesMenu();
+}
+
+/* Un toque sobre el nombre = suma 1 al carrito */
+function tocarProducto(i, btn) {
+    const p = menuProductosVista[i];
+    if (!p) return;
+    agregarAlCarrito(p.name, p.price, 1);
+    if (btn) {
+        btn.classList.add("just-added");
+        setTimeout(function () { btn.classList.remove("just-added"); }, 160);
+    }
+}
+
+/* Cantidad ya cargada en el carrito, sobre cada botón del menú */
+function actualizarBadgesMenu() {
+    document.querySelectorAll(".menu-item-btn").forEach(function (btn) {
+        const p = menuProductosVista[Number(btn.dataset.i)];
+        const badge = btn.querySelector(".menu-item-badge");
+        if (!p || !badge) return;
+        let cant = 0;
+        carrito.forEach(function (it) {
+            if (it.nombre === p.name && it.precio === Number(p.price)) cant += it.cantidad;
+        });
+        if (cant > 0) { badge.textContent = cant; badge.hidden = false; }
+        else { badge.hidden = true; }
+    });
+}
+
+/* Importe fuera de la carta: se suma al carrito */
+function agregarImporteManual() {
+    const descEl = document.getElementById("manual-desc");
+    const impEl = document.getElementById("manual-importe");
+    if (!impEl) return;
+
+    const importe = parseFloat(String(impEl.value).replace(",", "."));
+    if (!importe || importe <= 0) {
+        alert("Ingresá un importe válido.");
+        impEl.focus();
+        return;
+    }
+
+    const desc = descEl ? descEl.value.replace(/[<>]/g, "").trim() : "";
+    const nombre = desc ? "Otro importe: " + desc : "Otro importe";
+
+    agregarAlCarrito(nombre, importe, 1, true);
+
+    if (descEl) descEl.value = "";
+    impEl.value = "";
+    impEl.focus();
 }
 
 function seleccionarCategoriaMenu(cat) {
@@ -594,10 +720,12 @@ function agregarDesdeMenu(btn, nombre, precio) {
    AGREGAR AL CARRITO
 ========================================================= */
 
-function agregarAlCarrito(nombre, precio, cantidad = 1) {
+function agregarAlCarrito(nombre, precio, cantidad = 1, manual = false) {
+
+    const precioNum = Number(precio);
 
     const itemExistente =
-        carrito.find(item => item.nombre === nombre);
+        carrito.find(item => item.nombre === nombre && item.precio === precioNum);
 
     if (itemExistente) {
 
@@ -609,9 +737,11 @@ function agregarAlCarrito(nombre, precio, cantidad = 1) {
 
             nombre: nombre,
 
-            precio: Number(precio),
+            precio: precioNum,
 
-            cantidad: cantidad
+            cantidad: cantidad,
+
+            manual: !!manual
 
         });
     }
@@ -662,6 +792,8 @@ function vaciarCarrito() {
 ========================================================= */
 
 function actualizarCarritoUI() {
+
+    actualizarBadgesMenu();
 
     const container =
         document.getElementById("cart-items");
@@ -1076,7 +1208,7 @@ function imprimirComanda() {
             pago: pago,
             total: total,
             items: carrito.map(function (item) {
-                return { nombre: item.nombre, precio: item.precio, cantidad: item.cantidad };
+                return { nombre: item.nombre, precio: item.precio, cantidad: item.cantidad, manual: !!item.manual };
             })
         });
     }
@@ -1090,7 +1222,7 @@ function imprimirComanda() {
         estadoPago: esPendiente ? "pendiente" : "cobrado",
         notas: notas,
         items: carrito.map(function (item) {
-            return { nombre: item.nombre, precio: item.precio, cantidad: item.cantidad };
+            return { nombre: item.nombre, precio: item.precio, cantidad: item.cantidad, manual: !!item.manual };
         })
     });
 
