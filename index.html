@@ -122,13 +122,27 @@
     max-width: none;
     min-width: 0;
     position: sticky;
-    top: 20px;
+    top: 12px;
+    align-self: flex-start;
 }
 
-        .pos-cart-col .cart-box {
-            margin: 0;
-            padding: 18px;
-        }
+.pos-cart-col .cart-box {
+    margin: 0;
+    padding: 14px;
+    max-height: calc(100vh - 24px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-sizing: border-box;
+}
+
+/* Total y botones siempre visibles dentro del panel */
+.pos-cart-col .cart-summary {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    background: var(--bg-card);
+    padding-top: 10px;
+}
 
         .pos-cart-col .form-group input,
         .pos-cart-col .form-group select {
