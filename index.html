@@ -189,7 +189,17 @@
         .menu-item-btn:hover {
             border-color: var(--accent);
         }
+.menu-item-btn {
+    flex-direction: column;
+    gap: 3px;
+}
 
+.menu-item-price {
+    font-size: 0.72rem;
+    font-weight: 600;
+    line-height: 1.1;
+    opacity: 0.85;
+}
         .menu-item-btn:active,
         .menu-item-btn.just-added {
             background: var(--accent);
@@ -573,15 +583,13 @@ function renderMenuPagina() {
         return;
     }
 
-    grid.innerHTML = menuProductosVista.map(function (p, i) {
-        return '<button type="button" class="menu-item-btn" data-i="' + i + '" onclick="tocarProducto(' + i + ', this)">' +
-            cajaEscapeHtml(p.name) +
-            '<span class="menu-item-badge" hidden></span>' +
-            '</button>';
-    }).join("");
-
-    actualizarBadgesMenu();
-}
+ grid.innerHTML = menuProductosVista.map(function (p, i) {
+    return '<button type="button" class="menu-item-btn" data-i="' + i + '" onclick="tocarProducto(' + i + ', this)">' +
+        '<span>' + cajaEscapeHtml(p.name) + '</span>' +
+        '<span class="menu-item-price">$' + Number(p.price).toLocaleString("es-AR") + '</span>' +
+        '<span class="menu-item-badge" hidden></span>' +
+        '</button>';
+}).join("");
 
 /* Un toque sobre el nombre = suma 1 al carrito */
 function tocarProducto(i, btn) {
