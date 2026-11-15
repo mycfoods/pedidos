@@ -109,7 +109,7 @@
 /* PANEL DE MENÚ Y CARRITO */
 .pos-layout {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 350px;
+    grid-template-columns: minmax(0, 1fr) 380px;
     gap: 20px;
     align-items: start;
     width: 100%;
@@ -121,7 +121,7 @@
 }
 
 .pos-cart-col {
-    width: 350px;
+    width: 380px;
     min-width: 0;
     position: sticky;
     top: 12px;
@@ -147,9 +147,9 @@
 
 .pos-cart-col .cart-items-list {
     height: auto;
-    max-height: 90px;
+    max-height: none;
     min-height: 0;
-    overflow-y: auto;
+    overflow-y: visible;
     overflow-x: hidden;
     flex-shrink: 0;
     margin-bottom: 4px;
